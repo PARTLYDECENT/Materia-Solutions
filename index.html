@@ -368,6 +368,8 @@
             position: relative;
             overflow: hidden;
             flex: 1;
+            display: flex; /* Use flexbox for panel layout */
+            flex-direction: column;
         }
 
         .content-area::before {
@@ -380,17 +382,23 @@
             background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
         }
 
+        /* REDESIGNED CONTENT PANEL STYLES */
         .content-panel {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            visibility: hidden;
-            position: absolute;
-            top: 40px; left: 40px; right: 40px; bottom: 40px;
+            display: none; /* Hide all panels by default */
             overflow-y: auto;
-            padding-right: 20px; /* for scrollbar */
+            animation: fadeIn 0.5s ease-in-out;
+            padding-right: 15px; /* space for scrollbar */
+        }
+
+        .content-panel.visible {
+            display: block; /* Show only the active panel */
         }
         
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .content-panel::-webkit-scrollbar {
             width: 8px;
         }
@@ -402,12 +410,6 @@
             border-radius: 10px;
         }
 
-
-        .content-panel.visible {
-            opacity: 1;
-            transform: translateY(0);
-            visibility: visible;
-        }
 
         .content-panel h2 {
             font-size: 2rem;
@@ -584,7 +586,7 @@
             .hero-description { font-size: 1rem; }
 
             .content-area { padding: 25px; }
-            .content-panel { top: 25px; left: 25px; right: 25px; bottom: 25px; }
+            .content-panel { padding-right: 10px; } /* Adjust scrollbar padding on mobile */
             .content-panel h2 { font-size: 1.5rem; }
 
             .contact-info {
@@ -827,9 +829,13 @@
 
             // --- Service Navigation ---
             function showPanel(targetId) {
-                contentPanels.forEach(panel => panel.classList.remove('visible'));
+                contentPanels.forEach(panel => {
+                    panel.classList.remove('visible');
+                });
                 const targetPanel = document.getElementById(targetId);
-                if (targetPanel) targetPanel.classList.add('visible');
+                if (targetPanel) {
+                    targetPanel.classList.add('visible');
+                }
             }
 
             serviceButtons.forEach(button => {
