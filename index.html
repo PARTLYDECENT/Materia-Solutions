@@ -124,6 +124,9 @@
             overflow: hidden;
             -webkit-backdrop-filter: blur(12px);
             backdrop-filter: blur(12px);
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
         }
         
         .content-panel {
@@ -135,6 +138,8 @@
             transform: translateY(15px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
             visibility: hidden;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
+            padding: 1.5rem;
         }
         
         .content-panel.visible {
@@ -177,7 +182,7 @@
 
     <div id="video-overlay"></div>
     <video playsinline autoplay muted loop id="video-bg">
-        <source src="bg1.mp4" type="video/mp4">
+        <source src="bg.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -188,11 +193,11 @@
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn" data-target="#content-directives">Directives</button>
-            <button class="service-btn" data-target="#content-structural">Structural</button>
-            <button class="service-btn" data-target="#content-automotive">Automotive</button>
-            <button class="service-btn" data-target="#content-fabrication">Fabrication</button>
-            <button class="service-btn" data-target="#content-finishing">Aesthetics</button>
+            <button class="service-btn" data-target="#content-directives" data-bg="image1.jpg">Directives</button>
+            <button class="service-btn" data-target="#content-structural" data-bg="image2.jpg">Structural</button>
+            <button class="service-btn" data-target="#content-automotive" data-bg="image3.jpg">Automotive</button>
+            <button class="service-btn" data-target="#content-fabrication" data-bg="image4.jpg">Fabrication</button>
+            <button class="service-btn" data-target="#content-finishing" data-bg="image5.jpg">Aesthetics</button>
         </nav>
 
         <main id="content-display">
@@ -227,8 +232,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
+            const contentDisplay = document.getElementById('content-display');
             
-            function showPanel(targetId) {
+            function showPanel(targetId, bgImage) {
                 contentPanels.forEach(panel => {
                     // Hide all panels
                     panel.classList.remove('visible');
@@ -239,6 +245,10 @@
                     // Show the target panel
                     panelToShow.classList.add('visible');
                 }
+
+                if (bgImage) {
+                    contentDisplay.style.backgroundImage = `url('${bgImage}')`;
+                }
             }
 
             buttons.forEach(button => {
@@ -247,7 +257,8 @@
                     this.classList.add('active');
                     
                     const targetId = this.getAttribute('data-target');
-                    showPanel(targetId);
+                    const bgImage = this.getAttribute('data-bg');
+                    showPanel(targetId, bgImage);
                 });
             });
 
@@ -255,7 +266,8 @@
             if (buttons.length > 0) {
                 buttons[0].classList.add('active');
                 const initialTarget = buttons[0].getAttribute('data-target');
-                showPanel(initialTarget);
+                const initialBg = buttons[0].getAttribute('data-bg');
+                showPanel(initialTarget, initialBg);
             }
         });
     </script>
