@@ -11,7 +11,7 @@
         :root {
             --bg-color: #0A0A0A;
             --text-color: #EAEAEA;
-            --accent-color: #00BFFF; /* Deep Sky Blue */
+            --accent-color: #00BFFF;
             --surface-color: rgba(15, 15, 15, 0.7);
             --border-color: rgba(138, 221, 255, 0.3);
             --font-main: 'IBM Plex Mono', monospace;
@@ -26,35 +26,45 @@
 
         body {
             font-family: var(--font-main);
-            background-color: var(--bg-color);
+            background: linear-gradient(45deg, #0A0A0A, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             color: var(--text-color);
             display: grid;
             place-items: center;
             padding: 1.5rem;
+            position: relative;
         }
 
-        #video-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -100;
-            transform: translateX(-50%) translateY(-50%);
-            object-fit: cover;
-            opacity: 0.5;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        
-        #video-overlay {
+
+        /* Animated background particles */
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: -99;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, var(--accent-color), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 90px 20px, var(--accent-color), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: sparkle 20s linear infinite;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-200px); }
         }
         
         #startup-overlay {
@@ -83,6 +93,13 @@
             border: 1px solid var(--border-color);
             padding: 1rem 2rem;
             animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        #startup-overlay h2:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 30px var(--accent-color);
         }
 
         @keyframes pulse {
@@ -96,8 +113,8 @@
             max-width: 850px;
             text-align: center;
             z-index: 1;
-            opacity: 0; /* Start hidden */
-            pointer-events: none; /* Can't interact while hidden */
+            opacity: 0;
+            pointer-events: none;
             transition: opacity 0.8s ease-in;
         }
 
@@ -141,6 +158,23 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-btn:hover::before {
+            left: 100%;
         }
         
         .service-btn:hover, .service-btn.active {
@@ -148,6 +182,7 @@
             color: var(--bg-color);
             border-color: var(--accent-color);
             box-shadow: 0 0 15px var(--accent-color);
+            transform: translateY(-2px);
         }
 
         #content-display {
@@ -158,11 +193,25 @@
             text-align: left;
             position: relative;
             overflow: hidden;
-            -webkit-backdrop-filter: blur(12px);
             backdrop-filter: blur(12px);
-            background-size: cover;
-            background-position: center;
-            transition: background-image 0.5s ease-in-out;
+            background: linear-gradient(135deg, var(--surface-color), rgba(0, 191, 255, 0.1));
+            transition: all 0.5s ease-in-out;
+        }
+
+        #content-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(0, 191, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #content-display:hover::before {
+            opacity: 1;
         }
         
         .content-panel {
@@ -174,9 +223,10 @@
             transform: translateY(15px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
             visibility: hidden;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
+            background-color: rgba(0, 0, 0, 0.5);
             padding: 1.5rem;
             border-radius: 4px;
+            border-left: 3px solid var(--accent-color);
         }
         
         .content-panel.visible {
@@ -206,12 +256,28 @@
             text-transform: uppercase;
         }
 
+        /* Glitch effect for the title */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        header h1:hover {
+            animation: glitch 0.3s;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             body { padding: 1rem; overflow-y: auto; }
             header h1 { font-size: 1.5rem; }
             header p { font-size: 0.9rem; }
             #content-display, .content-panel { padding: 1.5rem; top: 1.5rem; left: 1.5rem; right: 1.5rem; }
+            .services-nav { gap: 0.5rem; }
+            .service-btn { padding: 10px 16px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -221,12 +287,6 @@
         <h2>[ Click to Initialize ]</h2>
     </div>
 
-    <div id="video-overlay"></div>
-    <video playsinline muted loop id="video-bg" preload="auto">
-        <source src="bg.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
     <div class="container">
         <header>
             <h1>// RESONANCE REPAIR //</h1>
@@ -234,11 +294,11 @@
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn" data-target="#content-directives" data-bg="image1.jpg">Directives</button>
-            <button class="service-btn" data-target="#content-structural" data-bg="image2.jpg">Structural</button>
-            <button class="service-btn" data-target="#content-automotive" data-bg="image3.jpg">Automotive</button>
-            <button class="service-btn" data-target="#content-fabrication" data-bg="image4.jpg">Fabrication</button>
-            <button class="service-btn" data-target="#content-finishing" data-bg="image5.jpg">Aesthetics</button>
+            <button class="service-btn" data-target="#content-directives">Directives</button>
+            <button class="service-btn" data-target="#content-structural">Structural</button>
+            <button class="service-btn" data-target="#content-automotive">Automotive</button>
+            <button class="service-btn" data-target="#content-fabrication">Fabrication</button>
+            <button class="service-btn" data-target="#content-finishing">Aesthetics</button>
         </nav>
 
         <main id="content-display">
@@ -274,72 +334,99 @@
             const buttons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
             const contentDisplay = document.getElementById('content-display');
-            const video = document.getElementById('video-bg');
             const startupOverlay = document.getElementById('startup-overlay');
             const container = document.querySelector('.container');
 
-            let videoStarted = false;
+            let systemInitialized = false;
 
-            // Function to start the video and reveal the main content
-            function startExperience() {
-                if (videoStarted) return; // Prevent multiple triggers
+            // Function to initialize the system
+            function initializeSystem() {
+                if (systemInitialized) return;
                 
-                // Attempt to play the video.
-                video.play().then(() => {
-                    videoStarted = true;
-                    // Hide the startup overlay
-                    startupOverlay.classList.add('hidden');
-                    // Make the main container visible
-                    container.classList.add('visible');
+                systemInitialized = true;
+                
+                // Hide the startup overlay
+                startupOverlay.classList.add('hidden');
+                
+                // Show the main container
+                container.classList.add('visible');
 
-                    // Now that the container is visible, show the initial panel
+                // Show the initial panel after a short delay
+                setTimeout(() => {
                     if (buttons.length > 0) {
-                         buttons[0].classList.add('active');
+                        buttons[0].classList.add('active');
                         const initialTarget = buttons[0].getAttribute('data-target');
-                        const initialBg = buttons[0].getAttribute('data-bg');
-                        showPanel(initialTarget, initialBg);
+                        showPanel(initialTarget);
                     }
-                }).catch(error => {
-                    // This catch is important for browsers that might still block it.
-                    console.error("Video play failed:", error);
-                    // The overlay will remain, prompting the user to click again.
-                });
+                }, 300);
             }
             
-            // Allow the overlay itself to be the trigger
-            startupOverlay.addEventListener('click', startExperience);
+            // Handle startup overlay click
+            startupOverlay.addEventListener('click', initializeSystem);
 
-            function showPanel(targetId, bgImage) {
+            function showPanel(targetId) {
+                // Hide all panels
                 contentPanels.forEach(panel => {
                     panel.classList.remove('visible');
                 });
                 
+                // Show the target panel
                 const panelToShow = document.querySelector(targetId);
                 if (panelToShow) {
-                    panelToShow.classList.add('visible');
+                    // Small delay to ensure smooth transition
+                    setTimeout(() => {
+                        panelToShow.classList.add('visible');
+                    }, 100);
                 }
 
-                if (bgImage) {
-                    contentDisplay.style.backgroundImage = `url('${bgImage}')`;
-                }
+                // Add visual feedback to content display
+                contentDisplay.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    contentDisplay.style.transform = 'scale(1)';
+                }, 150);
             }
 
+            // Handle service button clicks
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // On the first click of any button, also try to start the video.
-                    startExperience();
+                    // Initialize system if not already done
+                    if (!systemInitialized) {
+                        initializeSystem();
+                    }
                     
+                    // Remove active class from all buttons
                     buttons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
                     this.classList.add('active');
                     
+                    // Show the corresponding panel
                     const targetId = this.getAttribute('data-target');
-                    const bgImage = this.getAttribute('data-bg');
-                    showPanel(targetId, bgImage);
+                    showPanel(targetId);
                 });
             });
 
-            // Note: The initial panel setup is now inside startExperience,
-            // so nothing appears until after the user's first click.
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (!systemInitialized) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        initializeSystem();
+                    }
+                    return;
+                }
+
+                // Number keys 1-5 to select services
+                const num = parseInt(e.key);
+                if (num >= 1 && num <= 5 && buttons[num - 1]) {
+                    buttons[num - 1].click();
+                }
+            });
+
+            // Add some console output for debugging
+            console.log('Resonance Repair Interface Loaded');
+            console.log('Total service buttons:', buttons.length);
+            console.log('Total content panels:', contentPanels.length);
         });
     </script>
 
