@@ -8,64 +8,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #F9F9F9;
-            --text-color: #222222;
-            --primary-color: #0052FF; /* A confident, modern blue */
-            --secondary-color: #666666;
-            --surface-color: #FFFFFF;
-            --border-color: #EAEAEA;
-            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* Basic Setup */
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
-            padding: 1.5rem;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F9F9;
+            color: #222;
+            padding: 2rem;
             text-align: center;
-            animation: fadeIn 1s ease-out;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Typography */
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; font-weight: 700; color: #0052FF; margin-bottom: 1rem; }
+        p { font-size: 1.1rem; color: #666; line-height: 1.6; }
+        .tagline { margin-bottom: 2.5rem; }
 
-        header h1 {
-            font-size: 2.75rem;
-            font-weight: 700;
-            letter-spacing: -1.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            font-size: 1.125rem;
-            color: var(--secondary-color);
-            margin-bottom: 2.5rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
+        /* Buttons */
         .services-nav {
             display: flex;
             flex-wrap: wrap;
@@ -73,89 +35,44 @@
             gap: 0.75rem;
             margin-bottom: 2rem;
         }
-
         .service-btn {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            color: #222;
             padding: 10px 20px;
             border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
         }
-
-        .service-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        
         .service-btn.active {
-            background-color: var(--primary-color);
-            color: var(--surface-color);
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 15px rgba(0, 82, 255, 0.25);
-            transform: translateY(-2px);
+            background-color: #0052FF;
+            color: #FFFFFF;
+            border-color: #0052FF;
         }
 
+        /* Content Area */
         #content-display {
-            background-color: var(--surface-color);
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
             border-radius: 12px;
-            padding: 2rem 2.5rem;
+            padding: 2.5rem;
             min-height: 200px;
-            border: 1px solid var(--border-color);
             text-align: left;
-            transition: opacity 0.4s ease-in-out;
         }
         
-        #content-display h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.75rem;
+        /* The key change: Simple show/hide */
+        .content-panel {
+            display: none; /* All panels are hidden by default */
         }
-        
-        #content-display p {
-            color: var(--secondary-color);
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        .initial-message {
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        .initial-message p {
-            font-size: 1.1rem;
-            color: var(--secondary-color);
+        .content-panel.visible {
+            display: block; /* The active panel is shown */
         }
 
         footer {
             margin-top: 3rem;
             color: #AAA;
-            font-size: 0.85rem;
-            font-weight: 400;
         }
-
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 600px) {
-            body {
-                padding: 1rem;
-            }
-            header h1 {
-                font-size: 2rem;
-            }
-            header p {
-                font-size: 1rem;
-            }
-            #content-display {
-                padding: 1.5rem;
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -163,20 +80,37 @@
     <div class="container">
         <header>
             <h1>Resonance Repair</h1>
-            <p>Your one-stop solution for life's endless to-do list. We tackle the jobs that pile up and turn your "someday" into "done."</p>
+            <p class="tagline">Your one-stop solution for life's endless to-do list.</p>
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn" data-src="example1.html">Home Repairs</button>
-            <button class="service-btn" data-src="example2.html">Automotive</button>
-            <button class="service-btn" data-src="example3.html">Welding</button>
-            <button class="service-btn" data-src="example4.html">Landscaping</button>
-            <button class="service-btn" data-src="example5.html">Finishing</button>
+            <button class="service-btn" data-target="#content-welcome">Welcome</button>
+            <button class="service-btn" data-target="#content-home">Home Repairs</button>
+            <button class="service-btn" data-target="#content-auto">Automotive</button>
+            <button class="service-btn" data-target="#content-welding">Welding</button>
+            <button class="service-btn" data-target="#content-finishing">Finishing</button>
         </nav>
 
         <main id="content-display">
-             <div class="initial-message">
-                <p>Select a service to see how we get it done right.</p>
+            <div id="content-welcome" class="content-panel">
+                <h2>We Handle Anything</h2>
+                <p>Select a service above to see how we get it done right, restoring harmony and function with precision and care.</p>
+            </div>
+            <div id="content-home" class="content-panel">
+                <h2>Home Repairs</h2>
+                <p>Drywall, flooring, fixtures, and everything that breaks when you least expect it. We make recurring problems a thing of the past.</p>
+            </div>
+            <div id="content-auto" class="content-panel">
+                <h2>Automotive Services</h2>
+                <p>Brake jobs, oil changes, tire work, and basic engine repairs. We keep your ride running smooth, ensuring reliability for the road ahead.</p>
+            </div>
+            <div id="content-welding" class="content-panel">
+                <h2>Welding & Fabrication</h2>
+                <p>Custom metalwork, structural repairs, and decorative ironwork. We bring your steel dreams to life with strength and artistry.</p>
+            </div>
+            <div id="content-finishing" class="content-panel">
+                <h2>Painting & Finishing</h2>
+                <p>Interior, exterior, cabinets, and fences. We make everything look brand new, applying flawless finishes that transform your assets.</p>
             </div>
         </main>
 
@@ -188,42 +122,40 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.service-btn');
-            const contentDisplay = document.getElementById('content-display');
+            const contentPanels = document.querySelectorAll('.content-panel');
+            
+            // Function to show a panel
+            function showPanel(targetId) {
+                // Hide all panels first
+                contentPanels.forEach(panel => {
+                    panel.style.display = 'none';
+                });
+                
+                // Show the target panel
+                const panelToShow = document.querySelector(targetId);
+                if (panelToShow) {
+                    panelToShow.style.display = 'block';
+                }
+            }
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const isActive = this.classList.contains('active');
-
-                    // Remove active class from all buttons
+                    // Set active state on button
                     buttons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
                     
-                    // If the button wasn't already active, make it active
-                    if (!isActive) {
-                        this.classList.add('active');
-                    }
-
-                    const sourceFile = this.getAttribute('data-src');
-                    
-                    contentDisplay.style.opacity = '0';
-
-                    setTimeout(() => {
-                        fetch(sourceFile)
-                            .then(response => {
-                                if (!response.ok) throw new Error(`Network response failed for ${sourceFile}`);
-                                return response.text();
-                            })
-                            .then(data => {
-                                contentDisplay.innerHTML = data;
-                                contentDisplay.style.opacity = '1';
-                            })
-                            .catch(error => {
-                                contentDisplay.innerHTML = `<p style="color:red; text-align:center;">Error loading content. Please try again.</p>`;
-                                contentDisplay.style.opacity = '1';
-                                console.error('Fetch Error:', error);
-                            });
-                    }, 300); // Wait for fade-out transition
+                    // Show the corresponding content panel
+                    const targetId = this.getAttribute('data-target');
+                    showPanel(targetId);
                 });
             });
+
+            // Initially, activate the first button and show the first panel
+            if (buttons.length > 0) {
+                buttons[0].classList.add('active');
+                const initialTarget = buttons[0].getAttribute('data-target');
+                showPanel(initialTarget);
+            }
         });
     </script>
 
