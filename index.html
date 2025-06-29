@@ -91,18 +91,19 @@
             100% { box-shadow: 0 0 5px var(--accent-color); }
         }
 
-
         .container {
             width: 100%;
             max-width: 850px;
             text-align: center;
-            animation: fadeIn 1.5s ease-out;
             z-index: 1;
+            opacity: 0; /* Start hidden */
+            pointer-events: none; /* Can't interact while hidden */
+            transition: opacity 0.8s ease-in;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .container.visible {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         header h1 {
@@ -275,10 +276,11 @@
             const contentDisplay = document.getElementById('content-display');
             const video = document.getElementById('video-bg');
             const startupOverlay = document.getElementById('startup-overlay');
+            const container = document.querySelector('.container');
 
             let videoStarted = false;
 
-            // Function to start the video and remove the overlay
+            // Function to start the video and reveal the main content
             function startExperience() {
                 if (videoStarted) return; // Prevent multiple triggers
                 
@@ -287,6 +289,16 @@
                     videoStarted = true;
                     // Hide the startup overlay
                     startupOverlay.classList.add('hidden');
+                    // Make the main container visible
+                    container.classList.add('visible');
+
+                    // Now that the container is visible, show the initial panel
+                    if (buttons.length > 0) {
+                         buttons[0].classList.add('active');
+                        const initialTarget = buttons[0].getAttribute('data-target');
+                        const initialBg = buttons[0].getAttribute('data-bg');
+                        showPanel(initialTarget, initialBg);
+                    }
                 }).catch(error => {
                     // This catch is important for browsers that might still block it.
                     console.error("Video play failed:", error);
@@ -314,7 +326,7 @@
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // On the first click of any button, try to start the video.
+                    // On the first click of any button, also try to start the video.
                     startExperience();
                     
                     buttons.forEach(btn => btn.classList.remove('active'));
@@ -326,13 +338,8 @@
                 });
             });
 
-            // Set up the initial state without showing a panel yet
-            if (buttons.length > 0) {
-                 buttons[0].classList.add('active');
-                const initialTarget = buttons[0].getAttribute('data-target');
-                const initialBg = buttons[0].getAttribute('data-bg');
-                showPanel(initialTarget, initialBg);
-            }
+            // Note: The initial panel setup is now inside startExperience,
+            // so nothing appears until after the user's first click.
         });
     </script>
 
