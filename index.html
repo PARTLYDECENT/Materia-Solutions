@@ -56,6 +56,41 @@
             background-color: rgba(0,0,0,0.5);
             z-index: -99;
         }
+        
+        #startup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0A0A0A;
+            z-index: 100;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        #startup-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #startup-overlay h2 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            border: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px var(--accent-color); }
+            50% { box-shadow: 0 0 20px var(--accent-color); }
+            100% { box-shadow: 0 0 5px var(--accent-color); }
+        }
+
 
         .container {
             width: 100%;
@@ -140,6 +175,7 @@
             visibility: hidden;
             background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for readability */
             padding: 1.5rem;
+            border-radius: 4px;
         }
         
         .content-panel.visible {
@@ -180,8 +216,12 @@
 </head>
 <body>
 
+    <div id="startup-overlay">
+        <h2>[ Click to Initialize ]</h2>
+    </div>
+
     <div id="video-overlay"></div>
-    <video playsinline autoplay muted loop id="video-bg">
+    <video playsinline muted loop id="video-bg" preload="auto">
         <source src="bg.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
@@ -234,29 +274,36 @@
             const contentPanels = document.querySelectorAll('.content-panel');
             const contentDisplay = document.getElementById('content-display');
             const video = document.getElementById('video-bg');
+            const startupOverlay = document.getElementById('startup-overlay');
 
-            // Attempt to play the video
-            var playPromise = video.play();
+            let videoStarted = false;
 
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                // Automatic playback started!
-                })
-                .catch(error => {
-                // Auto-play was prevented
-                // Show a UI element to let the user manually start playback.
+            // Function to start the video and remove the overlay
+            function startExperience() {
+                if (videoStarted) return; // Prevent multiple triggers
+                
+                // Attempt to play the video.
+                video.play().then(() => {
+                    videoStarted = true;
+                    // Hide the startup overlay
+                    startupOverlay.classList.add('hidden');
+                }).catch(error => {
+                    // This catch is important for browsers that might still block it.
+                    console.error("Video play failed:", error);
+                    // The overlay will remain, prompting the user to click again.
                 });
             }
             
+            // Allow the overlay itself to be the trigger
+            startupOverlay.addEventListener('click', startExperience);
+
             function showPanel(targetId, bgImage) {
                 contentPanels.forEach(panel => {
-                    // Hide all panels
                     panel.classList.remove('visible');
                 });
                 
                 const panelToShow = document.querySelector(targetId);
                 if (panelToShow) {
-                    // Show the target panel
                     panelToShow.classList.add('visible');
                 }
 
@@ -267,6 +314,9 @@
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
+                    // On the first click of any button, try to start the video.
+                    startExperience();
+                    
                     buttons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
@@ -276,9 +326,9 @@
                 });
             });
 
-            // Initially, activate the first button and show the first panel
+            // Set up the initial state without showing a panel yet
             if (buttons.length > 0) {
-                buttons[0].classList.add('active');
+                 buttons[0].classList.add('active');
                 const initialTarget = buttons[0].getAttribute('data-target');
                 const initialBg = buttons[0].getAttribute('data-bg');
                 showPanel(initialTarget, initialBg);
