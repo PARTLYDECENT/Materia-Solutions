@@ -20,10 +20,10 @@
             --font-main: 'Inter', sans-serif;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
+        * {  
+            box-sizing: border-box;  
+            margin: 0;  
+            padding: 0;  
         }
 
         html, body {
@@ -39,7 +39,7 @@
             position: relative;
         }
 
-        /* Cool animated shader background */
+        /* Animated background */
         .shader-bg {
             position: fixed;
             top: 0;
@@ -105,21 +105,32 @@
             right: 20px;
             width: 300px;
             height: 169px;
-            background: var(--surface-color);
+            background: #000;
             border-radius: 12px;
             overflow: hidden;
             backdrop-filter: blur(10px);
             border: 1px solid var(--border-color);
             z-index: 1000;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            pointer-events: none; /* Let clicks pass through to controls */
         }
-
-        .video-player {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        
+        #youtube-player-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 177.77vh; /* 16/9 ratio */
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%);
             display: none;
         }
+        
+        #youtube-player {
+            width: 100%;
+            height: 100%;
+        }
+
 
         .video-controls {
             position: absolute;
@@ -127,18 +138,25 @@
             left: 0;
             right: 0;
             background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 15px;
+            padding: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto; /* Make controls clickable */
+        }
+        
+        .video-container:hover .video-controls {
+            opacity: 1;
         }
 
         .play-btn {
             background: var(--primary-color);
             border: none;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -146,6 +164,7 @@
             justify-content: center;
             transition: all 0.3s ease;
             font-size: 16px;
+            pointer-events: auto; /* Make button clickable */
         }
 
         .play-btn:hover {
@@ -161,6 +180,7 @@
             height: 100%;
             text-align: center;
             padding: 20px;
+            pointer-events: auto; /* Make clickable */
         }
 
         .video-placeholder h3 {
@@ -196,7 +216,6 @@
         .logo {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--primary-color);
             margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
@@ -241,6 +260,19 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .service-btn .btn-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .service-btn:hover .btn-icon {
+            transform: scale(1.2);
         }
 
         .service-btn::before {
@@ -292,14 +324,25 @@
         .content-panel {
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.4s ease;
+            transition: opacity 0.4s ease, transform 0.4s ease;
             visibility: hidden;
             position: absolute;
-            top: 40px;
-            left: 40px;
-            right: 40px;
-            bottom: 40px;
+            top: 40px; left: 40px; right: 40px; bottom: 40px;
+            overflow-y: auto;
+            padding-right: 20px; /* for scrollbar */
         }
+        
+        .content-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .content-panel::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+        }
+
 
         .content-panel.visible {
             opacity: 1;
@@ -320,12 +363,7 @@
         .content-panel .icon {
             width: 32px;
             height: 32px;
-            background: var(--primary-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            color: var(--primary-color);
         }
 
         .content-panel p {
@@ -333,31 +371,107 @@
             color: var(--text-color);
             line-height: 1.8;
             margin-bottom: 25px;
+            max-width: 800px;
         }
-
-        .features-list {
-            list-style: none;
+        
+        .content-panel h3 {
+            color: var(--accent-color);
+            font-weight: 600;
             margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
 
-        .features-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        /* New styles for features and pricing */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .feature-item h4 {
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        
+        .feature-item p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .price-card {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 25px;
+            border-radius: 8px;
+            border-top: 3px solid var(--primary-color);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .price-card h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
             color: var(--text-color);
         }
-
-        .features-list li:last-child {
-            border-bottom: none;
+        
+        .price-tag {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .price-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
         }
 
-        .features-list li::before {
+        .price-card ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .price-card li {
+            padding: 8px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .price-card li::before {
             content: '✓';
             color: var(--accent-color);
             font-weight: bold;
-            width: 20px;
         }
 
         /* Footer */
@@ -390,58 +504,41 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .video-container {
                 position: static;
                 width: 100%;
-                height: 200px;
+                height: auto;
+                aspect-ratio: 16 / 9;
                 margin-bottom: 30px;
                 border-radius: 8px;
+                pointer-events: auto;
             }
-
+        }
+        
+        @media (max-width: 768px) {
             .container {
                 padding: 20px 15px;
             }
 
-            .logo {
-                font-size: 2rem;
-            }
+            .logo { font-size: 2rem; }
+            .tagline { font-size: 1rem; }
+            .hero-description { font-size: 1rem; }
 
-            .tagline {
-                font-size: 1rem;
-            }
-
-            .hero-description {
-                font-size: 1rem;
-            }
-
-            .content-area {
-                padding: 25px;
-            }
-
-            .content-panel {
-                top: 25px;
-                left: 25px;
-                right: 25px;
-                bottom: 25px;
-            }
-
-            .content-panel h2 {
-                font-size: 1.5rem;
-            }
+            .content-area { padding: 25px; }
+            .content-panel { top: 25px; left: 25px; right: 25px; bottom: 25px; }
+            .content-panel h2 { font-size: 1.5rem; }
 
             .contact-info {
                 flex-direction: column;
                 gap: 15px;
             }
 
-            .services-nav {
-                gap: 10px;
-            }
-
-            .service-btn {
-                padding: 12px 20px;
-                font-size: 0.9rem;
+            .services-nav { gap: 10px; }
+            .service-btn { padding: 12px 20px; font-size: 0.9rem; }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -449,16 +546,17 @@
 <body>
     <div class="shader-bg"></div>
 
-    <!-- Video Player -->
+    <!-- YouTube Video Player -->
     <div class="video-container">
-        <video class="video-player" id="bgVideo" preload="metadata">
-            <source src="bg.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <!-- This div will be replaced by the YouTube IFrame -->
+        <div id="youtube-player-container">
+            <div id="youtube-player"></div>
+        </div>
+
         <div class="video-placeholder" id="videoPlaceholder">
-            <h3>Background Video</h3>
-            <p>Click play to start the background video</p>
-            <button class="play-btn" id="playBtn">▶</button>
+            <h3>Visualizer Active</h3>
+            <p>Click play to feature video</p>
+            <button class="play-btn" id="initialPlayBtn">▶</button>
         </div>
         <div class="video-controls" id="videoControls" style="display: none;">
             <button class="play-btn" id="playPauseBtn">⏸</button>
@@ -477,103 +575,71 @@
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn active" data-target="overview">🏠 Overview</button>
-            <button class="service-btn" data-target="structural">🔧 Structural</button>
-            <button class="service-btn" data-target="automotive">🚗 Automotive</button>
-            <button class="service-btn" data-target="fabrication">⚙️ Fabrication</button>
-            <button class="service-btn" data-target="finishing">🎨 Finishing</button>
+            <button class="service-btn active" data-target="overview"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Overview</button>
+            <button class="service-btn" data-target="structural"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V3m0 9a9 9 0 0118 0v0a9 9 0 01-18 0v0zm0 0h18"></path></svg> Structural</button>
+            <button class="service-btn" data-target="automotive"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4m-6 0a2 2 0 100-4m0 4a2 2 0 110-4M6 18v-2a2 2 0 114 0v2H6zM12 18v-2a2 2 0 114 0v2h-4zm6 0v-2a2 2 0 114 0v2h-4z"></path></svg> Automotive</button>
+            <button class="service-btn" data-target="fabrication"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Fabrication</button>
+            <button class="service-btn" data-target="finishing"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg> Finishing</button>
         </nav>
 
         <main class="content-area">
             <div class="content-panel visible" id="overview">
-                <h2>
-                    <span class="icon">🏠</span>
-                    Welcome to Resonance Repair
-                </h2>
-                <p>
-                    Your trusted partner for comprehensive repair and maintenance services. We combine 
-                    traditional craftsmanship with modern techniques to deliver exceptional results 
-                    for residential and commercial clients.
-                </p>
-                <ul class="features-list">
-                    <li>Licensed and insured professionals</li>
-                    <li>24/7 emergency service available</li>
-                    <li>Free estimates and consultations</li>
-                    <li>Warranty on all work performed</li>
-                    <li>Eco-friendly materials and practices</li>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Resonance Repair</h2>
+                <p>Your trusted partner for comprehensive repair and maintenance. We combine traditional craftsmanship with modern techniques to deliver exceptional results for residential and commercial clients. Our commitment to quality, reliability, and customer satisfaction is the foundation of our business.</p>
+                
+                <h3>Why Choose Us?</h3>
+                <ul class="features-grid">
+                    <li class="feature-item"><h4>Licensed & Insured</h4><p>Complete peace of mind knowing you're working with qualified, protected professionals.</p></li>
+                    <li class="feature-item"><h4>24/7 Emergency Service</h4><p>We're available around the clock to handle your most urgent repair needs.</p></li>
+                    <li class="feature-item"><h4>Free Consultations</h4><p>We offer no-obligation estimates to help you make informed decisions.</p></li>
+                    <li class="feature-item"><h4>Workmanship Warranty</h4><p>We stand behind our work with a comprehensive warranty on all services performed.</p></li>
+                    <li class="feature-item"><h4>Eco-Friendly Practices</h4><p>We prioritize the use of sustainable materials and methods to protect our environment.</p></li>
+                    <li class="feature-item"><h4>Multi-Discipline Experts</h4><p>Our team has proven expertise across structural, automotive, and fabrication fields.</p></li>
                 </ul>
             </div>
 
             <div class="content-panel" id="structural">
-                <h2>
-                    <span class="icon">🔧</span>
-                    Structural Services
-                </h2>
-                <p>
-                    Complete structural repair and renovation services for homes and businesses. 
-                    We handle everything from minor fixes to major renovations with precision and care.
-                </p>
-                <ul class="features-list">
-                    <li>Drywall repair and installation</li>
-                    <li>Flooring installation and refinishing</li>
-                    <li>Fixture replacement and upgrades</li>
-                    <li>Foundation and framing work</li>
-                    <li>Plumbing and electrical coordination</li>
-                </ul>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V3m0 9a9 9 0 0118 0v0a9 9 0 01-18 0v0zm0 0h18"></path></svg> Structural Services</h2>
+                <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and value of your property. We handle everything from foundational assessments to complete interior remodels with precision and care.</p>
+                <h3>Fee Structure</h3>
+                <div class="pricing-grid">
+                    <div class="price-card"><h4>Assessment</h4><div class="price-tag">$150</div><p class="price-desc">On-site Visit</p><ul><li>Full structural evaluation</li><li>Moisture & integrity checks</li><li>Detailed report & estimate</li><li>Fee credited to project cost</li></ul></div>
+                    <div class="price-card"><h4>Repair Work</h4><div class="price-tag">$85/hr</div><p class="price-desc">+ Materials</p><ul><li>Drywall & flooring</li><li>Fixture replacement</li><li>Minor framing & support</li><li>Transparent time tracking</li></ul></div>
+                    <div class="price-card"><h4>Major Projects</h4><div class="price-tag">Custom</div><p class="price-desc">Per-Project Quote</p><ul><li>Full renovations</li><li>Foundation & framing</li><li>Plumbing/electrical coordination</li><li>Dedicated project manager</li></ul></div>
+                </div>
             </div>
 
             <div class="content-panel" id="automotive">
-                <h2>
-                    <span class="icon">🚗</span>
-                    Automotive Care
-                </h2>
-                <p>
-                    Professional automotive maintenance and repair services to keep your vehicles 
-                    running smoothly. From routine maintenance to complex repairs, we've got you covered.
-                </p>
-                <ul class="features-list">
-                    <li>Engine diagnostics and repair</li>
-                    <li>Brake system maintenance</li>
-                    <li>Transmission and drivetrain service</li>
-                    <li>Electrical system troubleshooting</li>
-                    <li>Preventive maintenance programs</li>
-                </ul>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4m-6 0a2 2 0 100-4m0 4a2 2 0 110-4M6 18v-2a2 2 0 114 0v2H6zM12 18v-2a2 2 0 114 0v2h-4zm6 0v-2a2 2 0 114 0v2h-4z"></path></svg> Automotive Care</h2>
+                <p>Our automotive division provides professional maintenance and repair to keep your vehicles running smoothly and safely. Using state-of-the-art diagnostic tools and high-quality parts, we cover everything from routine checks to complex system repairs.</p>
+                <h3>Fee Structure</h3>
+                <div class="pricing-grid">
+                     <div class="price-card"><h4>Diagnostics</h4><div class="price-tag">$99</div><p class="price-desc">Full System Scan</p><ul><li>Check Engine Light analysis</li><li>Electrical system test</li><li>Brake & transmission scan</li><li>Includes detailed report</li></ul></div>
+                     <div class="price-card"><h4>Maintenance</h4><div class="price-tag">Menu</div><p class="price-desc">Fixed-Price Services</p><ul><li>Oil Change: from $75</li><li>Brake Pads: from $250/axle</li><li>Tire Rotation: $40</li><li>See in-shop for full menu</li></ul></div>
+                     <div class="price-card"><h4>Major Repairs</h4><div class="price-tag">$125/hr</div><p class="price-desc">+ Parts</p><ul><li>Engine & transmission work</li><li>Drivetrain service</li><li>Suspension systems</li><li>Guaranteed parts & labor</li></ul></div>
+                </div>
             </div>
 
             <div class="content-panel" id="fabrication">
-                <h2>
-                    <span class="icon">⚙️</span>
-                    Custom Fabrication
-                </h2>
-                <p>
-                    Custom metalwork and fabrication services for unique projects. We create 
-                    bespoke solutions tailored to your specific needs and specifications.
-                </p>
-                <ul class="features-list">
-                    <li>Custom metal fabrication</li>
-                    <li>Welding and joining services</li>
-                    <li>Prototype development</li>
-                    <li>Structural steel work</li>
-                    <li>Precision machining</li>
-                </ul>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Custom Fabrication</h2>
+                <p>From concept to creation, our custom fabrication service brings your unique vision to life. We specialize in metalwork for bespoke components, structural art, and functional prototypes, delivering precision-engineered solutions tailored to your exact specifications.</p>
+                 <h3>Fee Structure</h3>
+                <div class="pricing-grid">
+                     <div class="price-card"><h4>Consult & Design</h4><div class="price-tag">$250</div><p class="price-desc">Initial Phase</p><ul><li>Requirement analysis</li><li>CAD modeling (2 revisions)</li><li>Material selection</li><li>Fee credited to project cost</li></ul></div>
+                     <div class="price-card"><h4>Welding & Machining</h4><div class="price-tag">$110/hr</div><p class="price-desc">Shop Time</p><ul><li>TIG, MIG, Stick welding</li><li>CNC plasma cutting</li><li>Milling and lathing</li><li>Billed in 15-min increments</li></ul></div>
+                     <div class="price-card"><h4>Full Project Build</h4><div class="price-tag">Quote</div><p class="price-desc">End-to-End Service</p><ul><li>From design to delivery</li><li>Includes all labor & materials</li><li>Fixed price for budget control</li><li>Ideal for large-scale work</li></ul></div>
+                </div>
             </div>
 
             <div class="content-panel" id="finishing">
-                <h2>
-                    <span class="icon">🎨</span>
-                    Finishing Services
-                </h2>
-                <p>
-                    Professional painting and finishing services to protect and beautify your 
-                    property. We use premium materials and proven techniques for lasting results.
-                </p>
-                <ul class="features-list">
-                    <li>Interior and exterior painting</li>
-                    <li>Surface preparation and priming</li>
-                    <li>Specialty coatings and treatments</li>
-                    <li>Color consultation and design</li>
-                    <li>Protective sealants and finishes</li>
-                </ul>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg> Finishing Services</h2>
+                <p>The final touch that defines and protects a project. Our professional finishing services provide a flawless, durable aesthetic for any surface. We use premium paints, coatings, and sealants combined with meticulous preparation for results that last.</p>
+                 <h3>Fee Structure</h3>
+                <div class="pricing-grid">
+                     <div class="price-card"><h4>Interior Painting</h4><div class="price-tag">$3/sq ft</div><p class="price-desc">Walls & Ceilings</p><ul><li>Includes prep & priming</li><li>Two coats of premium paint</li><li>Trim/doors priced separately</li><li>Free color consultation</li></ul></div>
+                     <div class="price-card"><h4>Exterior Finishes</h4><div class="price-tag">Quote</div><p class="price-desc">Project-Based</p><ul><li>Siding & trim painting</li><li>Deck staining & sealing</li><li>Pressure washing included</li><li>Weather-resistant coatings</li></ul></div>
+                     <div class="price-card"><h4>Specialty Coatings</h4><div class="price-tag">$95/hr</div><p class="price-desc">+ Materials</p><ul><li>Powder coating</li><li>Epoxy flooring</li><li>Protective metal sealants</li><li>Requires consultation</li></ul></div>
+                </div>
             </div>
         </main>
 
@@ -586,55 +652,100 @@
             <p class="status">✓ Currently Accepting New Projects</p>
         </footer>
     </div>
-
+    
+    <!-- YouTube IFrame API script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const video = document.getElementById('bgVideo');
-            const playBtn = document.getElementById('playBtn');
+            // --- UI Elements ---
+            const initialPlayBtn = document.getElementById('initialPlayBtn');
             const playPauseBtn = document.getElementById('playPauseBtn');
             const videoPlaceholder = document.getElementById('videoPlaceholder');
             const videoControls = document.getElementById('videoControls');
             const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
+            const playerContainer = document.getElementById('youtube-player-container');
 
-            // Video player functionality
-            function playVideo() {
-                video.play().then(() => {
-                    videoPlaceholder.style.display = 'none';
-                    video.style.display = 'block';
-                    videoControls.style.display = 'flex';
-                    console.log('✅ Video started playing');
-                }).catch(error => {
-                    console.error('❌ Video play failed:', error);
-                    alert('Unable to play video. Please check if bg.mp4 exists in your directory.');
+            // --- YouTube Player Logic ---
+            let player;
+            const videoId = 'dRne0j9k61w'; // The ID from your YouTube URL
+
+            // This function is called by the YouTube API script when it's ready
+            window.onYouTubeIframeAPIReady = function() {
+                console.log('YouTube API Ready.');
+                player = new YT.Player('youtube-player', {
+                    videoId: videoId,
+                    playerVars: {
+                        'autoplay': 0, // Don't autoplay
+                        'controls': 0, // Hide native controls
+                        'showinfo': 0, // Deprecated
+                        'modestbranding': 1,
+                        'loop': 1, // Loop the video
+                        'playlist': videoId, // Required for loop to work
+                        'fs': 0, // Disable fullscreen
+                        'cc_load_policy': 0, // Disable captions
+                        'iv_load_policy': 3, // Disable annotations
+                        'autohide': 0, // Deprecated
+                        'rel': 0, // Do not show related videos
+                        'origin': window.location.origin
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
                 });
             }
 
-            function toggleVideo() {
-                if (video.paused) {
-                    video.play();
+            function onPlayerReady(event) {
+                console.log('YouTube Player Ready.');
+                event.target.mute(); // Mute the video for background use
+                initialPlayBtn.disabled = false; // Enable the play button
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data === YT.PlayerState.PLAYING) {
                     playPauseBtn.textContent = '⏸';
                 } else {
-                    video.pause();
                     playPauseBtn.textContent = '▶';
                 }
             }
 
-            // Event listeners for video
-            playBtn.addEventListener('click', playVideo);
-            playPauseBtn.addEventListener('click', toggleVideo);
+            function playVideo() {
+                if (player && typeof player.playVideo === 'function') {
+                    videoPlaceholder.style.display = 'none';
+                    playerContainer.style.display = 'block';
+                    videoControls.style.display = 'flex';
+                    player.playVideo();
+                    console.log('✅ Playing YouTube video.');
+                } else {
+                     console.error('❌ YouTube player is not ready yet.');
+                }
+            }
 
-            // Service navigation
+            function toggleVideoPlayback() {
+                if (!player || typeof player.getPlayerState !== 'function') return;
+
+                const playerState = player.getPlayerState();
+                if (playerState === YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            }
+            
+            initialPlayBtn.disabled = true; // Disable until player is ready
+            initialPlayBtn.addEventListener('click', playVideo);
+            playPauseBtn.addEventListener('click', toggleVideoPlayback);
+            
+            // --- Service Navigation ---
             function showPanel(targetId) {
                 contentPanels.forEach(panel => {
                     panel.classList.remove('visible');
                 });
-
+                
                 const targetPanel = document.getElementById(targetId);
                 if (targetPanel) {
-                    setTimeout(() => {
-                        targetPanel.classList.add('visible');
-                    }, 100);
+                    targetPanel.classList.add('visible');
                 }
             }
 
@@ -642,27 +753,12 @@
                 button.addEventListener('click', function() {
                     serviceButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-                    
                     const targetId = this.getAttribute('data-target');
                     showPanel(targetId);
                 });
             });
-
-            // Video event listeners
-            video.addEventListener('ended', function() {
-                playPauseBtn.textContent = '▶';
-            });
-
-            video.addEventListener('error', function(e) {
-                console.error('Video error:', e);
-                videoPlaceholder.innerHTML = `
-                    <h3>Video Error</h3>
-                    <p>Could not load bg.mp4</p>
-                    <p style="font-size: 10px; color: #64748b;">Make sure bg.mp4 is in the same directory</p>
-                `;
-            });
-
-            console.log('🚀 Resonance Repair interface loaded');
+            
+            console.log('🚀 Resonance Repair interface loaded and ready.');
         });
     </script>
 </body>
