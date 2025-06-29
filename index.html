@@ -3,151 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Repair // Operator Interface</title>
+    <title>Resonance Repair - Professional Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0A0A0A;
-            --text-color: #EAEAEA;
-            --accent-color: #00BFFF;
-            --surface-color: rgba(15, 15, 15, 0.7);
-            --border-color: rgba(138, 221, 255, 0.3);
-            --font-main: 'IBM Plex Mono', monospace;
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent-color: #06b6d4;
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --surface-color: rgba(30, 41, 59, 0.8);
+            --border-color: rgba(148, 163, 184, 0.2);
+            --font-main: 'Inter', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
 
         html, body {
             height: 100%;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         body {
             font-family: var(--font-main);
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: grid;
-            place-items: center;
-            padding: 1.5rem;
+            line-height: 1.6;
+            position: relative;
         }
 
-        #video-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -100;
-            transform: translateX(-50%) translateY(-50%);
-            object-fit: cover;
-            opacity: 0.6;
-        }
-        
-        #video-overlay {
+        /* Cool animated shader background */
+        .shader-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(10,10,10,0.7), rgba(26,26,46,0.5), rgba(22,33,62,0.5), rgba(15,52,96,0.7));
-            z-index: -99;
+            z-index: -2;
+            background: linear-gradient(45deg, #0f172a, #1e293b, #334155, #475569);
+            background-size: 400% 400%;
+            animation: gradientWave 8s ease infinite;
         }
-        
-        #startup-overlay {
-            position: fixed;
+
+        .shader-bg::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #0A0A0A;
-            z-index: 100;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: opacity 0.5s ease;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+            animation: floatingOrbs 12s ease-in-out infinite;
         }
 
-        #startup-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
+        .shader-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(45deg, transparent 49%, rgba(37, 99, 235, 0.1) 50%, transparent 51%),
+                linear-gradient(-45deg, transparent 49%, rgba(6, 182, 212, 0.1) 50%, transparent 51%);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+            opacity: 0.3;
         }
 
-        #startup-overlay h2 {
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            text-transform: uppercase;
+        @keyframes gradientWave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatingOrbs {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        /* Video Player */
+        .video-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            height: 169px;
+            background: var(--surface-color);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            animation: pulse 2s infinite;
-            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
-        #startup-overlay h2:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 30px var(--accent-color);
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 5px var(--accent-color); }
-            50% { box-shadow: 0 0 20px var(--accent-color); }
-            100% { box-shadow: 0 0 5px var(--accent-color); }
-        }
-
-        .container {
+        .video-player {
             width: 100%;
-            max-width: 850px;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .play-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
             text-align: center;
-            z-index: 1;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s ease-in;
+            padding: 20px;
         }
 
-        .container.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-color);
-            text-shadow: 0 0 10px var(--accent-color), 0 0 20px rgba(0, 191, 255, 0.5);
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            font-size: 1rem;
+        .video-placeholder h3 {
             color: var(--text-color);
-            margin-bottom: 2.5rem;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
+        .video-placeholder p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-top: 40px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .hero-description {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        /* Services Navigation */
         .services-nav {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            gap: 16px;
+            margin-bottom: 40px;
         }
 
         .service-btn {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
+            background: transparent;
+            border: 2px solid var(--border-color);
             color: var(--text-color);
-            padding: 12px 24px;
+            padding: 14px 28px;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
+            border-radius: 50px;
             transition: all 0.3s ease;
-            text-transform: uppercase;
             position: relative;
             overflow: hidden;
         }
@@ -159,341 +250,420 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.2), transparent);
+            transition: left 0.6s ease;
         }
 
         .service-btn:hover::before {
             left: 100%;
         }
-        
+
         .service-btn:hover, .service-btn.active {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px var(--accent-color);
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
         }
 
-        #content-display {
-            background-color: var(--surface-color);
+        /* Content Display */
+        .content-area {
+            background: var(--surface-color);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border-color);
-            padding: 2.5rem;
-            min-height: 250px;
-            text-align: left;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(12px);
-            background: linear-gradient(135deg, var(--surface-color), rgba(0, 191, 255, 0.1));
-            transition: all 0.5s ease-in-out;
+            flex: 1;
         }
 
-        #content-display::before {
+        .content-area::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(0, 191, 255, 0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
         }
 
-        #content-display:hover::before {
-            opacity: 1;
-        }
-        
         .content-panel {
-            position: absolute;
-            top: 2.5rem;
-            left: 2.5rem;
-            right: 2.5rem;
             opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
             visibility: hidden;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 1.5rem;
-            border-radius: 4px;
-            border-left: 3px solid var(--accent-color);
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            bottom: 40px;
         }
-        
+
         .content-panel.visible {
             opacity: 1;
             transform: translateY(0);
             visibility: visible;
         }
-        
+
         .content-panel h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
+
+        .content-panel .icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
         .content-panel p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: var(--text-color);
-            line-height: 1.7;
+            line-height: 1.8;
+            margin-bottom: 25px;
         }
 
+        .features-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .features-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-color);
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--accent-color);
+            font-weight: bold;
+            width: 20px;
+        }
+
+        /* Footer */
         footer {
-            margin-top: 1.5rem;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-            text-transform: uppercase;
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 0;
+            border-top: 1px solid var(--border-color);
         }
 
-        /* Glitch effect for the title */
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        header h1:hover {
-            animation: glitch 0.3s;
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
         }
 
-        /* Responsive adjustments */
+        .status {
+            color: var(--accent-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            body { padding: 1rem; overflow-y: auto; }
-            header h1 { font-size: 1.5rem; }
-            header p { font-size: 0.9rem; }
-            #content-display, .content-panel { padding: 1.5rem; top: 1.5rem; left: 1.5rem; right: 1.5rem; }
-            .services-nav { gap: 0.5rem; }
-            .service-btn { padding: 10px 16px; font-size: 0.8rem; }
+            .video-container {
+                position: static;
+                width: 100%;
+                height: 200px;
+                margin-bottom: 30px;
+                border-radius: 8px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .content-area {
+                padding: 25px;
+            }
+
+            .content-panel {
+                top: 25px;
+                left: 25px;
+                right: 25px;
+                bottom: 25px;
+            }
+
+            .content-panel h2 {
+                font-size: 1.5rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .services-nav {
+                gap: 10px;
+            }
+
+            .service-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="shader-bg"></div>
 
-    <div id="startup-overlay">
-        <h2>[ Click to Initialize ]</h2>
+    <!-- Video Player -->
+    <div class="video-container">
+        <video class="video-player" id="bgVideo" preload="metadata">
+            <source src="bg.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-placeholder" id="videoPlaceholder">
+            <h3>Background Video</h3>
+            <p>Click play to start the background video</p>
+            <button class="play-btn" id="playBtn">▶</button>
+        </div>
+        <div class="video-controls" id="videoControls" style="display: none;">
+            <button class="play-btn" id="playPauseBtn">⏸</button>
+        </div>
     </div>
-
-    <div id="video-overlay"></div>
-    <video playsinline muted loop autoplay id="video-bg" preload="metadata">
-        <source src="./bg.mp4" type="video/mp4">
-        <source src="./bg.webm" type="video/webm">
-        <source src="bg.mov" type="video/quicktime">
-        Your browser does not support the video tag.
-    </video>
 
     <div class="container">
         <header>
-            <h1>// RESONANCE REPAIR //</h1>
-            <p>SYSTEM ONLINE: Awaiting Directives</p>
+            <h1 class="logo">Resonance Repair</h1>
+            <p class="tagline">Professional Solutions for Every Challenge</p>
+            <p class="hero-description">
+                We deliver expert repair and maintenance services across multiple industries. 
+                From structural work to automotive care, our skilled team provides reliable, 
+                high-quality solutions that stand the test of time.
+            </p>
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn" data-target="#content-directives">Directives</button>
-            <button class="service-btn" data-target="#content-structural">Structural</button>
-            <button class="service-btn" data-target="#content-automotive">Automotive</button>
-            <button class="service-btn" data-target="#content-fabrication">Fabrication</button>
-            <button class="service-btn" data-target="#content-finishing">Aesthetics</button>
+            <button class="service-btn active" data-target="overview">🏠 Overview</button>
+            <button class="service-btn" data-target="structural">🔧 Structural</button>
+            <button class="service-btn" data-target="automotive">🚗 Automotive</button>
+            <button class="service-btn" data-target="fabrication">⚙️ Fabrication</button>
+            <button class="service-btn" data-target="finishing">🎨 Finishing</button>
         </nav>
 
-        <main id="content-display">
-            <div id="content-directives" class="content-panel">
-                <h2>// MISSION DIRECTIVES</h2>
-                <p>We solve complex problems across multiple domains. Our core function is to execute tasks with precision and efficiency. Select a specialization protocol for detailed capabilities.</p>
+        <main class="content-area">
+            <div class="content-panel visible" id="overview">
+                <h2>
+                    <span class="icon">🏠</span>
+                    Welcome to Resonance Repair
+                </h2>
+                <p>
+                    Your trusted partner for comprehensive repair and maintenance services. We combine 
+                    traditional craftsmanship with modern techniques to deliver exceptional results 
+                    for residential and commercial clients.
+                </p>
+                <ul class="features-list">
+                    <li>Licensed and insured professionals</li>
+                    <li>24/7 emergency service available</li>
+                    <li>Free estimates and consultations</li>
+                    <li>Warranty on all work performed</li>
+                    <li>Eco-friendly materials and practices</li>
+                </ul>
             </div>
-            <div id="content-structural" class="content-panel">
-                <h2>// PROTOCOL: STRUCTURAL</h2>
-                <p>Integrity restoration for residential and commercial assets. Drywall, flooring, fixtures. We identify points of failure and implement robust, lasting solutions.</p>
+
+            <div class="content-panel" id="structural">
+                <h2>
+                    <span class="icon">🔧</span>
+                    Structural Services
+                </h2>
+                <p>
+                    Complete structural repair and renovation services for homes and businesses. 
+                    We handle everything from minor fixes to major renovations with precision and care.
+                </p>
+                <ul class="features-list">
+                    <li>Drywall repair and installation</li>
+                    <li>Flooring installation and refinishing</li>
+                    <li>Fixture replacement and upgrades</li>
+                    <li>Foundation and framing work</li>
+                    <li>Plumbing and electrical coordination</li>
+                </ul>
             </div>
-            <div id="content-automotive" class="content-panel">
-                <h2>// PROTOCOL: AUTOMOTIVE</h2>
-                <p>Mobility asset maintenance and optimization. Propulsion, braking, and guidance systems. We ensure peak operational readiness and performance for all terrestrial vehicles.</p>
+
+            <div class="content-panel" id="automotive">
+                <h2>
+                    <span class="icon">🚗</span>
+                    Automotive Care
+                </h2>
+                <p>
+                    Professional automotive maintenance and repair services to keep your vehicles 
+                    running smoothly. From routine maintenance to complex repairs, we've got you covered.
+                </p>
+                <ul class="features-list">
+                    <li>Engine diagnostics and repair</li>
+                    <li>Brake system maintenance</li>
+                    <li>Transmission and drivetrain service</li>
+                    <li>Electrical system troubleshooting</li>
+                    <li>Preventive maintenance programs</li>
+                </ul>
             </div>
-            <div id="content-fabrication" class="content-panel">
-                <h2>// PROTOCOL: FABRICATION</h2>
-                <p>On-demand material synthesis and assembly. Custom metalwork and structural augmentation. From raw materials to functional components, we manifest your designs.</p>
+
+            <div class="content-panel" id="fabrication">
+                <h2>
+                    <span class="icon">⚙️</span>
+                    Custom Fabrication
+                </h2>
+                <p>
+                    Custom metalwork and fabrication services for unique projects. We create 
+                    bespoke solutions tailored to your specific needs and specifications.
+                </p>
+                <ul class="features-list">
+                    <li>Custom metal fabrication</li>
+                    <li>Welding and joining services</li>
+                    <li>Prototype development</li>
+                    <li>Structural steel work</li>
+                    <li>Precision machining</li>
+                </ul>
             </div>
-            <div id="content-finishing" class="content-panel">
-                <h2>// PROTOCOL: AESTHETICS</h2>
-                <p>Surface layer application and restoration. Full-spectrum coatings for interior and exterior assets. We apply protective and cosmetic layers to exacting specifications.</p>
+
+            <div class="content-panel" id="finishing">
+                <h2>
+                    <span class="icon">🎨</span>
+                    Finishing Services
+                </h2>
+                <p>
+                    Professional painting and finishing services to protect and beautify your 
+                    property. We use premium materials and proven techniques for lasting results.
+                </p>
+                <ul class="features-list">
+                    <li>Interior and exterior painting</li>
+                    <li>Surface preparation and priming</li>
+                    <li>Specialty coatings and treatments</li>
+                    <li>Color consultation and design</li>
+                    <li>Protective sealants and finishes</li>
+                </ul>
             </div>
         </main>
 
         <footer>
-            <p>STATUS: OPERATIONAL_</p>
+            <div class="contact-info">
+                <div class="contact-item">📞 (555) 123-4567</div>
+                <div class="contact-item">📧 info@resonancerepair.com</div>
+                <div class="contact-item">📍 Serving Greater Metro Area</div>
+            </div>
+            <p class="status">✓ Currently Accepting New Projects</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.service-btn');
+            const video = document.getElementById('bgVideo');
+            const playBtn = document.getElementById('playBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            const videoControls = document.getElementById('videoControls');
+            const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
-            const contentDisplay = document.getElementById('content-display');
-            const video = document.getElementById('video-bg');
-            const startupOverlay = document.getElementById('startup-overlay');
-            const container = document.querySelector('.container');
 
-            let systemInitialized = false;
-            let videoStarted = false;
-
-            // Function to start video and initialize system
-            function initializeSystem() {
-                if (systemInitialized) return;
-                
-                // Aggressive video start attempts for GitHub Pages
-                if (video && !videoStarted) {
-                    // Force all video properties
-                    video.muted = true;
-                    video.playsInline = true;
-                    video.autoplay = true;
-                    video.loop = true;
-                    video.controls = false;
-                    video.volume = 0;
-                    
-                    // Multiple play attempts
-                    const tryPlay = () => {
-                        if (video.paused) {
-                            const playPromise = video.play();
-                            if (playPromise !== undefined) {
-                                playPromise.then(() => {
-                                    console.log('✅ Video started successfully');
-                                    videoStarted = true;
-                                    video.style.opacity = '0.6';
-                                }).catch(error => {
-                                    console.log('❌ Video play attempt failed:', error);
-                                    // Try again after a short delay
-                                    setTimeout(tryPlay, 500);
-                                });
-                            }
-                        }
-                    };
-                    
-                    // Try immediately
-                    tryPlay();
-                    
-                    // Force play after load
-                    video.addEventListener('loadeddata', tryPlay);
-                    video.addEventListener('canplay', tryPlay);
-                }
-                
-                systemInitialized = true;
-                
-                // Hide the startup overlay
-                startupOverlay.classList.add('hidden');
-                
-                // Show the main container
-                container.classList.add('visible');
-
-                // Show the initial panel after a short delay
-                setTimeout(() => {
-                    if (buttons.length > 0) {
-                        buttons[0].classList.add('active');
-                        const initialTarget = buttons[0].getAttribute('data-target');
-                        showPanel(initialTarget);
-                    }
-                }, 300);
+            // Video player functionality
+            function playVideo() {
+                video.play().then(() => {
+                    videoPlaceholder.style.display = 'none';
+                    video.style.display = 'block';
+                    videoControls.style.display = 'flex';
+                    console.log('✅ Video started playing');
+                }).catch(error => {
+                    console.error('❌ Video play failed:', error);
+                    alert('Unable to play video. Please check if bg.mp4 exists in your directory.');
+                });
             }
-            
-            // Handle startup overlay click
-            startupOverlay.addEventListener('click', initializeSystem);
 
-            // Alternative video initialization on any user interaction
-            document.addEventListener('click', function() {
-                if (!videoStarted && video) {
-                    video.play().catch(e => console.log('Video play failed:', e));
+            function toggleVideo() {
+                if (video.paused) {
+                    video.play();
+                    playPauseBtn.textContent = '⏸';
+                } else {
+                    video.pause();
+                    playPauseBtn.textContent = '▶';
                 }
-            }, { once: true });
+            }
 
+            // Event listeners for video
+            playBtn.addEventListener('click', playVideo);
+            playPauseBtn.addEventListener('click', toggleVideo);
+
+            // Service navigation
             function showPanel(targetId) {
-                // Hide all panels
                 contentPanels.forEach(panel => {
                     panel.classList.remove('visible');
                 });
-                
-                // Show the target panel
-                const panelToShow = document.querySelector(targetId);
-                if (panelToShow) {
-                    // Small delay to ensure smooth transition
+
+                const targetPanel = document.getElementById(targetId);
+                if (targetPanel) {
                     setTimeout(() => {
-                        panelToShow.classList.add('visible');
+                        targetPanel.classList.add('visible');
                     }, 100);
                 }
-
-                // Add visual feedback to content display
-                contentDisplay.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    contentDisplay.style.transform = 'scale(1)';
-                }, 150);
             }
 
-            // Handle service button clicks
-            buttons.forEach(button => {
+            serviceButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Initialize system if not already done
-                    if (!systemInitialized) {
-                        initializeSystem();
-                    }
-                    
-                    // Try to start video on button click if not started
-                    if (!videoStarted && video) {
-                        video.play().catch(e => console.log('Video play failed on button click:', e));
-                    }
-                    
-                    // Remove active class from all buttons
-                    buttons.forEach(btn => btn.classList.remove('active'));
-                    
-                    // Add active class to clicked button
+                    serviceButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Show the corresponding panel
                     const targetId = this.getAttribute('data-target');
                     showPanel(targetId);
                 });
             });
 
-            // Add keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (!systemInitialized) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        initializeSystem();
-                    }
-                    return;
-                }
-
-                // Number keys 1-5 to select services
-                const num = parseInt(e.key);
-                if (num >= 1 && num <= 5 && buttons[num - 1]) {
-                    buttons[num - 1].click();
-                }
+            // Video event listeners
+            video.addEventListener('ended', function() {
+                playPauseBtn.textContent = '▶';
             });
 
-            // Video error handling
-            if (video) {
-                video.addEventListener('error', function(e) {
-                    console.log('Video error:', e);
-                    console.log('Video error details:', video.error);
-                });
-                
-                video.addEventListener('loadeddata', function() {
-                    console.log('Video loaded successfully');
-                });
-                
-                video.addEventListener('canplay', function() {
-                    console.log('Video can start playing');
-                });
-            }
+            video.addEventListener('error', function(e) {
+                console.error('Video error:', e);
+                videoPlaceholder.innerHTML = `
+                    <h3>Video Error</h3>
+                    <p>Could not load bg.mp4</p>
+                    <p style="font-size: 10px; color: #64748b;">Make sure bg.mp4 is in the same directory</p>
+                `;
+            });
 
-            // Add some console output for debugging
-            console.log('Resonance Repair Interface Loaded');
-            console.log('Video element found:', !!video);
-            console.log('Total service buttons:', buttons.length);
-            console.log('Total content panels:', contentPanels.length);
+            console.log('🚀 Resonance Repair interface loaded');
         });
     </script>
-
 </body>
 </html>
