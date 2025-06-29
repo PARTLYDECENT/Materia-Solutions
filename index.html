@@ -3,119 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Repair</title>
+    <title>Resonance Repair // Operator Interface</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Basic Setup */
+        :root {
+            --bg-color: #0A0A0A;
+            --text-color: #EAEAEA;
+            --accent-color: #00BFFF; /* Deep Sky Blue */
+            --surface-color: rgba(15, 15, 15, 0.7);
+            --border-color: rgba(138, 221, 255, 0.3);
+            --font-main: 'IBM Plex Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F9F9F9;
-            color: #222;
-            padding: 2rem;
-            text-align: center;
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
         }
+
+        #video-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -100;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            opacity: 0.5;
+        }
+        
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: -99;
+        }
+
         .container {
-            max-width: 800px;
-            margin: auto;
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-out;
+            z-index: 1;
         }
 
-        /* Typography */
-        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
-        h2 { font-size: 1.5rem; font-weight: 700; color: #0052FF; margin-bottom: 1rem; }
-        p { font-size: 1.1rem; color: #666; line-height: 1.6; }
-        .tagline { margin-bottom: 2.5rem; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Buttons */
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-color), 0 0 20px rgba(0, 191, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 2.5rem;
+        }
+
         .services-nav {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 0.75rem;
-            margin-bottom: 2rem;
-        }
-        .service-btn {
-            background-color: #FFFFFF;
-            border: 1px solid #EAEAEA;
-            color: #222;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .service-btn.active {
-            background-color: #0052FF;
-            color: #FFFFFF;
-            border-color: #0052FF;
+            margin-bottom: 1.5rem;
         }
 
-        /* Content Area */
-        #content-display {
-            background-color: #FFFFFF;
-            border: 1px solid #EAEAEA;
-            border-radius: 12px;
-            padding: 2.5rem;
-            min-height: 200px;
-            text-align: left;
+        .service-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 24px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
         }
         
-        /* The key change: Simple show/hide */
-        .content-panel {
-            display: none; /* All panels are hidden by default */
+        .service-btn:hover, .service-btn.active {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color);
         }
+
+        #content-display {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            min-height: 250px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+        
+        .content-panel {
+            position: absolute;
+            top: 2.5rem;
+            left: 2.5rem;
+            right: 2.5rem;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            visibility: hidden;
+        }
+        
         .content-panel.visible {
-            display: block; /* The active panel is shown */
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+        
+        .content-panel h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        
+        .content-panel p {
+            font-size: 1rem;
+            color: var(--text-color);
+            line-height: 1.7;
         }
 
         footer {
-            margin-top: 3rem;
-            color: #AAA;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body { padding: 1rem; overflow-y: auto; }
+            header h1 { font-size: 1.5rem; }
+            header p { font-size: 0.9rem; }
+            #content-display, .content-panel { padding: 1.5rem; top: 1.5rem; left: 1.5rem; right: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
+    <div id="video-overlay"></div>
+    <video playsinline autoplay muted loop id="video-bg">
+        <source src="bg1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
     <div class="container">
         <header>
-            <h1>Resonance Repair</h1>
-            <p class="tagline">Your one-stop solution for life's endless to-do list.</p>
+            <h1>// RESONANCE REPAIR //</h1>
+            <p>SYSTEM ONLINE: Awaiting Directives</p>
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn" data-target="#content-welcome">Welcome</button>
-            <button class="service-btn" data-target="#content-home">Home Repairs</button>
-            <button class="service-btn" data-target="#content-auto">Automotive</button>
-            <button class="service-btn" data-target="#content-welding">Welding</button>
-            <button class="service-btn" data-target="#content-finishing">Finishing</button>
+            <button class="service-btn" data-target="#content-directives">Directives</button>
+            <button class="service-btn" data-target="#content-structural">Structural</button>
+            <button class="service-btn" data-target="#content-automotive">Automotive</button>
+            <button class="service-btn" data-target="#content-fabrication">Fabrication</button>
+            <button class="service-btn" data-target="#content-finishing">Aesthetics</button>
         </nav>
 
         <main id="content-display">
-            <div id="content-welcome" class="content-panel">
-                <h2>We Handle Anything</h2>
-                <p>Select a service above to see how we get it done right, restoring harmony and function with precision and care.</p>
+            <div id="content-directives" class="content-panel">
+                <h2>// MISSION DIRECTIVES</h2>
+                <p>We solve complex problems across multiple domains. Our core function is to execute tasks with precision and efficiency. Select a specialization protocol for detailed capabilities.</p>
             </div>
-            <div id="content-home" class="content-panel">
-                <h2>Home Repairs</h2>
-                <p>Drywall, flooring, fixtures, and everything that breaks when you least expect it. We make recurring problems a thing of the past.</p>
+            <div id="content-structural" class="content-panel">
+                <h2>// PROTOCOL: STRUCTURAL</h2>
+                <p>Integrity restoration for residential and commercial assets. Drywall, flooring, fixtures. We identify points of failure and implement robust, lasting solutions.</p>
             </div>
-            <div id="content-auto" class="content-panel">
-                <h2>Automotive Services</h2>
-                <p>Brake jobs, oil changes, tire work, and basic engine repairs. We keep your ride running smooth, ensuring reliability for the road ahead.</p>
+            <div id="content-automotive" class="content-panel">
+                <h2>// PROTOCOL: AUTOMOTIVE</h2>
+                <p>Mobility asset maintenance and optimization. Propulsion, braking, and guidance systems. We ensure peak operational readiness and performance for all terrestrial vehicles.</p>
             </div>
-            <div id="content-welding" class="content-panel">
-                <h2>Welding & Fabrication</h2>
-                <p>Custom metalwork, structural repairs, and decorative ironwork. We bring your steel dreams to life with strength and artistry.</p>
+            <div id="content-fabrication" class="content-panel">
+                <h2>// PROTOCOL: FABRICATION</h2>
+                <p>On-demand material synthesis and assembly. Custom metalwork and structural augmentation. From raw materials to functional components, we manifest your designs.</p>
             </div>
             <div id="content-finishing" class="content-panel">
-                <h2>Painting & Finishing</h2>
-                <p>Interior, exterior, cabinets, and fences. We make everything look brand new, applying flawless finishes that transform your assets.</p>
+                <h2>// PROTOCOL: AESTHETICS</h2>
+                <p>Surface layer application and restoration. Full-spectrum coatings for interior and exterior assets. We apply protective and cosmetic layers to exacting specifications.</p>
             </div>
         </main>
 
         <footer>
-            <p>Licensed where required, insured always. Ready when you are.</p>
+            <p>STATUS: OPERATIONAL_</p>
         </footer>
     </div>
 
@@ -124,27 +228,24 @@
             const buttons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
             
-            // Function to show a panel
             function showPanel(targetId) {
-                // Hide all panels first
                 contentPanels.forEach(panel => {
-                    panel.style.display = 'none';
+                    // Hide all panels
+                    panel.classList.remove('visible');
                 });
                 
-                // Show the target panel
                 const panelToShow = document.querySelector(targetId);
                 if (panelToShow) {
-                    panelToShow.style.display = 'block';
+                    // Show the target panel
+                    panelToShow.classList.add('visible');
                 }
             }
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Set active state on button
                     buttons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Show the corresponding content panel
                     const targetId = this.getAttribute('data-target');
                     showPanel(targetId);
                 });
