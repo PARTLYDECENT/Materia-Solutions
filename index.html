@@ -233,6 +233,20 @@
             const buttons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
             const contentDisplay = document.getElementById('content-display');
+            const video = document.getElementById('video-bg');
+
+            // Attempt to play the video
+            var playPromise = video.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                // Automatic playback started!
+                })
+                .catch(error => {
+                // Auto-play was prevented
+                // Show a UI element to let the user manually start playback.
+                });
+            }
             
             function showPanel(targetId, bgImage) {
                 contentPanels.forEach(panel => {
