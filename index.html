@@ -277,6 +277,14 @@
         <h2>[ Click to Initialize ]</h2>
     </div>
 
+    <div id="video-overlay"></div>
+    <video playsinline muted loop autoplay id="video-bg" preload="metadata">
+        <source src="./bg.mp4" type="video/mp4">
+        <source src="./bg.webm" type="video/webm">
+        <source src="bg.mov" type="video/quicktime">
+        Your browser does not support the video tag.
+    </video>
+
     <div class="container">
         <header>
             <h1>// RESONANCE REPAIR //</h1>
@@ -324,14 +332,52 @@
             const buttons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
             const contentDisplay = document.getElementById('content-display');
+            const video = document.getElementById('video-bg');
             const startupOverlay = document.getElementById('startup-overlay');
             const container = document.querySelector('.container');
 
             let systemInitialized = false;
+            let videoStarted = false;
 
-            // Function to initialize the system
+            // Function to start video and initialize system
             function initializeSystem() {
                 if (systemInitialized) return;
+                
+                // Aggressive video start attempts for GitHub Pages
+                if (video && !videoStarted) {
+                    // Force all video properties
+                    video.muted = true;
+                    video.playsInline = true;
+                    video.autoplay = true;
+                    video.loop = true;
+                    video.controls = false;
+                    video.volume = 0;
+                    
+                    // Multiple play attempts
+                    const tryPlay = () => {
+                        if (video.paused) {
+                            const playPromise = video.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(() => {
+                                    console.log('✅ Video started successfully');
+                                    videoStarted = true;
+                                    video.style.opacity = '0.6';
+                                }).catch(error => {
+                                    console.log('❌ Video play attempt failed:', error);
+                                    // Try again after a short delay
+                                    setTimeout(tryPlay, 500);
+                                });
+                            }
+                        }
+                    };
+                    
+                    // Try immediately
+                    tryPlay();
+                    
+                    // Force play after load
+                    video.addEventListener('loadeddata', tryPlay);
+                    video.addEventListener('canplay', tryPlay);
+                }
                 
                 systemInitialized = true;
                 
@@ -353,6 +399,13 @@
             
             // Handle startup overlay click
             startupOverlay.addEventListener('click', initializeSystem);
+
+            // Alternative video initialization on any user interaction
+            document.addEventListener('click', function() {
+                if (!videoStarted && video) {
+                    video.play().catch(e => console.log('Video play failed:', e));
+                }
+            }, { once: true });
 
             function showPanel(targetId) {
                 // Hide all panels
@@ -384,6 +437,11 @@
                         initializeSystem();
                     }
                     
+                    // Try to start video on button click if not started
+                    if (!videoStarted && video) {
+                        video.play().catch(e => console.log('Video play failed on button click:', e));
+                    }
+                    
                     // Remove active class from all buttons
                     buttons.forEach(btn => btn.classList.remove('active'));
                     
@@ -413,8 +471,25 @@
                 }
             });
 
+            // Video error handling
+            if (video) {
+                video.addEventListener('error', function(e) {
+                    console.log('Video error:', e);
+                    console.log('Video error details:', video.error);
+                });
+                
+                video.addEventListener('loadeddata', function() {
+                    console.log('Video loaded successfully');
+                });
+                
+                video.addEventListener('canplay', function() {
+                    console.log('Video can start playing');
+                });
+            }
+
             // Add some console output for debugging
             console.log('Resonance Repair Interface Loaded');
+            console.log('Video element found:', !!video);
             console.log('Total service buttons:', buttons.length);
             console.log('Total content panels:', contentPanels.length);
         });
