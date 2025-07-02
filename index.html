@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonance Repair - Professional Services</title>
+    <title>Versa Solutions - Professional Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -606,7 +606,6 @@
 <body>
     <div class="shader-bg"></div>
 
-    <!-- YouTube Video Player -->
     <div class="video-container">
         <div id="youtube-player-container">
             <div id="youtube-player"></div>
@@ -618,15 +617,12 @@
             <button class="play-btn" id="initialPlayBtn">▶</button>
         </div>
         
-        <!-- Redesigned Video Controls -->
         <div class="video-controls" id="videoControls" style="display: none;">
             <button id="playPauseBtn" class="control-btn" aria-label="Play/Pause">
-                <!-- SVG Icon will be injected by JS -->
-            </button>
+                </button>
             <div id="volume-container">
                 <button id="muteBtn" class="control-btn" aria-label="Mute/Unmute">
-                    <!-- SVG Icon will be injected by JS -->
-                </button>
+                    </button>
                 <input type="range" id="volume-slider" min="0" max="100" value="50">
             </div>
         </div>
@@ -634,10 +630,10 @@
 
     <div class="container">
         <header>
-            <h1 class="logo">Resonance Repair</h1>
+            <h1 class="logo">Versa Solutions</h1>
             <p class="tagline">Professional Solutions for Every Challenge</p>
             <p class="hero-description">
-                We deliver expert repair and maintenance services across multiple industries. 
+                We deliver expert services and maintenance across multiple industries. 
                 From structural work to automotive care, our skilled team provides reliable, 
                 high-quality solutions that stand the test of time.
             </p>
@@ -653,13 +649,13 @@
 
         <main class="content-area">
             <div class="content-panel visible" id="overview">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Resonance Repair</h2>
-                <p>Your trusted partner for comprehensive repair and maintenance. We combine traditional craftsmanship with modern techniques to deliver exceptional results for residential and commercial clients. Our commitment to quality, reliability, and customer satisfaction is the foundation of our business.</p>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Versa Solutions</h2>
+                <p>Your trusted partner for comprehensive services and maintenance. We combine traditional craftsmanship with modern techniques to deliver exceptional results for residential and commercial clients. Our commitment to quality, reliability, and customer satisfaction is the foundation of our business.</p>
                 
                 <h3>Why Choose Us?</h3>
                 <ul class="features-grid">
                     <li class="feature-item"><h4>Licensed & Insured</h4><p>Complete peace of mind knowing you're working with qualified, protected professionals.</p></li>
-                    <li class="feature-item"><h4>24/7 Emergency Service</h4><p>We're available around the clock to handle your most urgent repair needs.</p></li>
+                    <li class="feature-item"><h4>24/7 Emergency Service</h4><p>We're available around the clock to handle your most urgent needs.</p></li>
                     <li class="feature-item"><h4>Free Consultations</h4><p>We offer no-obligation estimates to help you make informed decisions.</p></li>
                     <li class="feature-item"><h4>Workmanship Warranty</h4><p>We stand behind our work with a comprehensive warranty on all services performed.</p></li>
                     <li class="feature-item"><h4>Eco-Friendly Practices</h4><p>We prioritize the use of sustainable materials and methods to protect our environment.</p></li>
@@ -715,14 +711,13 @@
         <footer>
             <div class="contact-info">
                 <div class="contact-item">📞 (724) 964-2936</div>
-                <div class="contact-item">📧 info@resonancerepair.com</div>
+                <div class="contact-item">📧 info@versasolutions.com</div>
                 <div class="contact-item">📍 Serving Greater Metro Area</div>
             </div>
             <p class="status">✓ Currently Accepting New Projects</p>
         </footer>
     </div>
     
-    <!-- YouTube IFrame API script -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -806,10 +801,10 @@
             
             function updateVolumeIcon(volume, isMuted = false) {
                  if (isMuted || volume === 0) {
-                    muteBtn.innerHTML = icons.volumeOff;
-                } else {
-                    muteBtn.innerHTML = icons.volumeHigh;
-                }
+                     muteBtn.innerHTML = icons.volumeOff;
+                 } else {
+                     muteBtn.innerHTML = icons.volumeHigh;
+                 }
             }
 
             initialPlayBtn.disabled = true;
@@ -846,7 +841,7 @@
                 });
             });
             
-            console.log('🚀 Resonance Repair interface loaded and ready.');
+            console.log('🚀 Versa Solutions interface loaded and ready.');
         });
     </script>
 </body>
