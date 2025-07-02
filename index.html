@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Versa Solutions - Professional Services</title>
+    <title>Materia Solutions - Professional Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,10 +20,10 @@
             --font-main: 'Inter', sans-serif;
         }
 
-        * {  
-            box-sizing: border-box;  
-            margin: 0;  
-            padding: 0;  
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         html, body {
@@ -59,7 +59,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
@@ -73,7 +73,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(45deg, transparent 49%, rgba(37, 99, 235, 0.1) 50%, transparent 51%),
                 linear-gradient(-45deg, transparent 49%, rgba(6, 182, 212, 0.1) 50%, transparent 51%);
             background-size: 60px 60px;
@@ -114,7 +114,7 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
             pointer-events: none; /* Let clicks pass through to controls */
         }
-        
+
         #youtube-player-container {
             position: absolute;
             top: 50%;
@@ -125,7 +125,7 @@
             transform: translate(-50%, -50%);
             display: none;
         }
-        
+
         #youtube-player {
             width: 100%;
             height: 100%;
@@ -145,7 +145,7 @@
             transition: opacity 0.3s ease;
             pointer-events: auto;
         }
-        
+
         .video-container:hover .video-controls, .video-controls.visible {
             opacity: 1;
         }
@@ -162,11 +162,11 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
-        
+
         .control-btn:hover {
             background: rgba(255,255,255,0.2);
         }
-        
+
         .control-btn svg {
             width: 20px;
             height: 20px;
@@ -177,7 +177,7 @@
             align-items: center;
             flex-grow: 1;
         }
-        
+
         #volume-slider {
             -webkit-appearance: none;
             appearance: none;
@@ -209,7 +209,7 @@
             border-radius: 50%;
             border: 2px solid var(--bg-color);
         }
-        
+
         .play-btn {
             background: var(--primary-color);
             border: none;
@@ -225,7 +225,7 @@
             font-size: 16px;
             pointer-events: auto;
         }
-        
+
         .play-btn:hover {
             background: var(--primary-dark);
             transform: scale(1.1);
@@ -323,13 +323,13 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .service-btn .btn-icon {
             width: 20px;
             height: 20px;
             transition: transform 0.3s ease;
         }
-        
+
         .service-btn:hover .btn-icon {
             transform: scale(1.2);
         }
@@ -393,7 +393,7 @@
         .content-panel.visible {
             display: block; /* Show only the active panel */
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -434,7 +434,7 @@
             margin-bottom: 25px;
             max-width: 800px;
         }
-        
+
         .content-panel h3 {
             color: var(--accent-color);
             font-weight: 600;
@@ -452,7 +452,7 @@
             list-style: none;
             padding: 0;
         }
-        
+
         .feature-item {
             background: rgba(15, 23, 42, 0.5);
             padding: 20px;
@@ -464,14 +464,14 @@
             color: var(--text-color);
             margin-bottom: 8px;
         }
-        
+
         .feature-item p {
             font-size: 0.95rem;
             color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 0;
         }
-        
+
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -486,26 +486,26 @@
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .price-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
-        
+
         .price-card h4 {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 10px;
             color: var(--text-color);
         }
-        
+
         .price-tag {
             font-size: 2rem;
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 5px;
         }
-        
+
         .price-desc {
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -518,7 +518,7 @@
             margin-bottom: 25px;
             text-align: left;
         }
-        
+
         .price-card li {
             padding: 8px 0;
             color: var(--text-muted);
@@ -575,7 +575,7 @@
                 pointer-events: auto;
             }
         }
-        
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px 15px;
@@ -596,7 +596,7 @@
 
             .services-nav { gap: 10px; }
             .service-btn { padding: 12px 20px; font-size: 0.9rem; }
-            
+
             .pricing-grid {
                 grid-template-columns: 1fr;
             }
@@ -616,13 +616,13 @@
             <p>Click play to feature video</p>
             <button class="play-btn" id="initialPlayBtn">▶</button>
         </div>
-        
+
         <div class="video-controls" id="videoControls" style="display: none;">
             <button id="playPauseBtn" class="control-btn" aria-label="Play/Pause">
-                </button>
+            </button>
             <div id="volume-container">
                 <button id="muteBtn" class="control-btn" aria-label="Mute/Unmute">
-                    </button>
+                </button>
                 <input type="range" id="volume-slider" min="0" max="100" value="50">
             </div>
         </div>
@@ -630,11 +630,11 @@
 
     <div class="container">
         <header>
-            <h1 class="logo">Versa Solutions</h1>
+            <h1 class="logo">Materia Solutions</h1>
             <p class="tagline">Professional Solutions for Every Challenge</p>
             <p class="hero-description">
-                We deliver expert services and maintenance across multiple industries. 
-                From structural work to automotive care, our skilled team provides reliable, 
+                We deliver expert services and maintenance across multiple industries.
+                From structural work to automotive care, our skilled team provides reliable,
                 high-quality solutions that stand the test of time.
             </p>
         </header>
@@ -649,9 +649,9 @@
 
         <main class="content-area">
             <div class="content-panel visible" id="overview">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Versa Solutions</h2>
+                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Materia Solutions</h2>
                 <p>Your trusted partner for comprehensive services and maintenance. We combine traditional craftsmanship with modern techniques to deliver exceptional results for residential and commercial clients. Our commitment to quality, reliability, and customer satisfaction is the foundation of our business.</p>
-                
+
                 <h3>Why Choose Us?</h3>
                 <ul class="features-grid">
                     <li class="feature-item"><h4>Licensed & Insured</h4><p>Complete peace of mind knowing you're working with qualified, protected professionals.</p></li>
@@ -710,14 +710,14 @@
 
         <footer>
             <div class="contact-info">
-                <div class="contact-item">📞 (724) 964-2936</div>
-                <div class="contact-item">📧 info@versasolutions.com</div>
+                <div class="contact-item">📞 <a href="tel:724-964-2936" style="color: inherit; text-decoration: none;">(724) 964-2936</a></div>
+                <div class="contact-item">📧 <a href="mailto:info@materiasolutions.com" style="color: inherit; text-decoration: none;">info@materiasolutions.com</a></div>
                 <div class="contact-item">📍 Serving Greater Metro Area</div>
             </div>
             <p class="status">✓ Currently Accepting New Projects</p>
         </footer>
     </div>
-    
+
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -798,12 +798,12 @@
                     updateVolumeIcon(0, true);
                 }
             }
-            
+
             function updateVolumeIcon(volume, isMuted = false) {
                  if (isMuted || volume === 0) {
-                     muteBtn.innerHTML = icons.volumeOff;
+                      muteBtn.innerHTML = icons.volumeOff;
                  } else {
-                     muteBtn.innerHTML = icons.volumeHigh;
+                      muteBtn.innerHTML = icons.volumeHigh;
                  }
             }
 
@@ -840,8 +840,8 @@
                     showPanel(this.getAttribute('data-target'));
                 });
             });
-            
-            console.log('🚀 Versa Solutions interface loaded and ready.');
+
+            console.log('🚀 Materia Solutions interface loaded and ready.');
         });
     </script>
 </body>
