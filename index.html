@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materia Solutions - Professional Services</title>
+    <title>Materia Solutions - Advanced Systems Integration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- Darker Color Palette --- */
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --accent-color: #06b6d4;
-            --bg-color: #05080f; /* Made darker */
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --surface-color: rgba(10, 15, 26, 0.75); /* Made darker and slightly more transparent */
-            --border-color: rgba(148, 163, 184, 0.15); /* Made more subtle */
-            --font-main: 'Inter', sans-serif;
+            /* --- 2026 "Raytheon" Inspired Palette --- */
+            --primary-color: #ff8a00; /* High-impact accent: Burnt Orange/Amber */
+            --primary-dark: #cc6e00;
+            --accent-color: #00e5ff;  /* Secondary accent for highlights */
+            --bg-color: #0d1218;      /* Deep, dark blue-grey */
+            --text-color: #e5e9f0;    /* Off-white for clarity */
+            --text-muted: #818c9a;    /* Muted grey for secondary text */
+            --surface-color: rgba(18, 25, 35, 0.8); /* Semi-transparent surface */
+            --border-color: rgba(60, 100, 130, 0.25); /* Faint, technical blue border */
+            --font-main: 'Roboto Mono', monospace;
+            --font-headings: 'Orbitron', sans-serif;
         }
 
         * {
@@ -40,7 +41,7 @@
             position: relative;
         }
 
-        /* Animated background */
+        /* --- Advanced Animated Background --- */
         .shader-bg {
             position: fixed;
             top: 0;
@@ -48,216 +49,37 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: linear-gradient(45deg, #05080f, #0a0f1a, #1a243b, #2c3a5e); /* Darkened gradient */
-            background-size: 400% 400%;
-            animation: gradientWave 10s ease infinite;
+            background-color: var(--bg-color);
+            overflow: hidden;
         }
 
-        .shader-bg::before {
+        .shader-bg::before, .shader-bg::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            animation: floatingOrbs 12s ease-in-out infinite;
-            opacity: 0.8;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+            opacity: 0.3;
         }
 
         .shader-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(45deg, transparent 49%, rgba(37, 99, 235, 0.05) 50%, transparent 51%),
-                linear-gradient(-45deg, transparent 49%, rgba(6, 182, 212, 0.05) 50%, transparent 51%);
-            background-size: 80px 80px; /* Made grid larger */
-            animation: gridMove 25s linear infinite;
-            opacity: 0.2;
+            animation-direction: reverse;
+            animation-duration: 45s;
+            opacity: 0.15;
         }
-
-        @keyframes gradientWave {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes floatingOrbs {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-
+        
         @keyframes gridMove {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(80px, 80px); }
+            100% { transform: translate(-50px, -50px); }
         }
 
-        /* Video Player */
-        .video-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-            height: 169px;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            z-index: 1000;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-            pointer-events: none;
-        }
-
-        #youtube-player-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 177.77vh;
-            min-width: 100%;
-            min-height: 100%;
-            transform: translate(-50%, -50%);
-            display: none;
-        }
-
-        #youtube-player {
-            width: 100%;
-            height: 100%;
-        }
-
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: auto;
-        }
-
-        .video-container:hover .video-controls, .video-controls.visible {
-            opacity: 1;
-        }
-
-        .control-btn {
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 4px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .control-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .control-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        #volume-container {
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
-        }
-
-        #volume-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            outline: none;
-            transition: opacity 0.2s;
-            cursor: pointer;
-        }
-
-        #volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            background: var(--accent-color);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid var(--bg-color);
-        }
-
-        #volume-slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            background: var(--accent-color);
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid var(--bg-color);
-        }
-
-        .play-btn {
-            background: var(--primary-color);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            pointer-events: auto;
-        }
-
-        .play-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
-        }
-
-        .video-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 20px;
-            pointer-events: auto;
-        }
-
-        .video-placeholder h3 {
-            color: var(--text-color);
-            margin-bottom: 10px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .video-placeholder p {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-
-        /* Main Container */
+        /* --- Main Container --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -267,7 +89,7 @@
             flex-direction: column;
         }
 
-        /* Header */
+        /* --- Header: High-Tech Feel --- */
         header {
             text-align: center;
             margin-bottom: 60px;
@@ -275,121 +97,75 @@
         }
 
         .logo {
-            font-size: 2.5rem;
+            font-family: var(--font-headings);
+            font-size: 2.8rem;
             font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(255, 138, 0, 0.4);
             margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .tagline {
-            font-size: 1.2rem;
+            font-family: var(--font-main);
+            font-size: 1.1rem;
             color: var(--text-muted);
             font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 30px;
         }
 
-        .hero-description {
-            max-width: 600px;
-            margin: 0 auto;
-            font-size: 1.1rem;
-            color: var(--text-color);
-            line-height: 1.7;
-        }
-
-        /* Services Navigation */
+        /* --- Services Navigation: Sharp & Geometric --- */
         .services-nav {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 16px;
+            gap: 12px;
             margin-bottom: 40px;
         }
 
         .service-btn {
             background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            padding: 14px 28px;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 500;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            border-radius: 50px;
+            border-radius: 0; /* Sharp corners */
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        .service-btn .btn-icon {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .service-btn:hover .btn-icon {
-            transform: scale(1.2);
-        }
-
-        .service-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.15), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .service-btn:hover::before {
-            left: 100%;
-        }
-
+        
         .service-btn:hover, .service-btn.active {
+            color: var(--primary-color);
+            background: var(--border-color);
             border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            box-shadow: inset 0 0 10px rgba(255, 138, 0, 0.2), 0 0 15px rgba(255, 138, 0, 0.2);
         }
 
-        /* Content Display */
+        /* --- Content Display: HUD Style --- */
         .content-area {
             background: var(--surface-color);
-            border-radius: 16px;
-            padding: 40px;
-            backdrop-filter: blur(12px); /* Increased blur for smoother feel */
+            border-radius: 0;
+            padding: 30px;
+            backdrop-filter: blur(15px);
             border: 1px solid var(--border-color);
-            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3); /* Slightly softer shadow */
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.5);
             position: relative;
-            overflow: hidden;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-
-        .content-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-            opacity: 0.5;
-        }
-
+        
         .content-panel {
             display: none;
-            overflow-y: auto;
             animation: fadeIn 0.5s ease-in-out;
-            padding-right: 15px;
         }
 
         .content-panel.visible {
@@ -397,227 +173,125 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .content-panel::-webkit-scrollbar {
-            width: 8px;
-        }
-        .content-panel::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .content-panel::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 10px;
-        }
-
-
         .content-panel h2 {
-            font-size: 2rem;
-            font-weight: 600;
+            font-family: var(--font-headings);
+            font-size: 1.8rem;
+            font-weight: 500;
             color: var(--primary-color);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .content-panel .icon {
-            width: 32px;
-            height: 32px;
-            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .content-panel p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-color);
             line-height: 1.8;
             margin-bottom: 25px;
             max-width: 800px;
         }
 
-        .content-panel h3 {
-            color: var(--accent-color);
-            font-weight: 600;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 15px;
             list-style: none;
             padding: 0;
         }
 
         .feature-item {
-            background: rgba(5, 8, 15, 0.6); /* Darker feature items */
+            background: rgba(0, 0, 0, 0.2);
             padding: 20px;
-            border-radius: 8px;
-            border-left: 3px solid var(--accent-color);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--primary-color);
+            transition: background 0.3s;
+        }
+        
+        .feature-item:hover {
+            background: rgba(255, 138, 0, 0.05);
         }
 
         .feature-item h4 {
+            font-family: var(--font-headings);
+            font-weight: 500;
             color: var(--text-color);
             margin-bottom: 8px;
         }
 
         .feature-item p {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 0;
         }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .price-card {
-            background: rgba(5, 8, 15, 0.6); /* Darker price cards */
-            padding: 25px;
-            border-radius: 8px;
-            border-top: 3px solid var(--primary-color);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .price-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .price-card h4 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-
-        .price-tag {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-
-        .price-desc {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .price-card ul {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .price-card li {
-            padding: 8px 0;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95rem;
-        }
-
-        .price-card li::before {
-            content: '✓';
-            color: var(--accent-color);
-            font-weight: bold;
-        }
         
-        /* START: Added styles for Facebook Plugin Section */
+        /* --- Facebook & Footer Sections --- */
         #facebook-section {
             background: var(--surface-color);
-            border-radius: 16px;
-            padding: 20px;
-            backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
-            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3);
+            padding: 20px;
             margin-top: 40px;
             text-align: center;
         }
-        /* END: Added styles for Facebook Plugin Section */
 
-        /* Footer */
         footer {
             text-align: center;
-            margin-top: 60px;
-            padding: 30px 0;
+            margin-top: 40px;
+            padding: 20px 0;
             border-top: 1px solid var(--border-color);
         }
 
         .contact-info {
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 25px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
-        .contact-item {
+        .contact-item a {
+            color: var(--text-muted);
+            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-muted);
+            transition: color 0.3s, text-shadow 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .contact-item a:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 5px rgba(255, 138, 0, 0.5);
+        }
+        
+        .contact-item svg {
+             width: 18px;
+             height: 18px;
+             fill: currentColor;
         }
 
         .status {
             color: var(--accent-color);
             font-weight: 500;
             font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
         }
 
         /* Responsive */
-        @media (max-width: 992px) {
-            .video-container {
-                position: static;
-                width: 100%;
-                height: auto;
-                aspect-ratio: 16 / 9;
-                margin-bottom: 30px;
-                border-radius: 8px;
-                pointer-events: auto;
-            }
-        }
-
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 15px;
-            }
-
             .logo { font-size: 2rem; }
-            .tagline { font-size: 1rem; }
-            .hero-description { font-size: 1rem; }
-
-            .content-area { padding: 25px; }
-            .content-panel { padding-right: 10px; }
-            .content-panel h2 { font-size: 1.5rem; }
-
+            .tagline { font-size: 0.9rem; }
             .contact-info {
                 flex-direction: column;
                 gap: 15px;
-            }
-
-            .services-nav { gap: 10px; }
-            .service-btn { padding: 12px 20px; font-size: 0.9rem; }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            #facebook-section {
-                padding: 15px;
             }
         }
     </style>
@@ -625,220 +299,96 @@
 <body>
     <div id="fb-root"></div>
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0"></script>
+    
     <div class="shader-bg"></div>
-
-    <div class="video-container">
-        <div id="youtube-player-container">
-            <div id="youtube-player"></div>
-        </div>
-        <div class="video-placeholder" id="videoPlaceholder">
-            <h3>Visualizer Active</h3>
-            <p>Click play to feature video</p>
-            <button class="play-btn" id="initialPlayBtn">▶</button>
-        </div>
-        <div class="video-controls" id="videoControls" style="display: none;">
-            <button id="playPauseBtn" class="control-btn" aria-label="Play/Pause"></button>
-            <div id="volume-container">
-                <button id="muteBtn" class="control-btn" aria-label="Mute/Unmute"></button>
-                <input type="range" id="volume-slider" min="0" max="100" value="50">
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <header>
             <h1 class="logo">Materia Solutions</h1>
-            <p class="tagline">Professional Solutions for Every Challenge</p>
-            <p class="hero-description">
-                We deliver expert services and maintenance across multiple industries.
-                From structural work to automotive care, our skilled team provides reliable,
-                high-quality solutions that stand the test of time.
-            </p>
+            <p class="tagline">Advanced Systems & Strategic Integration</p>
         </header>
 
         <nav class="services-nav">
-            <button class="service-btn active" data-target="overview"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Overview</button>
-            <button class="service-btn" data-target="structural"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V3m0 9a9 9 0 0118 0v0a9 9 0 01-18 0v0zm0 0h18"></path></svg> Structural</button>
-            <button class="service-btn" data-target="automotive"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4m-6 0a2 2 0 100-4m0 4a2 2 0 110-4M6 18v-2a2 2 0 114 0v2H6zM12 18v-2a2 2 0 114 0v2h-4zm6 0v-2a2 2 0 114 0v2h-4z"></path></svg> Automotive</button>
-            <button class="service-btn" data-target="fabrication"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Fabrication</button>
-            <button class="service-btn" data-target="finishing"><svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg> Finishing</button>
+            <button class="service-btn active" data-target="overview">01_OVERVIEW</button>
+            <button class="service-btn" data-target="structural">02_STRUCTURAL</button>
+            <button class="service-btn" data-target="automotive">03_AUTOMOTIVE</button>
+            <button class="service-btn" data-target="fabrication">04_FABRICATION</button>
+            <button class="service-btn" data-target="finishing">05_FINISHING</button>
         </nav>
 
         <main class="content-area">
             <div class="content-panel visible" id="overview">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Welcome to Materia Solutions</h2>
-                <p>Your trusted partner for comprehensive services and maintenance. We combine traditional craftsmanship with modern techniques to deliver exceptional results for residential and commercial clients. Our commitment to quality, reliability, and customer satisfaction is the foundation of our business.</p>
-                <h3>Why Choose Us?</h3>
+                <h2>SYSTEM OVERVIEW</h2>
+                <p>Materia Solutions provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems.</p>
+                <h3>Core Capabilities</h3>
                 <ul class="features-grid">
-                    <li class="feature-item"><h4>Licensed & Insured</h4><p>Complete peace of mind knowing you're working with qualified, protected professionals.</p></li>
-                    <li class="feature-item"><h4>24/7 Emergency Service</h4><p>We're available around the clock to handle your most urgent needs.</p></li>
-                    <li class="feature-item"><h4>Free Consultations</h4><p>We offer no-obligation estimates to help you make informed decisions.</p></li>
-                    <li class="feature-item"><h4>Workmanship Warranty</h4><p>We stand behind our work with a comprehensive warranty on all services performed.</p></li>
-                    <li class="feature-item"><h4>Eco-Friendly Practices</h4><p>We prioritize the use of sustainable materials and methods to protect our environment.</p></li>
-                    <li class="feature-item"><h4>Multi-Discipline Experts</h4><p>Our team has proven expertise across structural, automotive, and fabrication fields.</p></li>
+                    <li class="feature-item"><h4>Advanced Diagnostics</h4><p>Proprietary analysis protocols for structural and system integrity.</p></li>
+                    <li class="feature-item"><h4>Rapid Deployment</h4><p>24/7 emergency response protocols for critical failures.</p></li>
+                    <li class="feature-item"><h4>Mil-Spec Fabrication</h4><p>Precision engineering and fabrication of custom components.</p></li>
+                    <li class="feature-item"><h4>Lifecycle Support</h4><p>Comprehensive warranty and maintenance programs.</p></li>
+                    <li class="feature-item"><h4>Secure Operations</h4><p>Fully licensed and insured teams for secure, reliable project execution.</p></li>
+                     <li class="feature-item"><h4>Modular Systems</h4><p>Expertise across integrated structural, automotive, and fabrication disciplines.</p></li>
                 </ul>
             </div>
 
             <div class="content-panel" id="structural">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12V3m0 9a9 9 0 0118 0v0a9 9 0 01-18 0v0zm0 0h18"></path></svg> Structural Services</h2>
-                <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and value of your property. We handle everything from foundational assessments to complete interior remodels with precision and care.</p>
-                <h3>Fee Structure</h3>
-                <div class="pricing-grid">
-                    <div class="price-card"><h4>Assessment</h4><div class="price-tag">$125</div><p class="price-desc">On-site Visit</p><ul><li>Full structural evaluation</li><li>Moisture & integrity checks</li><li>Detailed report & estimate</li><li>Fee credited to project cost</li></ul></div>
-                    <div class="price-card"><h4>Repair Work</h4><div class="price-tag">$75/hr</div><p class="price-desc">+ Materials</p><ul><li>Drywall & flooring</li><li>Fixture replacement</li><li>Minor framing & support</li><li>Transparent time tracking</li></ul></div>
-                    <div class="price-card"><h4>Major Projects</h4><div class="price-tag">Custom</div><p class="price-desc">Per-Project Quote</p><ul><li>Full renovations</li><li>Foundation & framing</li><li>Plumbing/electrical coordination</li><li>Dedicated project manager</li></ul></div>
-                </div>
+                <h2>STRUCTURAL SYSTEMS</h2>
+                <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning.</p>
             </div>
 
             <div class="content-panel" id="automotive">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m12 0a2 2 0 100-4m0 4a2 2 0 110-4m-6 0a2 2 0 100-4m0 4a2 2 0 110-4M6 18v-2a2 2 0 114 0v2H6zM12 18v-2a2 2 0 114 0v2h-4zm6 0v-2a2 2 0 114 0v2h-4z"></path></svg> Automotive Care</h2>
-                <p>Our automotive division provides professional maintenance and repair to keep your vehicles running smoothly and safely. Using state-of-the-art diagnostic tools and high-quality parts, we cover everything from routine checks to complex system repairs.</p>
-                <h3>Fee Structure</h3>
-                <div class="pricing-grid">
-                     <div class="price-card"><h4>Diagnostics</h4><div class="price-tag">$89</div><p class="price-desc">Full System Scan</p><ul><li>Check Engine Light analysis</li><li>Electrical system test</li><li>Brake & transmission scan</li><li>Includes detailed report</li></ul></div>
-                     <div class="price-card"><h4>Maintenance</h4><div class="price-tag">Menu</div><p class="price-desc">Fixed-Price Services</p><ul><li>Oil Change: from $65</li><li>Brake Pads: from $225/axle</li><li>Tire Rotation: $35</li><li>See in-shop for full menu</li></ul></div>
-                     <div class="price-card"><h4>Major Repairs</h4><div class="price-tag">$115/hr</div><p class="price-desc">+ Parts</p><ul><li>Engine & transmission work</li><li>Drivetrain service</li><li>Suspension systems</li><li>Guaranteed parts & labor</li></ul></div>
-                </div>
+                <h2>AUTOMOTIVE SYSTEMS</h2>
+                <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services.</p>
             </div>
 
             <div class="content-panel" id="fabrication">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Custom Fabrication</h2>
-                <p>From concept to creation, our custom fabrication service brings your unique vision to life. We specialize in metalwork for bespoke components, structural art, and functional prototypes, delivering precision-engineered solutions tailored to your exact specifications.</p>
-                <h3>Fee Structure</h3>
-                <div class="pricing-grid">
-                     <div class="price-card"><h4>Consult & Design</h4><div class="price-tag">$220</div><p class="price-desc">Initial Phase</p><ul><li>Requirement analysis</li><li>CAD modeling (2 revisions)</li><li>Material selection</li><li>Fee credited to project cost</li></ul></div>
-                     <div class="price-card"><h4>Welding & Machining</h4><div class="price-tag">$95/hr</div><p class="price-desc">Shop Time</p><ul><li>TIG, MIG, Stick welding</li><li>CNC plasma cutting</li><li>Milling and lathing</li><li>Billed in 15-min increments</li></ul></div>
-                     <div class="price-card"><h4>Full Project Build</h4><div class="price-tag">Quote</div><p class="price-desc">End-to-End Service</p><ul><li>From design to delivery</li><li>Includes all labor & materials</li><li>Fixed price for budget control</li><li>Ideal for large-scale work</li></ul></div>
-                </div>
+                 <h2>CUSTOM FABRICATION</h2>
+                <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems.</p>
             </div>
 
             <div class="content-panel" id="finishing">
-                <h2><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg> Finishing Services</h2>
-                <p>The final touch that defines and protects a project. Our professional finishing services provide a flawless, durable aesthetic for any surface. We use premium paints, coatings, and sealants combined with meticulous preparation for results that last.</p>
-                <h3>Fee Structure</h3>
-                <div class="pricing-grid">
-                     <div class="price-card"><h4>Interior Painting</h4><div class="price-tag">$2.50/sq ft</div><p class="price-desc">Walls & Ceilings</p><ul><li>Includes prep & priming</li><li>Two coats of premium paint</li><li>Trim/doors priced separately</li><li>Free color consultation</li></ul></div>
-                     <div class="price-card"><h4>Exterior Finishes</h4><div class="price-tag">Quote</div><p class="price-desc">Project-Based</p><ul><li>Siding & trim painting</li><li>Deck staining & sealing</li><li>Pressure washing included</li><li>Weather-resistant coatings</li></ul></div>
-                     <div class="price-card"><h4>Specialty Coatings</h4><div class="price-tag">$85/hr</div><p class="price-desc">+ Materials</p><ul><li>Powder coating</li><li>Epoxy flooring</li><li>Protective metal sealants</li><li>Requires consultation</li></ul></div>
-                </div>
+                <h2>APPLIED FINISHES</h2>
+                <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability.</p>
             </div>
         </main>
         
         <section id="facebook-section">
             <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=61578092934913" data-tabs="timeline" data-width="500" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/profile.php?id=61578092934913" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/profile.php?id=61578092934913">Materia Solutions</a></blockquote></div>
         </section>
+
         <footer>
             <div class="contact-info">
-                <div class="contact-item">📞 <a href="tel:724-964-2936" style="color: inherit; text-decoration: none;">(724) 964-2936</a></div>
-                <div class="contact-item">📧 <a href="mailto:info@materiasolutions.com" style="color: inherit; text-decoration: none;">info@materiasolutions.com</a></div>
-                <div class="contact-item">📍 Serving Greater Metro Area</div>
-            </div>
-            <p class="status">✓ Currently Accepting New Projects</p>
+                <div class="contact-item">
+                    <a href="tel:724-964-2936">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.74-.25 1.02l-2.2 2.2z"/></svg>
+                        (724) 964-2936
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <a href="mailto:info@materiasolutions.com">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                         info@materiasolutions.com
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <a href="https://www.patreon.com/c/DamionRichter" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M20.44 4.56a2 2 0 0 0-1.02-1.02C18.67 3.23 17.85 3 16.5 3c-2.45 0-4.45 1.22-4.45 3.53 0 2.21 1.69 3.26 3.26 3.26 1.81 0 2.69-1.09 2.69-2.22 0-.6-.24-.95-.69-1.29-.46-.33-.95-.5-1.5-.5h-.06c-.53 0-1.02.17-1.46.49-.43.33-.67.78-.67 1.39 0 .91.56 1.69 1.41 1.69.83 0 1.5-.78 1.5-1.84 0-1.06-.67-1.84-1.5-1.84-.4 0-.76.15-1.03.43-.27.28-.43.64-.43 1.04 0 .58.37 1.04.88 1.04.5 0 .88-.46.88-1.04 0-.58-.37-1.04-.88-1.04h-.01c-.26 0-.5.09-.69.25-.19.17-.3.39-.3.66 0 .37.24.69.58.69.35 0 .59-.32.59-.69 0-.37-.24-.69-.59-.69H16.5c-1.2 0-2.12.44-2.12 1.35 0 .91.92 1.35 2.12 1.35 1.2 0 2.12-.44 2.12-1.35 0-.91-.92-1.35-2.12-1.35h-.03c-.63 0-1.19.24-1.58.64-.39.4-.59.93-.59 1.54 0 1.29 1.02 2.33 2.57 2.33 1.54 0 2.57-1.04 2.57-2.33 0-1.3-1.02-2.33-2.57-2.33h-.02c-.8 0-1.48.36-1.88.89-.4.53-.62 1.22-.62 1.99 0 1.64 1.32 2.97 3.25 2.97 1.93 0 3.25-1.33 3.25-2.97 0-1.64-1.32-2.97-3.25-2.97h-.01c-.5 0-.96.12-1.35.34-.39.22-.65.55-.65.95 0 .54.43.98.98.98.54 0 .98-.44.98-.98 0-.54-.43-.98-.98-.98h-.01c-.25 0-.48.06-.68.17-.2.11-.32.28-.32.47 0 .28.23.51.51.51.28 0 .51-.23.51-.51 0-.28-.23-.51-.51-.51h-.01c-.13 0-.25.03-.35.08-.1.05-.15.12-.15.2 0 .12.1.21.21.21.12 0 .21-.09.21-.21 0-.12-.1-.21-.21-.21h-.01c-.06 0-.12.01-.17.04-.05.03-.08.06-.08.1 0 .05.04.09.09.09.05 0 .09-.04.09-.09 0-.05-.04-.09-.09-.09z"/>
+                        </svg>
+                        Support on Patreon
+                    </a>
+                </div>
+                </div>
+            <p class="status">SYSTEM STATUS: NOMINAL // ACCEPTING PROJECTS</p>
         </footer>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- UI Elements ---
-            const initialPlayBtn = document.getElementById('initialPlayBtn');
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const videoPlaceholder = document.getElementById('videoPlaceholder');
-            const videoControls = document.getElementById('videoControls');
+            // Service Navigation
             const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
-            const playerContainer = document.getElementById('youtube-player-container');
-            const muteBtn = document.getElementById('muteBtn');
-            const volumeSlider = document.getElementById('volume-slider');
 
-            // --- SVG Icons ---
-            const icons = {
-                play: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>`,
-                pause: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>`,
-                volumeHigh: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>`,
-                volumeMute: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 9v6h4l5 5V4L7 9H3z"></path></svg>`,
-                volumeOff: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>`
-            };
-
-            // --- YouTube Player Logic ---
-            let player;
-            const videoId = 'dRne0j9k61w';
-
-            window.onYouTubeIframeAPIReady = function() {
-                player = new YT.Player('youtube-player', {
-                    videoId: videoId,
-                    playerVars: {
-                        'autoplay': 0, 'controls': 0, 'showinfo': 0, 'modestbranding': 1,
-                        'loop': 1, 'playlist': videoId, 'fs': 0, 'cc_load_policy': 0,
-                        'iv_load_policy': 3, 'autohide': 0, 'rel': 0, 'origin': window.location.origin
-                    },
-                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
-                });
-            };
-
-            function onPlayerReady(event) {
-                event.target.unMute();
-                event.target.setVolume(50);
-                volumeSlider.value = 50;
-                updateVolumeIcon(50);
-                initialPlayBtn.disabled = false;
-            }
-
-            function onPlayerStateChange(event) {
-                playPauseBtn.innerHTML = (event.data === YT.PlayerState.PLAYING) ? icons.pause : icons.play;
-            }
-
-            function playVideo() {
-                if (player && typeof player.playVideo === 'function') {
-                    videoPlaceholder.style.display = 'none';
-                    playerContainer.style.display = 'block';
-                    videoControls.style.display = 'flex';
-                    videoControls.classList.add('visible');
-                    player.playVideo();
-                }
-            }
-
-            function toggleVideoPlayback() {
-                if (!player || typeof player.getPlayerState !== 'function') return;
-                const state = player.getPlayerState();
-                if (state === YT.PlayerState.PLAYING) player.pauseVideo();
-                else player.playVideo();
-            }
-
-            function toggleMute() {
-                if (!player || typeof player.isMuted !== 'function') return;
-                if (player.isMuted()) {
-                    player.unMute();
-                    updateVolumeIcon(player.getVolume());
-                } else {
-                    player.mute();
-                    updateVolumeIcon(0, true);
-                }
-            }
-
-            function updateVolumeIcon(volume, isMuted = false) {
-                 if (isMuted || volume === 0) {
-                      muteBtn.innerHTML = icons.volumeOff;
-                 } else {
-                      muteBtn.innerHTML = icons.volumeHigh;
-                 }
-            }
-
-            initialPlayBtn.disabled = true;
-            initialPlayBtn.addEventListener('click', playVideo);
-            playPauseBtn.addEventListener('click', toggleVideoPlayback);
-            muteBtn.addEventListener('click', toggleMute);
-            volumeSlider.addEventListener('input', e => {
-                if(player && typeof player.setVolume === 'function') {
-                    player.setVolume(e.target.value);
-                    updateVolumeIcon(parseInt(e.target.value), player.isMuted());
-                }
-            });
-
-            playPauseBtn.innerHTML = icons.play;
-            muteBtn.innerHTML = icons.volumeHigh;
-
-            // --- Service Navigation ---
             function showPanel(targetId) {
                 contentPanels.forEach(panel => {
                     panel.classList.remove('visible');
