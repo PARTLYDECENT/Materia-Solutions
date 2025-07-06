@@ -535,6 +535,19 @@
             color: var(--accent-color);
             font-weight: bold;
         }
+        
+        /* START: Added styles for Facebook Plugin Section */
+        #facebook-section {
+            background: var(--surface-color);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.3);
+            margin-top: 40px;
+            text-align: center;
+        }
+        /* END: Added styles for Facebook Plugin Section */
 
         /* Footer */
         footer {
@@ -602,10 +615,16 @@
             .pricing-grid {
                 grid-template-columns: 1fr;
             }
+            
+            #facebook-section {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0"></script>
     <div class="shader-bg"></div>
 
     <div class="video-container">
@@ -704,7 +723,10 @@
                 </div>
             </div>
         </main>
-
+        
+        <section id="facebook-section">
+            <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=61578092934913" data-tabs="timeline" data-width="500" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/profile.php?id=61578092934913" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/profile.php?id=61578092934913">Materia Solutions</a></blockquote></div>
+        </section>
         <footer>
             <div class="contact-info">
                 <div class="contact-item">📞 <a href="tel:724-964-2936" style="color: inherit; text-decoration: none;">(724) 964-2936</a></div>
