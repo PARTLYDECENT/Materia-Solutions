@@ -12,7 +12,7 @@
             --primary-color: #00e5ff; /* High-impact accent: Cyber Blue */
             --primary-dark: #00b8cc;
             --bg-color: #0A0A0B;      /* Near-black for high contrast */
-            --surface-color: #111113; /* Slightly lighter surface */
+            --surface-color: rgba(17, 17, 19, 0.85); /* Slightly lighter surface with more opacity */
             --text-color: #dbe0e6;    /* Soft white for readability */
             --text-muted: #6a7481;    /* Muted grey for secondary text */
             --border-color: rgba(60, 100, 130, 0.2);
@@ -39,19 +39,14 @@
             position: relative;
         }
 
-        /* --- Background Grid --- */
-        .background-grid {
+        /* --- Canvas Background --- */
+        #background-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image:
-                linear-gradient(var(--border-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-            background-size: 40px 40px;
-            opacity: 0.3;
         }
 
         /* --- Main Container --- */
@@ -63,6 +58,8 @@
             display: grid;
             grid-template-rows: auto 1fr auto;
             gap: 60px;
+            position: relative;
+            z-index: 2;
         }
 
         /* --- Header: Clean & Minimalist --- */
@@ -160,6 +157,7 @@
             background-color: var(--surface-color);
             border: 1px solid var(--border-color);
             padding: 40px;
+            backdrop-filter: blur(10px);
         }
         
         .content-panel {
@@ -255,8 +253,35 @@
             color: var(--text-muted);
             letter-spacing: 1px;
         }
+        
+        /* --- YouTube Player --- */
+        .video-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            height: 180px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: opacity 0.5s;
+        }
+        
+        #youtube-player-container {
+            width: 100%;
+            height: 100%;
+        }
 
-        /* --- Responsive Design --- */
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .video-container {
+                display: none; /* Hide video player on smaller screens to save space */
+            }
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -287,7 +312,7 @@
     </style>
 </head>
 <body>
-    <div class="background-grid"></div>
+    <canvas id="background-canvas"></canvas>
 
     <div class="container">
         <header>
@@ -305,13 +330,14 @@
             </nav>
 
             <div class="content-area">
-                <div class="content-panel visible" id="overview">
+                <!-- Panels remain the same -->
+                 <div class="content-panel visible" id="overview">
                     <div class="panel-header">
                         <p class="subtitle">Mission Critical Solutions</p>
                         <h2>SYSTEM OVERVIEW</h2>
                     </div>
                     <div class="image-container">
-                        <img src="image1.jpg" alt="Overview of Materia Systems operations">
+                        <img src="image1.jpg" alt="Overview of Materia Systems operations" onerror="this.style.display='none'">
                     </div>
                     <div class="panel-content">
                         <p>Materia Systems provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems and bespoke component fabrication.</p>
@@ -324,7 +350,7 @@
                         <h2>STRUCTURAL SYSTEMS</h2>
                     </div>
                     <div class="image-container">
-                        <img src="image2.jpg" alt="Structural engineering schematics">
+                        <img src="image2.jpg" alt="Structural engineering schematics" onerror="this.style.display='none'">
                     </div>
                      <div class="panel-content">
                         <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning, utilizing advanced materials and predictive analysis.</p>
@@ -337,7 +363,7 @@
                         <h2>AUTOMOTIVE SYSTEMS</h2>
                     </div>
                     <div class="image-container">
-                        <img src="image3.jpg" alt="High-performance vehicle in maintenance">
+                        <img src="image3.jpg" alt="High-performance vehicle in maintenance" onerror="this.style.display='none'">
                     </div>
                      <div class="panel-content">
                         <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services, ensuring performance in demanding environments.</p>
@@ -350,7 +376,7 @@
                         <h2>BESPOKE FABRICATION</h2>
                     </div>
                     <div class="image-container">
-                        <img src="image4.jpg" alt="CNC machine in operation">
+                        <img src="image4.jpg" alt="CNC machine in operation" onerror="this.style.display='none'">
                     </div>
                      <div class="panel-content">
                         <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems, leveraging CNC machining and additive manufacturing.</p>
@@ -363,7 +389,7 @@
                         <h2>APPLIED FINISHES</h2>
                     </div>
                     <div class="image-container">
-                        <img src="image5.jpg" alt="Robotic arm applying a finishing coat">
+                        <img src="image5.jpg" alt="Robotic arm applying a finishing coat" onerror="this.style.display='none'">
                     </div>
                      <div class="panel-content">
                         <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability, including ceramic coatings and thermal barriers.</p>
@@ -381,20 +407,158 @@
             <p class="copyright">&copy; 2025 MATERIA SYSTEMS // ALL RIGHTS RESERVED</p>
         </footer>
     </div>
+    
+    <!-- YouTube Player Container -->
+    <div class="video-container" id="video-container">
+        <div id="youtube-player-container"></div>
+    </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            /**
+             * --------------------------------------------------------------------
+             * Canvas Background Animation: Grid Construction & Decay
+             * --------------------------------------------------------------------
+             */
+            const canvas = document.getElementById('background-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height, grid, particles;
+            const GRID_SIZE = 40;
+            const PARTICLE_COUNT = 80;
+            const PARTICLE_SPEED = 0.8;
+            const LINE_COLOR = 'rgba(0, 229, 255, 0.2)';
+            const PARTICLE_COLOR = 'rgba(0, 229, 255, 1)';
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.life = Math.random() * 200 + 100;
+                    this.initialLife = this.life;
+                    this.vx = (Math.random() - 0.5) * PARTICLE_SPEED;
+                    this.vy = (Math.random() - 0.5) * PARTICLE_SPEED;
+                    this.state = 'building'; // building, crumbling
+                    this.crumbleTime = Math.random() * 200 + 150;
+                }
+
+                update() {
+                    this.life--;
+                    this.crumbleTime--;
+
+                    if (this.crumbleTime <= 0 && this.state === 'building') {
+                        this.state = 'crumbling';
+                        this.life = this.initialLife / 2; // Shorter life when crumbling
+                    }
+
+                    if (this.life <= 0) {
+                        this.reset();
+                    }
+
+                    // Move particle
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Grid snapping
+                    if (Math.random() < 0.05) {
+                        if (Math.random() < 0.5) {
+                           this.vx = 0;
+                           this.vy = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
+                        } else {
+                           this.vx = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
+                           this.vy = 0;
+                        }
+                    }
+                    
+                    // Boundary check
+                    if (this.x > width || this.x < 0 || this.y > height || this.y < 0) {
+                        this.reset();
+                    }
+                }
+
+                draw() {
+                    let opacity = this.life / this.initialLife;
+                    if (this.state === 'crumbling') {
+                        opacity = this.life / (this.initialLife / 2);
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 229, 255, ${opacity * 0.8})`;
+                    ctx.fill();
+                }
+            }
+
+            function initCanvas() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                
+                // Create grid lines
+                grid = [];
+                for (let x = 0; x < width; x += GRID_SIZE) {
+                    grid.push({ x1: x, y1: 0, x2: x, y2: height, alpha: 0, dA: 0.005 });
+                }
+                for (let y = 0; y < height; y += GRID_SIZE) {
+                    grid.push({ x1: 0, y1: y, x2: width, y2: y, alpha: 0, dA: 0.005 });
+                }
+
+                // Create particles
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Draw and update grid lines
+                grid.forEach(line => {
+                    if (line.alpha < 0.2) {
+                        line.alpha += line.dA;
+                    }
+                    // Randomly "glitch" or crumble lines
+                    if (Math.random() < 0.001) {
+                        line.alpha = 0;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(line.x1, line.y1);
+                    ctx.lineTo(line.x2, line.y2);
+                    ctx.strokeStyle = `rgba(0, 229, 255, ${line.alpha})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                });
+
+                // Draw and update particles
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', initCanvas);
+            initCanvas();
+            animate();
+
+            /**
+             * --------------------------------------------------------------------
+             * Navigation Logic
+             * --------------------------------------------------------------------
+             */
             const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
 
             function showPanel(targetId) {
-                contentPanels.forEach(panel => {
-                    panel.classList.remove('visible');
-                });
+                contentPanels.forEach(panel => panel.classList.remove('visible'));
                 const targetPanel = document.getElementById(targetId);
-                if (targetPanel) {
-                    targetPanel.classList.add('visible');
-                }
+                if (targetPanel) targetPanel.classList.add('visible');
             }
 
             serviceButtons.forEach(button => {
@@ -404,6 +568,35 @@
                     showPanel(this.getAttribute('data-target'));
                 });
             });
+            
+            /**
+             * --------------------------------------------------------------------
+             * YouTube Player Logic
+             * --------------------------------------------------------------------
+             */
+            let player;
+            const videoId = 'dRne0j9k61w'; // Your original video ID
+
+            window.onYouTubeIframeAPIReady = function() {
+                if (window.innerWidth <= 992) return; // Don't load player on smaller screens
+
+                player = new YT.Player('youtube-player-container', {
+                    videoId: videoId,
+                    playerVars: {
+                        'autoplay': 1, 'controls': 0, 'showinfo': 0, 'modestbranding': 1,
+                        'loop': 1, 'playlist': videoId, 'fs': 0, 'cc_load_policy': 0,
+                        'iv_load_policy': 3, 'autohide': 0, 'rel': 0, 'origin': window.location.origin,
+                        'mute': 1
+                    },
+                    events: {
+                        'onReady': onPlayerReady
+                    }
+                });
+            };
+
+            function onPlayerReady(event) {
+                event.target.playVideo();
+            }
         });
     </script>
 </body>
