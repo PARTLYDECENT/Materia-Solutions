@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materia Solutions - Advanced Systems Integration</title>
+    <title>Materia Systems // Advanced Integration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- 2026 "Raytheon" Inspired Palette --- */
-            --primary-color: #ff8a00; /* High-impact accent: Burnt Orange/Amber */
-            --primary-dark: #cc6e00;
-            --accent-color: #00e5ff;  /* Secondary accent for highlights */
-            --bg-color: #0d1218;      /* Deep, dark blue-grey */
-            --text-color: #e5e9f0;    /* Off-white for clarity */
-            --text-muted: #818c9a;    /* Muted grey for secondary text */
-            --surface-color: rgba(18, 25, 35, 0.8); /* Semi-transparent surface */
-            --border-color: rgba(60, 100, 130, 0.25); /* Faint, technical blue border */
+            --primary-color: #00e5ff; /* High-impact accent: Cyber Blue */
+            --primary-dark: #00b8cc;
+            --bg-color: #0A0A0B;      /* Near-black for high contrast */
+            --surface-color: #111113; /* Slightly lighter surface */
+            --text-color: #dbe0e6;    /* Soft white for readability */
+            --text-muted: #6a7481;    /* Muted grey for secondary text */
+            --border-color: rgba(60, 100, 130, 0.2);
             --font-main: 'Roboto Mono', monospace;
             --font-headings: 'Orbitron', sans-serif;
         }
@@ -31,361 +29,361 @@
         html, body {
             height: 100%;
             overflow-x: hidden;
+            background-color: var(--bg-color);
         }
 
         body {
             font-family: var(--font-main);
-            background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.7;
             position: relative;
         }
 
-        /* --- Advanced Animated Background --- */
-        .shader-bg {
+        /* --- Background Grid --- */
+        .background-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2;
-            background-color: var(--bg-color);
-            overflow: hidden;
-        }
-
-        .shader-bg::before, .shader-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 200%;
+            z-index: -1;
             background-image:
                 linear-gradient(var(--border-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 30s linear infinite;
+            background-size: 40px 40px;
             opacity: 0.3;
-        }
-
-        .shader-bg::after {
-            animation-direction: reverse;
-            animation-duration: 45s;
-            opacity: 0.15;
-        }
-        
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-50px, -50px); }
         }
 
         /* --- Main Container --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 20px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 60px;
         }
 
-        /* --- Header: High-Tech Feel --- */
+        /* --- Header: Clean & Minimalist --- */
         header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding-top: 40px;
+            padding-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
         }
 
         .logo {
             font-family: var(--font-headings);
-            font-size: 2.8rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-color);
+        }
+        
+        .logo span {
+            color: var(--primary-color);
             font-weight: 700;
-            letter-spacing: 2px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
             text-transform: uppercase;
             color: var(--primary-color);
-            text-shadow: 0 0 15px rgba(255, 138, 0, 0.4);
-            margin-bottom: 10px;
         }
 
-        .tagline {
-            font-family: var(--font-main);
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 30px;
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
         }
 
-        /* --- Services Navigation: Sharp & Geometric --- */
+        /* --- Main Content Layout --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 50px;
+        }
+        
+        /* --- Services Navigation: Vertical & Clean --- */
         .services-nav {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 40px;
+            flex-direction: column;
+            gap: 5px;
+            position: sticky;
+            top: 40px;
+            align-self: start;
         }
 
         .service-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
+            background: none;
+            border: none;
+            border-left: 2px solid var(--border-color);
             color: var(--text-muted);
-            padding: 12px 24px;
+            padding: 12px 20px;
             font-family: var(--font-main);
             font-size: 0.9rem;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            text-align: left;
             cursor: pointer;
-            border-radius: 0; /* Sharp corners */
             transition: all 0.3s ease;
-            position: relative;
         }
         
-        .service-btn:hover, .service-btn.active {
-            color: var(--primary-color);
-            background: var(--border-color);
-            border-color: var(--primary-color);
-            box-shadow: inset 0 0 10px rgba(255, 138, 0, 0.2), 0 0 15px rgba(255, 138, 0, 0.2);
+        .service-btn:hover {
+            color: var(--text-color);
+            background: rgba(0, 229, 255, 0.05);
         }
-
-        /* --- Content Display: HUD Style --- */
+        
+        .service-btn.active {
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+            background: rgba(0, 229, 255, 0.05);
+        }
+        
+        /* --- Content Panels: Polished & with Images --- */
         .content-area {
-            background: var(--surface-color);
-            border-radius: 0;
-            padding: 30px;
-            backdrop-filter: blur(15px);
+            background-color: var(--surface-color);
             border: 1px solid var(--border-color);
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.5);
-            position: relative;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            padding: 40px;
         }
         
         .content-panel {
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.6s ease;
         }
 
         .content-panel.visible {
             display: block;
         }
-
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .content-panel h2 {
+        .panel-header {
+            margin-bottom: 30px;
+        }
+        
+        .panel-header h2 {
             font-family: var(--font-headings);
-            font-size: 1.8rem;
-            font-weight: 500;
+            font-size: 2.2rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .panel-header .subtitle {
+            font-size: 1rem;
             color: var(--primary-color);
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .content-panel p {
-            font-size: 1rem;
-            color: var(--text-color);
-            line-height: 1.8;
-            margin-bottom: 25px;
-            max-width: 800px;
-        }
-
-        .features-grid {
+        .panel-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            list-style: none;
-            padding: 0;
-        }
-
-        .feature-item {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-left: 3px solid var(--primary-color);
-            transition: background 0.3s;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            font-size: 1rem;
+            line-height: 1.8;
         }
         
-        .feature-item:hover {
-            background: rgba(255, 138, 0, 0.05);
+        .image-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            overflow: hidden;
         }
 
-        .feature-item h4 {
-            font-family: var(--font-headings);
-            font-weight: 500;
-            color: var(--text-color);
-            margin-bottom: 8px;
-        }
-
-        .feature-item p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 0;
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
         
-        /* --- Facebook & Footer Sections --- */
-        #facebook-section {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            margin-top: 40px;
-            text-align: center;
+        .image-container img:hover {
+            opacity: 1;
+            transform: scale(1.05);
         }
 
+        /* --- Footer --- */
         footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px 0;
+            padding: 30px 0;
             border-top: 1px solid var(--border-color);
+            text-align: center;
         }
 
         .contact-info {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            margin-bottom: 20px;
+            gap: 30px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
         .contact-item a {
             color: var(--text-muted);
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: color 0.3s, text-shadow 0.3s;
+            transition: color 0.3s;
             font-size: 0.9rem;
         }
         
         .contact-item a:hover {
             color: var(--primary-color);
-            text-shadow: 0 0 5px rgba(255, 138, 0, 0.5);
-        }
-        
-        .contact-item svg {
-             width: 18px;
-             height: 18px;
-             fill: currentColor;
         }
 
-        .status {
-            color: var(--accent-color);
-            font-weight: 500;
-            font-size: 0.9rem;
+        .copyright {
+            font-size: 0.8rem;
+            color: var(--text-muted);
             letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
         }
 
-        /* Responsive */
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .logo { font-size: 2rem; }
-            .tagline { font-size: 0.9rem; }
-            .contact-info {
-                flex-direction: column;
-                gap: 15px;
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .services-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                position: static;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 20px;
+            }
+            .service-btn {
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+            }
+            .service-btn.active {
+                border-color: var(--primary-color);
+            }
+            .content-area {
+                padding: 25px;
+            }
+            .panel-header h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v23.0"></script>
-    
-    <div class="shader-bg"></div>
+    <div class="background-grid"></div>
 
     <div class="container">
         <header>
-            <h1 class="logo">Materia Solutions</h1>
-            <p class="tagline">Advanced Systems & Strategic Integration</p>
+            <div class="logo">MATERIA<span>_</span>SYSTEMS</div>
+            <div class="status-indicator">ONLINE</div>
         </header>
 
-        <nav class="services-nav">
-            <button class="service-btn active" data-target="overview">01_OVERVIEW</button>
-            <button class="service-btn" data-target="structural">02_STRUCTURAL</button>
-            <button class="service-btn" data-target="automotive">03_AUTOMOTIVE</button>
-            <button class="service-btn" data-target="fabrication">04_FABRICATION</button>
-            <button class="service-btn" data-target="finishing">05_FINISHING</button>
-        </nav>
+        <main class="main-content">
+            <nav class="services-nav">
+                <button class="service-btn active" data-target="overview">OVERVIEW</button>
+                <button class="service-btn" data-target="structural">STRUCTURAL</button>
+                <button class="service-btn" data-target="automotive">AUTOMOTIVE</button>
+                <button class="service-btn" data-target="fabrication">FABRICATION</button>
+                <button class="service-btn" data-target="finishing">FINISHING</button>
+            </nav>
 
-        <main class="content-area">
-            <div class="content-panel visible" id="overview">
-                <h2>SYSTEM OVERVIEW</h2>
-                <p>Materia Solutions provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems.</p>
-                <h3>Core Capabilities</h3>
-                <ul class="features-grid">
-                    <li class="feature-item"><h4>Advanced Diagnostics</h4><p>Proprietary analysis protocols for structural and system integrity.</p></li>
-                    <li class="feature-item"><h4>Rapid Deployment</h4><p>24/7 emergency response protocols for critical failures.</p></li>
-                    <li class="feature-item"><h4>Mil-Spec Fabrication</h4><p>Precision engineering and fabrication of custom components.</p></li>
-                    <li class="feature-item"><h4>Lifecycle Support</h4><p>Comprehensive warranty and maintenance programs.</p></li>
-                    <li class="feature-item"><h4>Secure Operations</h4><p>Fully licensed and insured teams for secure, reliable project execution.</p></li>
-                     <li class="feature-item"><h4>Modular Systems</h4><p>Expertise across integrated structural, automotive, and fabrication disciplines.</p></li>
-                </ul>
-            </div>
+            <div class="content-area">
+                <div class="content-panel visible" id="overview">
+                    <div class="panel-header">
+                        <p class="subtitle">Mission Critical Solutions</p>
+                        <h2>SYSTEM OVERVIEW</h2>
+                    </div>
+                    <div class="image-container">
+                        <img src="image1.jpg" alt="Overview of Materia Systems operations">
+                    </div>
+                    <div class="panel-content">
+                        <p>Materia Systems provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems and bespoke component fabrication.</p>
+                    </div>
+                </div>
 
-            <div class="content-panel" id="structural">
-                <h2>STRUCTURAL SYSTEMS</h2>
-                <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning.</p>
-            </div>
+                <div class="content-panel" id="structural">
+                    <div class="panel-header">
+                        <p class="subtitle">Infrastructure & Integrity</p>
+                        <h2>STRUCTURAL SYSTEMS</h2>
+                    </div>
+                    <div class="image-container">
+                        <img src="image2.jpg" alt="Structural engineering schematics">
+                    </div>
+                     <div class="panel-content">
+                        <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning, utilizing advanced materials and predictive analysis.</p>
+                    </div>
+                </div>
 
-            <div class="content-panel" id="automotive">
-                <h2>AUTOMOTIVE SYSTEMS</h2>
-                <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services.</p>
-            </div>
+                <div class="content-panel" id="automotive">
+                    <div class="panel-header">
+                        <p class="subtitle">Mobility & Readiness</p>
+                        <h2>AUTOMOTIVE SYSTEMS</h2>
+                    </div>
+                    <div class="image-container">
+                        <img src="image3.jpg" alt="High-performance vehicle in maintenance">
+                    </div>
+                     <div class="panel-content">
+                        <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services, ensuring performance in demanding environments.</p>
+                    </div>
+                </div>
 
-            <div class="content-panel" id="fabrication">
-                 <h2>CUSTOM FABRICATION</h2>
-                <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems.</p>
-            </div>
+                <div class="content-panel" id="fabrication">
+                     <div class="panel-header">
+                        <p class="subtitle">Custom Engineering</p>
+                        <h2>BESPOKE FABRICATION</h2>
+                    </div>
+                    <div class="image-container">
+                        <img src="image4.jpg" alt="CNC machine in operation">
+                    </div>
+                     <div class="panel-content">
+                        <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems, leveraging CNC machining and additive manufacturing.</p>
+                    </div>
+                </div>
 
-            <div class="content-panel" id="finishing">
-                <h2>APPLIED FINISHES</h2>
-                <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability.</p>
+                <div class="content-panel" id="finishing">
+                    <div class="panel-header">
+                        <p class="subtitle">Protective Coatings</p>
+                        <h2>APPLIED FINISHES</h2>
+                    </div>
+                    <div class="image-container">
+                        <img src="image5.jpg" alt="Robotic arm applying a finishing coat">
+                    </div>
+                     <div class="panel-content">
+                        <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability, including ceramic coatings and thermal barriers.</p>
+                    </div>
+                </div>
             </div>
         </main>
-        
-        <section id="facebook-section">
-            <div class="fb-page" data-href="https://www.facebook.com/profile.php?id=61578092934913" data-tabs="timeline" data-width="500" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/profile.php?id=61578092934913" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/profile.php?id=61578092934913">Materia Solutions</a></blockquote></div>
-        </section>
 
         <footer>
             <div class="contact-info">
-                <div class="contact-item">
-                    <a href="tel:724-964-2936">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.02.74-.25 1.02l-2.2 2.2z"/></svg>
-                        (724) 964-2936
-                    </a>
-                </div>
-                <div class="contact-item">
-                    <a href="mailto:info@materiasolutions.com">
-                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                         info@materiasolutions.com
-                    </a>
-                </div>
-                <div class="contact-item">
-                    <a href="https://www.patreon.com/c/DamionRichter" target="_blank">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                           <path d="M20.44 4.56a2 2 0 0 0-1.02-1.02C18.67 3.23 17.85 3 16.5 3c-2.45 0-4.45 1.22-4.45 3.53 0 2.21 1.69 3.26 3.26 3.26 1.81 0 2.69-1.09 2.69-2.22 0-.6-.24-.95-.69-1.29-.46-.33-.95-.5-1.5-.5h-.06c-.53 0-1.02.17-1.46.49-.43.33-.67.78-.67 1.39 0 .91.56 1.69 1.41 1.69.83 0 1.5-.78 1.5-1.84 0-1.06-.67-1.84-1.5-1.84-.4 0-.76.15-1.03.43-.27.28-.43.64-.43 1.04 0 .58.37 1.04.88 1.04.5 0 .88-.46.88-1.04 0-.58-.37-1.04-.88-1.04h-.01c-.26 0-.5.09-.69.25-.19.17-.3.39-.3.66 0 .37.24.69.58.69.35 0 .59-.32.59-.69 0-.37-.24-.69-.59-.69H16.5c-1.2 0-2.12.44-2.12 1.35 0 .91.92 1.35 2.12 1.35 1.2 0 2.12-.44 2.12-1.35 0-.91-.92-1.35-2.12-1.35h-.03c-.63 0-1.19.24-1.58.64-.39.4-.59.93-.59 1.54 0 1.29 1.02 2.33 2.57 2.33 1.54 0 2.57-1.04 2.57-2.33 0-1.3-1.02-2.33-2.57-2.33h-.02c-.8 0-1.48.36-1.88.89-.4.53-.62 1.22-.62 1.99 0 1.64 1.32 2.97 3.25 2.97 1.93 0 3.25-1.33 3.25-2.97 0-1.64-1.32-2.97-3.25-2.97h-.01c-.5 0-.96.12-1.35.34-.39.22-.65.55-.65.95 0 .54.43.98.98.98.54 0 .98-.44.98-.98 0-.54-.43-.98-.98-.98h-.01c-.25 0-.48.06-.68.17-.2.11-.32.28-.32.47 0 .28.23.51.51.51.28 0 .51-.23.51-.51 0-.28-.23-.51-.51-.51h-.01c-.13 0-.25.03-.35.08-.1.05-.15.12-.15.2 0 .12.1.21.21.21.12 0 .21-.09.21-.21 0-.12-.1-.21-.21-.21h-.01c-.06 0-.12.01-.17.04-.05.03-.08.06-.08.1 0 .05.04.09.09.09.05 0 .09-.04.09-.09 0-.05-.04-.09-.09-.09z"/>
-                        </svg>
-                        Support on Patreon
-                    </a>
-                </div>
-                </div>
-            <p class="status">SYSTEM STATUS: NOMINAL // ACCEPTING PROJECTS</p>
+                <div class="contact-item"><a href="tel:724-964-2936">(724) 964-2936</a></div>
+                <div class="contact-item"><a href="mailto:chainswasversuslions@gmail.com">chainswasversuslions@gmail.com</a></div>
+                <div class="contact-item"><a href="https://www.patreon.com/c/DamionRichter" target="_blank">Patreon</a></div>
+            </div>
+            <p class="copyright">&copy; 2025 MATERIA SYSTEMS // ALL RIGHTS RESERVED</p>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Service Navigation
             const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
 
