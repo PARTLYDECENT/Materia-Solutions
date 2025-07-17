@@ -3,21 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materia Systems // Advanced Integration</title>
+    <title>Materia Systems // Advanced Integration 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #00e5ff; /* High-impact accent: Cyber Blue */
-            --primary-dark: #00b8cc;
-            --bg-color: #0A0A0B;      /* Near-black for high contrast */
-            --surface-color: rgba(17, 17, 19, 0.85); /* Slightly lighter surface with more opacity */
-            --text-color: #dbe0e6;    /* Soft white for readability */
-            --text-muted: #6a7481;    /* Muted grey for secondary text */
-            --border-color: rgba(60, 100, 130, 0.2);
-            --font-main: 'Roboto Mono', monospace;
-            --font-headings: 'Orbitron', sans-serif;
+            /* 2026 Color Palette - More sophisticated */
+            --primary-gradient: linear-gradient(135deg, #00f5ff 0%, #0099ff 50%, #6366f1 100%);
+            --primary-color: #00f5ff;
+            --primary-dark: #0099ff;
+            --accent-purple: #6366f1;
+            --accent-green: #10b981;
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-tertiary: #1a1a1d;
+            --surface-glass: rgba(255, 255, 255, 0.03);
+            --surface-elevated: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-subtle: #64748b;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.05);
+            --shadow-glow: 0 0 20px rgba(0, 245, 255, 0.1);
+            --shadow-elevated: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            
+            /* Typography */
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Spacing Scale */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease-out;
+            --transition-normal: 0.3s ease-out;
+            --transition-slow: 0.5s ease-out;
         }
 
         * {
@@ -26,578 +62,993 @@
             padding: 0;
         }
 
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-            background-color: var(--bg-color);
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: var(--font-main);
-            color: var(--text-color);
-            line-height: 1.7;
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
             position: relative;
         }
 
-        /* --- Canvas Background --- */
-        #background-canvas {
+        /* Enhanced Background with Mesh Gradient */
+        .background-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+        }
+
+        .background-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
+            opacity: 0.3;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
         }
 
-        /* --- Main Container --- */
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Container System */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
-            min-height: 100vh;
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            gap: 60px;
-            position: relative;
-            z-index: 2;
+            padding: 0 var(--space-xl);
         }
 
-        /* --- Header: Clean & Minimalist --- */
-        header {
-            padding-top: 50px;
+        /* Header - More sophisticated */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(10, 10, 11, 0.8);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
+            justify-content: space-between;
+            padding: var(--space-lg) 0;
         }
 
         .logo {
-            font-family: var(--font-headings);
-            font-size: 1.5rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-color);
-        }
-        
-        .logo span {
-            color: var(--primary-color);
+            font-family: var(--font-display);
+            font-size: 1.75rem;
             font-weight: 700;
+            letter-spacing: -0.025em;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-normal);
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--surface-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            backdrop-filter: blur(10px);
         }
 
         .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--primary-color);
-        }
-
-        .status-indicator::before {
-            content: '';
             width: 8px;
             height: 8px;
-            background-color: var(--primary-color);
+            background: var(--accent-green);
             border-radius: 50%;
             animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
-        /* --- Main Content Layout --- */
-        .main-content {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 50px;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
         }
-        
-        /* --- Services Navigation: Vertical & Clean --- */
-        .services-nav {
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--space-3xl);
+            padding: var(--space-3xl) 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Navigation - Enhanced */
+        .nav-sidebar {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .nav-title {
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-lg);
+            padding-left: var(--space-md);
+        }
+
+        .nav-list {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            position: sticky;
-            top: 40px;
-            align-self: start;
+            gap: var(--space-xs);
         }
 
-        .service-btn {
-            background: none;
+        .nav-item {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
             border: none;
-            border-left: 2px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 12px 20px;
-            font-family: var(--font-main);
+            color: var(--text-secondary);
+            font-family: var(--font-body);
             font-size: 0.9rem;
+            font-weight: 500;
             text-align: left;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
+            position: relative;
+            z-index: 1;
         }
-        
-        .service-btn:hover {
-            color: var(--text-color);
-            background: rgba(0, 229, 255, 0.05);
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--surface-glass);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            z-index: -1;
         }
-        
-        .service-btn.active {
-            border-left-color: var(--primary-color);
-            color: var(--primary-color);
-            font-weight: 500;
-            background: rgba(0, 229, 255, 0.05);
+
+        .nav-button:hover::before {
+            opacity: 1;
         }
-        
-        /* --- Content Panels: Polished & with Images --- */
+
+        .nav-button.active {
+            color: var(--text-primary);
+            background: var(--surface-elevated);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-button.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* Content Area - Redesigned */
         .content-area {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-            backdrop-filter: blur(10px);
+            background: var(--surface-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-2xl);
+            backdrop-filter: blur(20px) saturate(180%);
+            overflow: hidden;
+            position: relative;
         }
-        
+
         .content-panel {
             display: none;
-            animation: fadeIn 0.6s ease;
+            padding: var(--space-3xl);
+            animation: fadeInUp 0.6s ease-out;
         }
 
         .content-panel.visible {
             display: block;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .panel-header {
-            margin-bottom: 30px;
-        }
-        
-        .panel-header h2 {
-            font-family: var(--font-headings);
-            font-size: 2.2rem;
-            color: var(--text-color);
-            margin-bottom: 10px;
-        }
-        
-        .panel-header .subtitle {
-            font-size: 1rem;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-bottom: var(--space-3xl);
         }
 
-        .panel-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-            font-size: 1rem;
-            line-height: 1.8;
+        .panel-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-sm);
         }
-        
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.1;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: var(--space-lg);
+        }
+
+        .panel-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 600px;
+        }
+
+        /* Enhanced Image Container */
         .image-container {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
             overflow: hidden;
+            margin: var(--space-xl) 0;
+            position: relative;
+            group: hover;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            z-index: 1;
+            mix-blend-mode: overlay;
+        }
+
+        .image-container:hover::before {
+            opacity: 0.1;
         }
 
         .image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: transform var(--transition-slow);
         }
-        
-        .image-container img:hover {
-            opacity: 1;
+
+        .image-container:hover img {
             transform: scale(1.05);
         }
 
-        /* --- Footer --- */
-        footer {
-            padding: 30px 0;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .contact-info {
+        .image-placeholder {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
-        .contact-item a {
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            gap: var(--space-xl);
+            margin-top: var(--space-xl);
+        }
+
+        .content-section {
+            padding: var(--space-xl);
+            background: var(--surface-glass);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .content-section h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-xl) 0;
+        }
+
+        .stat-card {
+            padding: var(--space-lg);
+            background: var(--surface-glass);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: var(--space-sm);
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-primary);
+            padding: var(--space-3xl) 0;
+            margin-top: var(--space-3xl);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .footer-section h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .footer-link {
             color: var(--text-muted);
             text-decoration: none;
-            transition: color 0.3s;
             font-size: 0.9rem;
+            transition: color var(--transition-fast);
         }
-        
-        .contact-item a:hover {
+
+        .footer-link:hover {
             color: var(--primary-color);
         }
 
-        .copyright {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
+        .footer-bottom {
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--border-secondary);
+            text-align: center;
+            color: var(--text-subtle);
+            font-size: 0.875rem;
         }
-        
-        /* --- YouTube Player --- */
-        .video-container {
+
+        /* Video Player - Enhanced */
+        .video-player {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 320px;
-            height: 180px;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            width: 360px;
+            height: 203px;
+            background: var(--surface-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            transition: opacity 0.5s;
+            backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: var(--shadow-elevated);
+            z-index: 1000;
+            transition: all var(--transition-normal);
         }
-        
-        #youtube-player-container {
+
+        .video-player:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elevated), var(--shadow-glow);
+        }
+
+        .video-player iframe {
             width: 100%;
             height: 100%;
+            border: none;
         }
 
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .video-container {
-                display: none; /* Hide video player on smaller screens to save space */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 240px 1fr;
+                gap: var(--space-xl);
             }
         }
-        
-        @media (max-width: 768px) {
-            .main-content {
+
+        @media (max-width: 992px) {
+            .video-player {
+                display: none;
+            }
+            
+            .main-layout {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: var(--space-xl);
             }
-            .services-nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
+            
+            .nav-sidebar {
                 position: static;
-                border-bottom: 1px solid var(--border-color);
-                padding-bottom: 20px;
+                margin-bottom: var(--space-xl);
             }
-            .service-btn {
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
+            
+            .nav-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: var(--space-sm);
             }
-            .service-btn.active {
-                border-color: var(--primary-color);
+            
+            .nav-button {
+                text-align: center;
+                padding: var(--space-md);
+                border-radius: var(--radius-md);
+                border: 1px solid var(--border-secondary);
             }
-            .content-area {
-                padding: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-md);
             }
-            .panel-header h2 {
-                font-size: 1.8rem;
+            
+            .header-content {
+                padding: var(--space-md) 0;
             }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .main-layout {
+                padding: var(--space-xl) 0;
+                gap: var(--space-lg);
+            }
+            
+            .content-panel {
+                padding: var(--space-xl);
+            }
+            
+            .panel-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles */
+        .nav-button:focus-visible,
+        .footer-link:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
-    <canvas id="background-canvas"></canvas>
+    <div class="background-mesh"></div>
+    <div class="background-grid"></div>
 
-    <div class="container">
-        <header>
-            <div class="logo">MATERIA<span>_</span>SYSTEMS</div>
-            <div class="status-indicator">ONLINE</div>
-        </header>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">MATERIA_SYSTEMS</div>
+                <div class="status-badge">
+                    <div class="status-indicator"></div>
+                    <span>ONLINE</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-        <main class="main-content">
-            <nav class="services-nav">
-                <button class="service-btn active" data-target="overview">OVERVIEW</button>
-                <button class="service-btn" data-target="structural">STRUCTURAL</button>
-                <button class="service-btn" data-target="automotive">AUTOMOTIVE</button>
-                <button class="service-btn" data-target="fabrication">FABRICATION</button>
-                <button class="service-btn" data-target="finishing">FINISHING</button>
+    <main class="container">
+        <div class="main-layout">
+            <nav class="nav-sidebar">
+                <h2 class="nav-title">Services</h2>
+                <div class="nav-list">
+                    <div class="nav-item">
+                        <button class="nav-button active" data-target="overview">Overview</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="nav-button" data-target="structural">Structural</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="nav-button" data-target="automotive">Automotive</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="nav-button" data-target="fabrication">Fabrication</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="nav-button" data-target="finishing">Finishing</button>
+                    </div>
+                </div>
             </nav>
 
             <div class="content-area">
-                <!-- Panels remain the same -->
-                 <div class="content-panel visible" id="overview">
+                <div class="content-panel visible" id="overview">
                     <div class="panel-header">
-                        <p class="subtitle">Mission Critical Solutions</p>
-                        <h2>SYSTEM OVERVIEW</h2>
+                        <div class="panel-subtitle">Mission Critical Solutions</div>
+                        <h1 class="panel-title">System Overview</h1>
+                        <p class="panel-description">
+                            Materia Systems provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems and bespoke component fabrication.
+                        </p>
                     </div>
+
                     <div class="image-container">
-                        <img src="image1.jpg" alt="Overview of Materia Systems operations" onerror="this.style.display='none'">
+                        <div class="image-placeholder">System Architecture Visualization</div>
                     </div>
-                    <div class="panel-content">
-                        <p>Materia Systems provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems and bespoke component fabrication.</p>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">99.9%</span>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">500+</span>
+                            <div class="stat-label">Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">24/7</span>
+                            <div class="stat-label">Support</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">15+</span>
+                            <div class="stat-label">Years</div>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3>Advanced Integration</h3>
+                            <p>Our comprehensive approach ensures seamless integration across all operational domains, delivering solutions that exceed industry standards for performance and reliability.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Future-Ready Technology</h3>
+                            <p>Leveraging cutting-edge technologies and methodologies, we prepare your infrastructure for the challenges of tomorrow while solving today's complex problems.</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="content-panel" id="structural">
                     <div class="panel-header">
-                        <p class="subtitle">Infrastructure & Integrity</p>
-                        <h2>STRUCTURAL SYSTEMS</h2>
+                        <div class="panel-subtitle">Infrastructure & Integrity</div>
+                        <h1 class="panel-title">Structural Systems</h1>
+                        <p class="panel-description">
+                            We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning, utilizing advanced materials and predictive analysis.
+                        </p>
                     </div>
+
                     <div class="image-container">
-                        <img src="image2.jpg" alt="Structural engineering schematics" onerror="this.style.display='none'">
+                        <div class="image-placeholder">Structural Engineering Schematics</div>
                     </div>
-                     <div class="panel-content">
-                        <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning, utilizing advanced materials and predictive analysis.</p>
+
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3>Foundation Analysis</h3>
+                            <p>Comprehensive structural assessments using advanced scanning technologies and predictive modeling to identify potential issues before they become critical.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Material Innovation</h3>
+                            <p>Implementation of next-generation materials and construction techniques that provide superior durability and performance in demanding environments.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Lifecycle Management</h3>
+                            <p>Long-term maintenance strategies and monitoring systems that ensure structural integrity throughout the entire operational lifecycle.</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="content-panel" id="automotive">
                     <div class="panel-header">
-                        <p class="subtitle">Mobility & Readiness</p>
-                        <h2>AUTOMOTIVE SYSTEMS</h2>
+                        <div class="panel-subtitle">Mobility & Readiness</div>
+                        <h1 class="panel-title">Automotive Systems</h1>
+                        <p class="panel-description">
+                            Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services, ensuring performance in demanding environments.
+                        </p>
                     </div>
+
                     <div class="image-container">
-                        <img src="image3.jpg" alt="High-performance vehicle in maintenance" onerror="this.style.display='none'">
+                        <div class="image-placeholder">High-Performance Vehicle Maintenance</div>
                     </div>
-                     <div class="panel-content">
-                        <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services, ensuring performance in demanding environments.</p>
+
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3>Diagnostic Excellence</h3>
+                            <p>State-of-the-art diagnostic equipment and procedures that identify issues with precision, minimizing downtime and maximizing performance.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Performance Optimization</h3>
+                            <p>Advanced tuning and modification services that enhance vehicle performance while maintaining reliability and safety standards.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Fleet Management</h3>
+                            <p>Comprehensive fleet maintenance programs designed to optimize operational efficiency and reduce total cost of ownership.</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="content-panel" id="fabrication">
-                     <div class="panel-header">
-                        <p class="subtitle">Custom Engineering</p>
-                        <h2>BESPOKE FABRICATION</h2>
+                    <div class="panel-header">
+                        <div class="panel-subtitle">Custom Engineering</div>
+                        <h1 class="panel-title">Bespoke Fabrication</h1>
+                        <p class="panel-description">
+                            From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems, leveraging CNC machining and additive manufacturing.
+                        </p>
                     </div>
+
                     <div class="image-container">
-                        <img src="image4.jpg" alt="CNC machine in operation" onerror="this.style.display='none'">
+                        <div class="image-placeholder">CNC Machine in Operation</div>
                     </div>
-                     <div class="panel-content">
-                        <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. We specialize in high-tolerance metalwork for components, structural frameworks, and functional systems, leveraging CNC machining and additive manufacturing.</p>
+
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3>Precision Manufacturing</h3>
+                            <p>Ultra-high precision CNC machining capabilities with tolerances measured in microns, ensuring perfect fit and function for critical applications.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Additive Solutions</h3>
+                            <p>Advanced 3D printing and additive manufacturing technologies for rapid prototyping and production of complex geometries.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Material Expertise</h3>
+                            <p>Extensive knowledge of advanced materials including titanium alloys, carbon fiber composites, and specialized ceramics.</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="content-panel" id="finishing">
                     <div class="panel-header">
-                        <p class="subtitle">Protective Coatings</p>
-                        <h2>APPLIED FINISHES</h2>
+                        <div class="panel-subtitle">Protective Coatings</div>
+                        <h1 class="panel-title">Applied Finishes</h1>
+                        <p class="panel-description">
+                            Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability, including ceramic coatings and thermal barriers.
+                        </p>
                     </div>
+
                     <div class="image-container">
-                        <img src="image5.jpg" alt="Robotic arm applying a finishing coat" onerror="this.style.display='none'">
+                        <div class="image-placeholder">Robotic Finishing Application</div>
                     </div>
-                     <div class="panel-content">
-                        <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability, including ceramic coatings and thermal barriers.</p>
+
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3>Ceramic Coatings</h3>
+                            <p>Advanced ceramic coating systems that provide superior protection against corrosion, wear, and extreme temperatures.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Thermal Barriers</h3>
+                            <p>Specialized thermal barrier coatings designed to protect components operating in high-temperature environments.</p>
+                        </div>
+                        <div class="content-section">
+                            <h3>Surface Engineering</h3>
+                            <p>Comprehensive surface treatment solutions including anodizing, plating, and specialized chemical treatments.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </main>
 
-        <footer>
-            <div class="contact-info">
-                <div class="contact-item"><a href="tel:724-964-2936">(724) 964-2936</a></div>
-                <div class="contact-item"><a href="mailto:chainswasversuslions@gmail.com">chainswasversuslions@gmail.com</a></div>
-                <div class="contact-item"><a href="https://www.patreon.com/c/DamionRichter" target="_blank">Patreon</a></div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <div class="footer-links">
+                        <a href="tel:724-964-2936" class="footer-link">(724) 964-2936</a>
+                        <a href="mailto:chainswasversuslions@gmail.com" class="footer-link">chainswasversuslions@gmail.com</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <div class="footer-links">
+                        <a href="https://www.patreon.com/c/DamionRichter" target="_blank" class="footer-link">Patreon</a>
+                        <a href="#" class="footer-link">Documentation</a>
+                        <a href="#" class="footer-link">Support Portal</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About</a>
+                        <a href="#" class="footer-link">Careers</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                    </div>
+                </div>
             </div>
-            <p class="copyright">&copy; 2025 MATERIA SYSTEMS // ALL RIGHTS RESERVED</p>
-        </footer>
-    </div>
-    
-    <!-- YouTube Player Container -->
-    <div class="video-container" id="video-container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 MATERIA SYSTEMS // ALL RIGHTS RESERVED</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="video-player" id="video-player">
         <div id="youtube-player-container"></div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            /**
-             * --------------------------------------------------------------------
-             * Canvas Background Animation: Grid Construction & Decay
-             * --------------------------------------------------------------------
-             */
-            const canvas = document.getElementById('background-canvas');
-            const ctx = canvas.getContext('2d');
-
-            let width, height, grid, particles;
-            const GRID_SIZE = 40;
-            const PARTICLE_COUNT = 80;
-            const PARTICLE_SPEED = 0.8;
-            const LINE_COLOR = 'rgba(0, 229, 255, 0.2)';
-            const PARTICLE_COLOR = 'rgba(0, 229, 255, 1)';
-
-            class Particle {
-                constructor() {
-                    this.reset();
-                }
-
-                reset() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.life = Math.random() * 200 + 100;
-                    this.initialLife = this.life;
-                    this.vx = (Math.random() - 0.5) * PARTICLE_SPEED;
-                    this.vy = (Math.random() - 0.5) * PARTICLE_SPEED;
-                    this.state = 'building'; // building, crumbling
-                    this.crumbleTime = Math.random() * 200 + 150;
-                }
-
-                update() {
-                    this.life--;
-                    this.crumbleTime--;
-
-                    if (this.crumbleTime <= 0 && this.state === 'building') {
-                        this.state = 'crumbling';
-                        this.life = this.initialLife / 2; // Shorter life when crumbling
-                    }
-
-                    if (this.life <= 0) {
-                        this.reset();
-                    }
-
-                    // Move particle
-                    this.x += this.vx;
-                    this.y += this.vy;
-
-                    // Grid snapping
-                    if (Math.random() < 0.05) {
-                        if (Math.random() < 0.5) {
-                           this.vx = 0;
-                           this.vy = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
-                        } else {
-                           this.vx = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
-                           this.vy = 0;
-                        }
-                    }
-                    
-                    // Boundary check
-                    if (this.x > width || this.x < 0 || this.y > height || this.y < 0) {
-                        this.reset();
-                    }
-                }
-
-                draw() {
-                    let opacity = this.life / this.initialLife;
-                    if (this.state === 'crumbling') {
-                        opacity = this.life / (this.initialLife / 2);
-                    }
-                    
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 229, 255, ${opacity * 0.8})`;
-                    ctx.fill();
-                }
-            }
-
-            function initCanvas() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-                
-                // Create grid lines
-                grid = [];
-                for (let x = 0; x < width; x += GRID_SIZE) {
-                    grid.push({ x1: x, y1: 0, x2: x, y2: height, alpha: 0, dA: 0.005 });
-                }
-                for (let y = 0; y < height; y += GRID_SIZE) {
-                    grid.push({ x1: 0, y1: y, x2: width, y2: y, alpha: 0, dA: 0.005 });
-                }
-
-                // Create particles
-                particles = [];
-                for (let i = 0; i < PARTICLE_COUNT; i++) {
-                    particles.push(new Particle());
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-
-                // Draw and update grid lines
-                grid.forEach(line => {
-                    if (line.alpha < 0.2) {
-                        line.alpha += line.dA;
-                    }
-                    // Randomly "glitch" or crumble lines
-                    if (Math.random() < 0.001) {
-                        line.alpha = 0;
-                    }
-                    ctx.beginPath();
-                    ctx.moveTo(line.x1, line.y1);
-                    ctx.lineTo(line.x2, line.y2);
-                    ctx.strokeStyle = `rgba(0, 229, 255, ${line.alpha})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                });
-
-                // Draw and update particles
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('resize', initCanvas);
-            initCanvas();
-            animate();
-
-            /**
-             * --------------------------------------------------------------------
-             * Navigation Logic
-             * --------------------------------------------------------------------
-             */
-            const serviceButtons = document.querySelectorAll('.service-btn');
+            // Navigation functionality
+            const navButtons = document.querySelectorAll('.nav-button');
             const contentPanels = document.querySelectorAll('.content-panel');
 
             function showPanel(targetId) {
-                contentPanels.forEach(panel => panel.classList.remove('visible'));
+                // Hide all panels
+                contentPanels.forEach(panel => {
+                    panel.classList.remove('visible');
+                });
+
+                // Show target panel
                 const targetPanel = document.getElementById(targetId);
-                if (targetPanel) targetPanel.classList.add('visible');
+                if (targetPanel) {
+                    targetPanel.classList.add('visible');
+                }
+
+                // Update active button
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                const activeButton = document.querySelector(`[data-target="${targetId}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                }
             }
 
-            serviceButtons.forEach(button => {
+            // Add click listeners to navigation buttons
+            navButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    serviceButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    showPanel(this.getAttribute('data-target'));
+                    const target = this.getAttribute('data-target');
+                    showPanel(target);
                 });
             });
-            
-            /**
-             * --------------------------------------------------------------------
-             * YouTube Player Logic
-             * --------------------------------------------------------------------
-             */
+
+            // Enhanced background animation
+            function createFloatingParticles() {
+                const particleCount = 50;
+                const particles = [];
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.cssText = `
+                        position: fixed;
+                        width: 2px;
+                        height: 2px;
+                        background: rgba(0, 245, 255, 0.3);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: -1;
+                    `;
+                    document.body.appendChild(particle);
+                    
+                    particles.push({
+                        element: particle,
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * window.innerHeight,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        life: Math.random() * 1000 + 500
+                    });
+                }
+
+                function animateParticles() {
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        particle.life--;
+
+                        if (particle.life <= 0 || 
+                            particle.x < 0 || particle.x > window.innerWidth ||
+                            particle.y < 0 || particle.y > window.innerHeight) {
+                            particle.x = Math.random() * window.innerWidth;
+                            particle.y = Math.random() * window.innerHeight;
+                            particle.life = Math.random() * 1000 + 500;
+                        }
+
+                        particle.element.style.left = particle.x + 'px';
+                        particle.element.style.top = particle.y + 'px';
+                        particle.element.style.opacity = particle.life / 1000;
+                    });
+
+                    requestAnimationFrame(animateParticles);
+                }
+
+                animateParticles();
+            }
+
+            // Initialize particles
+            createFloatingParticles();
+
+            // YouTube Player
             let player;
-            const videoId = 'dRne0j9k61w'; // Your original video ID
+            const videoId = 'dRne0j9k61w';
 
             window.onYouTubeIframeAPIReady = function() {
-                if (window.innerWidth <= 992) return; // Don't load player on smaller screens
+                if (window.innerWidth <= 992) return;
 
                 player = new YT.Player('youtube-player-container', {
                     videoId: videoId,
                     playerVars: {
-                        'autoplay': 1, 'controls': 0, 'showinfo': 0, 'modestbranding': 1,
-                        'loop': 1, 'playlist': videoId, 'fs': 0, 'cc_load_policy': 0,
-                        'iv_load_policy': 3, 'autohide': 0, 'rel': 0, 'origin': window.location.origin,
+                        'autoplay': 1,
+                        'controls': 0,
+                        'showinfo': 0,
+                        'modestbranding': 1,
+                        'loop': 1,
+                        'playlist': videoId,
+                        'fs': 0,
+                        'cc_load_policy': 0,
+                        'iv_load_policy': 3,
+                        'autohide': 0,
+                        'rel': 0,
+                        'origin': window.location.origin,
                         'mute': 1
                     },
                     events: {
-                        'onReady': onPlayerReady
+                        'onReady': function(event) {
+                            event.target.playVideo();
+                        }
                     }
                 });
             };
 
-            function onPlayerReady(event) {
-                event.target.playVideo();
-            }
+            // Smooth scrolling for internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            document.querySelectorAll('.content-section, .stat-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
         });
     </script>
 </body>
 </html>
+
