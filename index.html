@@ -9,13 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #00e5ff; /* High-impact accent: Cyber Blue */
+            --primary-color: #00e5ff;
             --primary-dark: #00b8cc;
-            --bg-color: #0A0A0B;      /* Near-black for high contrast */
-            --surface-color: rgba(17, 17, 19, 0.85); /* Slightly lighter surface with more opacity */
-            --text-color: #dbe0e6;    /* Soft white for readability */
-            --text-muted: #6a7481;    /* Muted grey for secondary text */
-            --border-color: rgba(60, 100, 130, 0.2);
+            --secondary-color: #ff6b35;
+            --bg-color: #0A0A0B;
+            --surface-color: rgba(17, 17, 19, 0.95);
+            --surface-hover: rgba(25, 25, 27, 0.98);
+            --text-color: #e8eef5;
+            --text-muted: #6a7481;
+            --border-color: rgba(60, 100, 130, 0.15);
+            --border-active: rgba(0, 229, 255, 0.4);
             --font-main: 'Roboto Mono', monospace;
             --font-headings: 'Orbitron', sans-serif;
         }
@@ -29,7 +32,7 @@
         html, body {
             height: 100%;
             overflow-x: hidden;
-            background-color: var(--bg-color);
+            background: var(--bg-color);
         }
 
         body {
@@ -37,9 +40,33 @@
             color: var(--text-color);
             line-height: 1.7;
             position: relative;
+            cursor: none;
         }
 
-        /* --- Canvas Background --- */
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .cursor.active {
+            opacity: 1;
+            transform: scale(0.8);
+        }
+
+        .cursor.clicked {
+            transform: scale(1.5);
+            border-color: var(--secondary-color);
+        }
+
+        /* Background Canvas */
         #background-canvas {
             position: fixed;
             top: 0;
@@ -49,7 +76,6 @@
             z-index: -1;
         }
 
-        /* --- Main Container --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -62,7 +88,7 @@
             z-index: 2;
         }
 
-        /* --- Header: Clean & Minimalist --- */
+        /* Header with Glitch Effect */
         header {
             padding-top: 50px;
             display: flex;
@@ -70,58 +96,79 @@
             align-items: center;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 20px;
+            position: relative;
         }
 
         .logo {
             font-family: var(--font-headings);
             font-size: 1.5rem;
             font-weight: 500;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--text-color);
+            position: relative;
+            overflow: hidden;
         }
         
         .logo span {
             color: var(--primary-color);
             font-weight: 700;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+            51% { opacity: 1; }
+            52% { opacity: 0.8; }
+            53% { opacity: 1; }
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-size: 0.8rem;
             text-transform: uppercase;
             color: var(--primary-color);
+            letter-spacing: 1px;
         }
 
         .status-indicator::before {
             content: '';
             width: 8px;
             height: 8px;
-            background-color: var(--primary-color);
+            background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+            0% { 
+                box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 0 10px rgba(0, 229, 255, 0);
+                transform: scale(1.2);
+            }
+            100% { 
+                box-shadow: 0 0 0 0 rgba(0, 229, 255, 0);
+                transform: scale(1);
+            }
         }
 
-        /* --- Main Content Layout --- */
+        /* Main Content with Enhanced Layout */
         .main-content {
             display: grid;
             grid-template-columns: 200px 1fr;
             gap: 50px;
         }
         
-        /* --- Services Navigation: Vertical & Clean --- */
         .services-nav {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 2px;
             position: sticky;
             top: 40px;
             align-self: start;
@@ -132,50 +179,97 @@
             border: none;
             border-left: 2px solid var(--border-color);
             color: var(--text-muted);
-            padding: 12px 20px;
+            padding: 15px 20px;
             font-family: var(--font-main);
             font-size: 0.9rem;
             text-align: left;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            cursor: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            letter-spacing: 1px;
+        }
+
+        .service-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.1), transparent);
+            transition: width 0.5s ease;
+        }
+        
+        .service-btn:hover::before {
+            width: 100%;
         }
         
         .service-btn:hover {
             color: var(--text-color);
             background: rgba(0, 229, 255, 0.05);
+            transform: translateX(5px);
         }
         
         .service-btn.active {
             border-left-color: var(--primary-color);
             color: var(--primary-color);
             font-weight: 500;
-            background: rgba(0, 229, 255, 0.05);
+            background: rgba(0, 229, 255, 0.1);
+            transform: translateX(8px);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
         }
         
-        /* --- Content Panels: Polished & with Images --- */
+        /* Enhanced Content Area */
         .content-area {
-            background-color: var(--surface-color);
+            background: var(--surface-color);
             border: 1px solid var(--border-color);
             padding: 40px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-area::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, var(--border-active), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .content-area:hover::before {
+            opacity: 1;
         }
         
         .content-panel {
             display: none;
-            animation: fadeIn 0.6s ease;
+            animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .content-panel.visible {
             display: block;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
 
         .panel-header {
             margin-bottom: 30px;
+            position: relative;
         }
         
         .panel-header h2 {
@@ -183,13 +277,28 @@
             font-size: 2.2rem;
             color: var(--text-color);
             margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--text-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .panel-header .subtitle {
             font-size: 1rem;
             color: var(--primary-color);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .panel-header .subtitle::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
         }
 
         .panel-content {
@@ -203,36 +312,53 @@
         .image-container {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, var(--bg-color), rgba(17, 17, 19, 0.8));
             border: 1px solid var(--border-color);
             margin-bottom: 20px;
             overflow: hidden;
+            position: relative;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 229, 255, 0.1) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-container:hover::before {
+            opacity: 1;
         }
 
         .image-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0.7;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: grayscale(0.3) brightness(0.8);
         }
         
         .image-container img:hover {
             opacity: 1;
             transform: scale(1.05);
+            filter: grayscale(0) brightness(1);
         }
 
-        /* --- Footer --- */
+        /* Footer */
         footer {
             padding: 30px 0;
             border-top: 1px solid var(--border-color);
             text-align: center;
+            position: relative;
         }
 
         .contact-info {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 40px;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
@@ -240,12 +366,29 @@
         .contact-item a {
             color: var(--text-muted);
             text-decoration: none;
-            transition: color 0.3s;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
+            position: relative;
+        }
+
+        .contact-item a::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
         }
         
         .contact-item a:hover {
             color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .contact-item a:hover::after {
+            width: 100%;
         }
 
         .copyright {
@@ -254,7 +397,7 @@
             letter-spacing: 1px;
         }
         
-        /* --- YouTube Player --- */
+        /* YouTube Player */
         .video-container {
             position: fixed;
             bottom: 20px;
@@ -263,11 +406,16 @@
             height: 180px;
             background: var(--surface-color);
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
             z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             overflow: hidden;
-            transition: opacity 0.5s;
+            transition: all 0.3s ease;
+        }
+
+        .video-container:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
         }
         
         #youtube-player-container {
@@ -278,7 +426,13 @@
         /* Responsive Design */
         @media (max-width: 992px) {
             .video-container {
-                display: none; /* Hide video player on smaller screens to save space */
+                display: none;
+            }
+            body {
+                cursor: auto;
+            }
+            .cursor {
+                display: none;
             }
         }
         
@@ -298,9 +452,11 @@
             .service-btn {
                 border: 1px solid var(--border-color);
                 border-radius: 4px;
+                margin: 2px;
             }
             .service-btn.active {
                 border-color: var(--primary-color);
+                transform: none;
             }
             .content-area {
                 padding: 25px;
@@ -312,6 +468,7 @@
     </style>
 </head>
 <body>
+    <div class="cursor"></div>
     <canvas id="background-canvas"></canvas>
 
     <div class="container">
@@ -330,8 +487,7 @@
             </nav>
 
             <div class="content-area">
-                <!-- Panels remain the same -->
-                 <div class="content-panel visible" id="overview">
+                <div class="content-panel visible" id="overview">
                     <div class="panel-header">
                         <p class="subtitle">Mission Critical Solutions</p>
                         <h2>SYSTEM OVERVIEW</h2>
@@ -408,7 +564,6 @@
         </footer>
     </div>
     
-    <!-- YouTube Player Container -->
     <div class="video-container" id="video-container">
         <div id="youtube-player-container"></div>
     </div>
@@ -417,19 +572,53 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             /**
-             * --------------------------------------------------------------------
-             * Canvas Background Animation: Grid Construction & Decay
-             * --------------------------------------------------------------------
+             * Enhanced Custom Cursor
+             */
+            const cursor = document.querySelector('.cursor');
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursor.classList.add('active');
+            });
+
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('clicked');
+            });
+
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('clicked');
+            });
+
+            document.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+
+            // Smooth cursor animation
+            function animateCursor() {
+                const ease = 0.15;
+                cursorX += (mouseX - cursorX) * ease;
+                cursorY += (mouseY - cursorY) * ease;
+                
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            /**
+             * Enhanced Background Animation
              */
             const canvas = document.getElementById('background-canvas');
             const ctx = canvas.getContext('2d');
 
-            let width, height, grid, particles;
-            const GRID_SIZE = 40;
-            const PARTICLE_COUNT = 80;
-            const PARTICLE_SPEED = 0.8;
-            const LINE_COLOR = 'rgba(0, 229, 255, 0.2)';
-            const PARTICLE_COLOR = 'rgba(0, 229, 255, 1)';
+            let width, height, grid, particles, nodes;
+            const GRID_SIZE = 50;
+            const PARTICLE_COUNT = 60;
+            const NODE_COUNT = 30;
 
             class Particle {
                 constructor() {
@@ -439,57 +628,81 @@
                 reset() {
                     this.x = Math.random() * width;
                     this.y = Math.random() * height;
-                    this.life = Math.random() * 200 + 100;
-                    this.initialLife = this.life;
-                    this.vx = (Math.random() - 0.5) * PARTICLE_SPEED;
-                    this.vy = (Math.random() - 0.5) * PARTICLE_SPEED;
-                    this.state = 'building'; // building, crumbling
-                    this.crumbleTime = Math.random() * 200 + 150;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.life = Math.random() * 300 + 200;
+                    this.maxLife = this.life;
+                    this.size = Math.random() * 2 + 1;
                 }
 
                 update() {
-                    this.life--;
-                    this.crumbleTime--;
-
-                    if (this.crumbleTime <= 0 && this.state === 'building') {
-                        this.state = 'crumbling';
-                        this.life = this.initialLife / 2; // Shorter life when crumbling
-                    }
-
-                    if (this.life <= 0) {
-                        this.reset();
-                    }
-
-                    // Move particle
                     this.x += this.vx;
                     this.y += this.vy;
+                    this.life--;
 
-                    // Grid snapping
-                    if (Math.random() < 0.05) {
-                        if (Math.random() < 0.5) {
-                           this.vx = 0;
-                           this.vy = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
-                        } else {
-                           this.vx = (Math.random() < 0.5 ? 1 : -1) * PARTICLE_SPEED;
-                           this.vy = 0;
-                        }
-                    }
-                    
-                    // Boundary check
-                    if (this.x > width || this.x < 0 || this.y > height || this.y < 0) {
+                    if (this.life <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
                         this.reset();
                     }
                 }
 
                 draw() {
-                    let opacity = this.life / this.initialLife;
-                    if (this.state === 'crumbling') {
-                        opacity = this.life / (this.initialLife / 2);
-                    }
-                    
+                    const opacity = this.life / this.maxLife;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 229, 255, ${opacity * 0.8})`;
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 229, 255, ${opacity * 0.6})`;
+                    ctx.fill();
+                }
+            }
+
+            class Node {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.3;
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.connections = [];
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                    this.connections = [];
+                    nodes.forEach(node => {
+                        if (node !== this) {
+                            const dx = this.x - node.x;
+                            const dy = this.y - node.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 150) {
+                                this.connections.push({
+                                    node: node,
+                                    distance: distance
+                                });
+                            }
+                        }
+                    });
+                }
+
+                draw() {
+                    // Draw connections
+                    this.connections.forEach(conn => {
+                        const opacity = 1 - (conn.distance / 150);
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(conn.node.x, conn.node.y);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${opacity * 0.2})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    });
+
+                    // Draw node
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
                     ctx.fill();
                 }
             }
@@ -498,13 +711,13 @@
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
                 
-                // Create grid lines
+                // Create grid
                 grid = [];
                 for (let x = 0; x < width; x += GRID_SIZE) {
-                    grid.push({ x1: x, y1: 0, x2: x, y2: height, alpha: 0, dA: 0.005 });
+                    grid.push({ x1: x, y1: 0, x2: x, y2: height, opacity: Math.random() * 0.1 });
                 }
                 for (let y = 0; y < height; y += GRID_SIZE) {
-                    grid.push({ x1: 0, y1: y, x2: width, y2: y, alpha: 0, dA: 0.005 });
+                    grid.push({ x1: 0, y1: y, x2: width, y2: y, opacity: Math.random() * 0.1 });
                 }
 
                 // Create particles
@@ -512,32 +725,40 @@
                 for (let i = 0; i < PARTICLE_COUNT; i++) {
                     particles.push(new Particle());
                 }
+
+                // Create nodes
+                nodes = [];
+                for (let i = 0; i < NODE_COUNT; i++) {
+                    nodes.push(new Node());
+                }
             }
 
             function animate() {
                 ctx.clearRect(0, 0, width, height);
 
-                // Draw and update grid lines
+                // Draw grid with subtle animation
                 grid.forEach(line => {
-                    if (line.alpha < 0.2) {
-                        line.alpha += line.dA;
-                    }
-                    // Randomly "glitch" or crumble lines
-                    if (Math.random() < 0.001) {
-                        line.alpha = 0;
+                    if (Math.random() < 0.01) {
+                        line.opacity = Math.random() * 0.15;
                     }
                     ctx.beginPath();
                     ctx.moveTo(line.x1, line.y1);
                     ctx.lineTo(line.x2, line.y2);
-                    ctx.strokeStyle = `rgba(0, 229, 255, ${line.alpha})`;
+                    ctx.strokeStyle = `rgba(0, 229, 255, ${line.opacity})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 });
 
-                // Draw and update particles
+                // Update and draw particles
                 particles.forEach(p => {
                     p.update();
                     p.draw();
+                });
+
+                // Update and draw nodes
+                nodes.forEach(n => {
+                    n.update();
+                    n.draw();
                 });
 
                 requestAnimationFrame(animate);
@@ -548,9 +769,7 @@
             animate();
 
             /**
-             * --------------------------------------------------------------------
-             * Navigation Logic
-             * --------------------------------------------------------------------
+             * Enhanced Navigation
              */
             const serviceButtons = document.querySelectorAll('.service-btn');
             const contentPanels = document.querySelectorAll('.content-panel');
@@ -558,7 +777,11 @@
             function showPanel(targetId) {
                 contentPanels.forEach(panel => panel.classList.remove('visible'));
                 const targetPanel = document.getElementById(targetId);
-                if (targetPanel) targetPanel.classList.add('visible');
+                if (targetPanel) {
+                    setTimeout(() => {
+                        targetPanel.classList.add('visible');
+                    }, 100);
+                }
             }
 
             serviceButtons.forEach(button => {
@@ -570,15 +793,13 @@
             });
             
             /**
-             * --------------------------------------------------------------------
-             * YouTube Player Logic
-             * --------------------------------------------------------------------
+             * YouTube Player
              */
             let player;
-            const videoId = 'dRne0j9k61w'; // Your original video ID
+            const videoId = 'dRne0j9k61w';
 
             window.onYouTubeIframeAPIReady = function() {
-                if (window.innerWidth <= 992) return; // Don't load player on smaller screens
+                if (window.innerWidth <= 992) return;
 
                 player = new YT.Player('youtube-player-container', {
                     videoId: videoId,
