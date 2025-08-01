@@ -755,6 +755,112 @@
             </div>
         </main>
 
+
+
+
+	<div id="roofing-calculator" style="width: 100%; max-width: 500px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;">
+	  <div style="background: linear-gradient(90deg, #2c3e50, #3498db); color: white; padding: 20px; text-align: center;">
+	    <h2 style="margin: 0; font-size: 24px;">Roofing Calculator</h2>
+	    <p style="margin: 5px 0 0 0; opacity: 0.8;">Calculate square footage instantly</p>
+	  </div>
+	  <div style="padding: 25px;">
+	    <div style="margin-bottom: 20px;">
+	      <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Dimensions</label>
+	      <div style="display: flex; gap: 10px; align-items: center;">
+	        <input type="number" id="roof-length" placeholder="Length" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+	        <span style="color: #666; font-weight: bold;">×</span>
+	        <input type="number" id="roof-width" placeholder="Width" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+	      </div>
+	    </div>
+	    <div style="margin-bottom: 20px;">
+	      <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">Unit of Measurement</label>
+	      <select id="unit-measurement" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; background: white;">
+	        <option value="feet">Feet</option>
+	        <option value="meters">Meters</option>
+	      </select>
+	    </div>
+	    <button id="calculate-btn" style="width: 100%; padding: 14px; background: #3498db; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
+	      Calculate Square Footage
+	    </button>
+	    <div id="results" style="margin-top: 25px; display: none;">
+	      <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+	        <h3 style="margin-top: 0; color: #2c3e50; text-align: center;">Results</h3>
+	        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+	          <span style="color: #666;">Area:</span>
+	          <span id="area-result" style="font-weight: bold; font-size: 18px; color: #2c3e50;">0 sq ft</span>
+	        </div>
+	        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+	          <span style="color: #666;">Roofing Squares:</span>
+	          <span id="squares-result" style="font-weight: bold; font-size: 18px; color: #2c3e50;">0 squares</span>
+	        </div>
+	        <div style="display: flex; justify-content: space-between;">
+	          <span style="color: #666;">Material Needed:</span>
+	          <span id="material-result" style="font-weight: bold; font-size: 18px; color: #2c3e50;">0 bundles</span>
+	        </div>
+	      </div>
+	      <div style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+	        <p style="margin: 0; color: #555; font-size: 14px;">
+	          <strong>Note:</strong> 1 roofing square = 100 sq ft. Most shingle bundles cover 33.3 sq ft, so you typically need 3 bundles per square.
+	        </p>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  const calculateBtn = document.getElementById('calculate-btn');
+	  const lengthInput = document.getElementById('roof-length');
+	  const widthInput = document.getElementById('roof-width');
+	  const unitSelect = document.getElementById('unit-measurement');
+	  const resultsDiv = document.getElementById('results');
+	  const areaResult = document.getElementById('area-result');
+	  const squaresResult = document.getElementById('squares-result');
+	  const materialResult = document.getElementById('material-result');
+	  calculateBtn.addEventListener('click', function() {
+	    const length = parseFloat(lengthInput.value);
+	    const width = parseFloat(widthInput.value);
+	    const unit = unitSelect.value;
+	    if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
+	      alert('Please enter valid dimensions');
+	      return;
+	    }
+	    // Calculate area in square feet
+	    let areaSqFt;
+	    if (unit === 'feet') {
+	      areaSqFt = length * width;
+	    } else { // meters
+	      // Convert square meters to square feet (1 sq m = 10.764 sq ft)
+	      areaSqFt = (length * width) * 10.764;
+	    }
+	    // Calculate roofing squares (1 square = 100 sq ft)
+	    const squares = areaSqFt / 100;
+	    // Calculate material needed (3 bundles per square)
+	    const bundlesNeeded = Math.ceil(squares * 3);
+	    // Display results
+	    areaResult.textContent = `${areaSqFt.toFixed(2)} sq ft`;
+	    squaresResult.textContent = `${squares.toFixed(2)} squares`;
+	    materialResult.textContent = `${bundlesNeeded} bundles`;
+	    // Show results section
+	    resultsDiv.style.display = 'block';
+	  });
+	  // Allow calculation with Enter key
+	  [lengthInput, widthInput].forEach(input => {
+	    input.addEventListener('keypress', function(e) {
+	      if (e.key === 'Enter') {
+	        calculateBtn.click();
+	      }
+	    });
+	  });
+	});
+	</script>
+
+
+
+
+
+
+
+	    
         <footer>
             <div class="contact-info">
                 <div class="contact-item"><a href="tel:724-964-2936">(724) 964-2936</a></div>
