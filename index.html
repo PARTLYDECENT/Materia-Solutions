@@ -486,6 +486,104 @@
                 <button class="service-btn" data-target="finishing">FINISHING</button>
             </nav>
 
+
+
+
+
+
+
+	<div id="crypto-ticker-widget" style="width: 100%; overflow: hidden; background-color: #1a1a1a; color: white; padding: 15px 0; font-family: Arial, sans-serif;">
+	  <div id="ticker-content" style="display: flex; white-space: nowrap;">
+	    <!-- Crypto data will be inserted here by JavaScript -->
+	  </div>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  // Configuration - customize these values
+	  const config = {
+	    symbols: ['bitcoin', 'ethereum', 'cardano', 'solana', 'polkadot', 'dogecoin', 'ripple'],
+	    currency: 'usd',
+	    updateInterval: 60000, // Update every 60 seconds
+	    speed: 2, // Ticker speed (lower is faster)
+	    showChange: true, // Show price change
+	    showVolume: false // Show 24h volume
+	  };
+	  const tickerContent = document.getElementById('ticker-content');
+	  async function fetchCryptoData() {
+	    try {
+	      const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${config.currency}&ids=${config.symbols.join(',')}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`);
+	      const data = await response.json();
+	      updateTicker(data);
+	    } catch (error) {
+	      console.error('Error fetching crypto data:', error);
+	      tickerContent.innerHTML = '<div style="padding: 0 20px;">Error loading crypto data. Please try again later.</div>';
+	    }
+	  }
+	  function updateTicker(data) {
+	    tickerContent.innerHTML = '';
+	    data.forEach(coin => {
+	      const priceChangeClass = coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative';
+	      const priceChangeIcon = coin.price_change_percentage_24h >= 0 ? '▲' : '▼';
+	      const coinElement = document.createElement('div');
+	      coinElement.style.display = 'inline-flex';
+	      coinElement.style.alignItems = 'center';
+	      coinElement.style.padding = '0 20px';
+	      coinElement.style.marginRight = '30px';
+	      coinElement.innerHTML = `
+	        <span style="font-weight: bold; margin-right: 8px;">${coin.symbol.toUpperCase()}</span>
+	        <span style="margin-right: 8px;">$${coin.current_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})}</span>
+	        ${config.showChange ? `<span class="${priceChangeClass}" style="color: ${coin.price_change_percentage_24h >= 0 ? '#4caf50' : '#f44336'}">${priceChangeIcon} ${Math.abs(coin.price_change_percentage_24h).toFixed(2)}%</span>` : ''}
+	      `;
+	      tickerContent.appendChild(coinElement);
+	    });
+	    // Duplicate content for seamless scrolling
+	    tickerContent.innerHTML += tickerContent.innerHTML;
+	    // Start animation
+	    animateTicker();
+	  }
+	  function animateTicker() {
+	    const contentWidth = tickerContent.scrollWidth / 2;
+	    let position = 0;
+	    function scroll() {
+	      position -= config.speed;
+	      if (position <= -contentWidth) {
+	        position = 0;
+	      }
+	      tickerContent.style.transform = `translateX(${position}px)`;
+	      requestAnimationFrame(scroll);
+	    }
+	    scroll();
+	  }
+	  // Initial fetch
+	  fetchCryptoData();
+	  // Set up periodic updates
+	  setInterval(fetchCryptoData, config.updateInterval);
+	});
+	</script>
+	<style>
+	#crypto-ticker-widget {
+	  border-radius: 6px;
+	  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+	.positive {
+	  font-weight: bold;
+	}
+	.negative {
+	  font-weight: bold;
+	}
+	</style>
+
+
+
+
+
+
+
+
+
+
+
+            
             <div class="content-area">
                 <div class="content-panel visible" id="overview">
                     <div class="panel-header">
