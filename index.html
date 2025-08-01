@@ -1265,6 +1265,1166 @@
 
 
 
+
+
+
+
+<div id="welding-fab-tool" style="width: 100%; max-width: 1200px; margin: 0 auto; font-family: 'Courier New', monospace; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: #e0e0e0; border-radius: 12px; box-shadow: 0 0 30px rgba(255, 100, 0, 0.3); overflow: hidden; border: 2px solid #ff6400;">
+  <div style="background: linear-gradient(90deg, #ff6400, #ff9e00); color: #000; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);"></div>
+    <h2 style="margin: 0; font-size: 28px; position: relative; z-index: 1;">METAL MELTER 3000</h2>
+    <p style="margin: 5px 0 0 0; opacity: 0.9; position: relative; z-index: 1;">Automotive Welding & Fabrication Calculator</p>
+  </div>
+  
+  <div style="padding: 20px;">
+    <!-- Tab Navigation -->
+    <div style="display: flex; margin-bottom: 20px; border-bottom: 2px solid #444;">
+      <button class="tab-btn active" data-tab="weld-calc" style="flex: 1; padding: 12px; background: none; border: none; color: #ff6400; cursor: pointer; font-weight: bold; border-bottom: 3px solid #ff6400;">WELD CALC</button>
+      <button class="tab-btn" data-tab="material" style="flex: 1; padding: 12px; background: none; border: none; color: #e0e0e0; cursor: pointer; font-weight: bold;">MATERIAL</button>
+      <button class="tab-btn" data-tab="heat" style="flex: 1; padding: 12px; background: none; border: none; color: #e0e0e0; cursor: pointer; font-weight: bold;">HEAT INPUT</button>
+      <button class="tab-btn" data-tab="distortion" style="flex: 1; padding: 12px; background: none; border: none; color: #e0e0e0; cursor: pointer; font-weight: bold;">DISTORTION</button>
+      <button class="tab-btn" data-tab="wps" style="flex: 1; padding: 12px; background: none; border: none; color: #e0e0e0; cursor: pointer; font-weight: bold;">WPS GEN</button>
+    </div>
+    
+    <!-- Tab Content -->
+    <div id="weld-calc-tab" class="tab-content">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">WELDING PARAMETERS</h3>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Material Type</label>
+            <select id="material-type" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="mild-steel">Mild Steel</option>
+              <option value="stainless">Stainless Steel</option>
+              <option value="aluminum">Aluminum</option>
+              <option value="chromoly">Chromoly</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Thickness (mm)</label>
+            <input type="range" id="thickness" min="1" max="20" value="5" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #aaa;">
+              <span>1mm</span>
+              <span id="thickness-value">5mm</span>
+              <span>20mm</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Welding Process</label>
+            <select id="weld-process" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="mig">MIG</option>
+              <option value="tig">TIG</option>
+              <option value="stick">Stick</option>
+              <option value="flux">Flux Core</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Joint Type</label>
+            <select id="joint-type" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="butt">Butt Joint</option>
+              <option value="lap">Lap Joint</option>
+              <option value="t">T-Joint</option>
+              <option value="corner">Corner Joint</option>
+            </select>
+          </div>
+          
+          <button id="calculate-weld" style="width: 100%; padding: 12px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">CALCULATE</button>
+        </div>
+        
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">RECOMMENDED SETTINGS</h3>
+          
+          <div id="weld-results" style="display: none;">
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Voltage</div>
+              <div id="voltage-result" style="font-size: 24px; font-weight: bold;">0V</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff9e00;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Wire Speed / Amperage</div>
+              <div id="amperage-result" style="font-size: 24px; font-weight: bold;">0A</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff9e00;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Gas Flow</div>
+              <div id="gas-flow-result" style="font-size: 24px; font-weight: bold;">0 L/min</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff9e00;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Travel Speed</div>
+              <div id="travel-speed-result" style="font-size: 24px; font-weight: bold;">0 mm/min</div>
+            </div>
+            
+            <div style="padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Filler Material</div>
+              <div id="filler-result" style="font-size: 18px; font-weight: bold;">-</div>
+            </div>
+          </div>
+          
+          <div id="weld-placeholder" style="height: 400px; display: flex; align-items: center; justify-content: center; color: #666;">
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+              <p>Enter parameters and calculate to see recommended settings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="material-tab" class="tab-content" style="display: none;">
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">MATERIAL ESTIMATOR</h3>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Project Type</label>
+            <select id="project-type" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="roll-cage">Roll Cage</option>
+              <option value="bumper">Bumper/Fabrication</option>
+              <option value="exhaust">Exhaust System</option>
+              <option value="chassis">Chassis Repair</option>
+              <option value="custom">Custom Fabrication</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Vehicle Type</label>
+            <select id="vehicle-type" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="car">Car</option>
+              <option value="truck">Truck</option>
+              <option value="suv">SUV</option>
+              <option value="buggy">Off-road Buggy</option>
+              <option value="motorcycle">Motorcycle</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Complexity Level</label>
+            <div style="display: flex; gap: 10px;">
+              <button class="complexity-btn" data-level="basic" style="flex: 1; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px; cursor: pointer;">Basic</button>
+              <button class="complexity-btn active" data-level="intermediate" style="flex: 1; padding: 10px; background: #ff6400; color: #000; border: none; border-radius: 4px; cursor: pointer;">Intermediate</button>
+              <button class="complexity-btn" data-level="advanced" style="flex: 1; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px; cursor: pointer;">Advanced</button>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Custom Dimensions (mm)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <input type="number" id="custom-length" placeholder="Length" style="padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <input type="number" id="custom-width" placeholder="Width" style="padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <input type="number" id="custom-height" placeholder="Height" style="padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+            </div>
+          </div>
+          
+          <button id="calculate-material" style="width: 100%; padding: 12px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">CALCULATE MATERIALS</button>
+        </div>
+        
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">MATERIAL LIST</h3>
+          
+          <div id="material-results" style="display: none;">
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Estimated Weight</div>
+              <div id="material-weight" style="font-size: 24px; font-weight: bold;">0 kg</div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 10px;">Required Materials</div>
+              <div id="material-list" style="background: #1a1a1a; border-radius: 6px; padding: 15px;">
+                <!-- Material list will be generated here -->
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Estimated Cost</div>
+              <div id="material-cost" style="font-size: 24px; font-weight: bold;">$0</div>
+            </div>
+            
+            <button id="export-materials" style="width: 100%; padding: 10px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">EXPORT LIST</button>
+          </div>
+          
+          <div id="material-placeholder" style="height: 400px; display: flex; align-items: center; justify-content: center; color: #666;">
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">🔧</div>
+              <p>Calculate materials to see the list</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="heat-tab" class="tab-content" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">HEAT INPUT CALCULATOR</h3>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Voltage (V)</label>
+            <input type="number" id="heat-voltage" placeholder="Enter voltage" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Current (A)</label>
+            <input type="number" id="heat-current" placeholder="Enter current" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Travel Speed (mm/min)</label>
+            <input type="number" id="heat-speed" placeholder="Enter travel speed" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Process Efficiency (%)</label>
+            <input type="range" id="heat-efficiency" min="60" max="95" value="80" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #aaa;">
+              <span>60%</span>
+              <span id="efficiency-value">80%</span>
+              <span>95%</span>
+            </div>
+          </div>
+          
+          <button id="calculate-heat" style="width: 100%; padding: 12px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">CALCULATE HEAT INPUT</button>
+        </div>
+        
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">HEAT ANALYSIS</h3>
+          
+          <div id="heat-results" style="display: none;">
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Heat Input</div>
+              <div id="heat-input-result" style="font-size: 24px; font-weight: bold;">0 kJ/mm</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Heat Affected Zone (HAZ)</div>
+              <div id="haz-result" style="font-size: 24px; font-weight: bold;">0 mm</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Cooling Time</div>
+              <div id="cooling-time-result" style="font-size: 24px; font-weight: bold;">0 sec</div>
+            </div>
+            
+            <div style="padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Distortion Risk</div>
+              <div id="distortion-risk-result" style="font-size: 24px; font-weight: bold;">-</div>
+            </div>
+          </div>
+          
+          <div id="heat-placeholder" style="height: 400px; display: flex; align-items: center; justify-content: center; color: #666;">
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">🔥</div>
+              <p>Calculate heat input to see analysis</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="distortion-tab" class="tab-content" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">DISTORTION PREDICTOR</h3>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Material Type</label>
+            <select id="distortion-material" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="mild-steel">Mild Steel</option>
+              <option value="stainless">Stainless Steel</option>
+              <option value="aluminum">Aluminum</option>
+              <option value="chromoly">Chromoly</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Plate Thickness (mm)</label>
+            <input type="range" id="distortion-thickness" min="1" max="20" value="5" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #aaa;">
+              <span>1mm</span>
+              <span id="distortion-thickness-value">5mm</span>
+              <span>20mm</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Weld Length (mm)</label>
+            <input type="number" id="weld-length" placeholder="Enter weld length" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Joint Restraint</label>
+            <select id="joint-restraint" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              <option value="none">None (Free to Move)</option>
+              <option value="minimal">Minimal (Clamped)</option>
+              <option value="moderate">Moderate (Fixtured)</option>
+              <option value="high">High (Fully Restrained)</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Weld Passes</label>
+            <input type="number" id="weld-passes" placeholder="Number of passes" min="1" max="10" value="1" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+          </div>
+          
+          <button id="calculate-distortion" style="width: 100%; padding: 12px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">PREDICT DISTORTION</button>
+        </div>
+        
+        <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+          <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">DISTORTION ANALYSIS</h3>
+          
+          <div id="distortion-results" style="display: none;">
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Angular Distortion</div>
+              <div id="angular-distortion" style="font-size: 24px; font-weight: bold;">0°</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Longitudinal Shrinkage</div>
+              <div id="long-shrinkage" style="font-size: 24px; font-weight: bold;">0 mm</div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Transverse Shrinkage</div>
+              <div id="trans-shrinkage" style="font-size: 24px; font-weight: bold;">0 mm</div>
+            </div>
+            
+            <div style="padding: 15px; background: #1a1a1a; border-radius: 6px; border-left: 4px solid #ff6400;">
+              <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Mitigation Strategies</div>
+              <div id="mitigation-strategies" style="font-size: 16px;">
+                <!-- Strategies will be listed here -->
+              </div>
+            </div>
+          </div>
+          
+          <div id="distortion-placeholder" style="height: 400px; display: flex; align-items: center; justify-content: center; color: #666;">
+            <div style="text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 15px;">📐</div>
+              <p>Predict distortion to see analysis</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="wps-tab" class="tab-content" style="display: none;">
+      <div style="background: #252525; padding: 20px; border-radius: 8px; border: 1px solid #444;">
+        <h3 style="margin-top: 0; color: #ff9e00; text-align: center;">WELDING PROCEDURE SPECIFICATION GENERATOR</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div>
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">WPS Number</label>
+              <input type="text" id="wps-number" placeholder="e.g. WPS-001" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Process Type</label>
+              <select id="wps-process" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+                <option value="gtaw">GTAW (TIG)</option>
+                <option value="gmaw">GMAW (MIG)</option>
+                <option value="fcaw">FCAW (Flux Core)</option>
+                <option value="smaw">SMAW (Stick)</option>
+              </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Joint Design</label>
+              <select id="wps-joint" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+                <option value="butt">Butt Joint</option>
+                <option value="lap">Lap Joint</option>
+                <option value="t">T-Joint</option>
+                <option value="corner">Corner Joint</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Base Metal</label>
+              <select id="wps-base-metal" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+                <option value="astm-a36">ASTM A36</option>
+                <option value="astm-a516">ASTM A516</option>
+                <option value="aisi-304">AISI 304</option>
+                <option value="aisi-316">AISI 316</option>
+                <option value="aa-6061">AA 6061</option>
+              </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Thickness Range (mm)</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input type="number" id="thickness-min" placeholder="Min" style="padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+                <input type="number" id="thickness-max" placeholder="Max" style="padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Position</label>
+              <select id="wps-position" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+                <option value="flat">Flat (1G)</option>
+                <option value="horizontal">Horizontal (2G)</option>
+                <option value="vertical">Vertical (3G)</option>
+                <option value="overhead">Overhead (4G)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 5px; color: #e0e0e0;">Welding Parameters</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 14px;">Current (A)</label>
+              <input type="number" id="wps-current" placeholder="Amperage" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 14px;">Voltage (V)</label>
+              <input type="number" id="wps-voltage" placeholder="Voltage" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 14px;">Travel Speed (mm/min)</label>
+              <input type="number" id="wps-speed" placeholder="Speed" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px;">
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <button id="generate-wps" style="width: 100%; padding: 12px; background: #ff6400; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">GENERATE WPS</button>
+          </div>
+          <div>
+            <button id="export-wps" style="width: 100%; padding: 12px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 4px; font-weight: bold; cursor: pointer; display: none;">EXPORT WPS</button>
+          </div>
+        </div>
+        
+        <div id="wps-results" style="display: none; margin-top: 20px; padding: 20px; background: #1a1a1a; border-radius: 8px; border: 1px solid #444;">
+          <h4 style="margin-top: 0; color: #ff9e00; text-align: center;">WELDING PROCEDURE SPECIFICATION</h4>
+          <div id="wps-content" style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6;">
+            <!-- WPS content will be generated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.getAttribute('data-tab');
+      
+      // Update active tab button
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.color = '#e0e0e0';
+        btn.style.borderBottom = 'none';
+      });
+      button.classList.add('active');
+      button.style.color = '#ff6400';
+      button.style.borderBottom = '3px solid #ff6400';
+      
+      // Show corresponding tab content
+      tabContents.forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`${tabId}-tab`).style.display = 'block';
+    });
+  });
+  
+  // Welding Calculator Tab
+  const thicknessSlider = document.getElementById('thickness');
+  const thicknessValue = document.getElementById('thickness-value');
+  const calculateWeldBtn = document.getElementById('calculate-weld');
+  
+  thicknessSlider.addEventListener('input', function() {
+    thicknessValue.textContent = this.value + 'mm';
+  });
+  
+  calculateWeldBtn.addEventListener('click', function() {
+    const materialType = document.getElementById('material-type').value;
+    const thickness = parseFloat(document.getElementById('thickness').value);
+    const weldProcess = document.getElementById('weld-process').value;
+    const jointType = document.getElementById('joint-type').value;
+    
+    // Calculate welding parameters based on inputs
+    const params = calculateWeldingParameters(materialType, thickness, weldProcess, jointType);
+    
+    // Display results
+    document.getElementById('weld-placeholder').style.display = 'none';
+    document.getElementById('weld-results').style.display = 'block';
+    
+    document.getElementById('voltage-result').textContent = params.voltage + 'V';
+    document.getElementById('amperage-result').textContent = params.amperage + 'A';
+    document.getElementById('gas-flow-result').textContent = params.gasFlow + ' L/min';
+    document.getElementById('travel-speed-result').textContent = params.travelSpeed + ' mm/min';
+    document.getElementById('filler-result').textContent = params.fillerMaterial;
+  });
+  
+  function calculateWeldingParameters(material, thickness, process, joint) {
+    // Base parameters
+    let voltage, amperage, gasFlow, travelSpeed, fillerMaterial;
+    
+    // Adjust parameters based on material
+    if (material === 'aluminum') {
+      voltage = 20 + (thickness * 0.8);
+      amperage = 100 + (thickness * 15);
+      gasFlow = 15 + (thickness * 0.5);
+      travelSpeed = 300 - (thickness * 5);
+      fillerMaterial = 'ER4043';
+    } else if (material === 'stainless') {
+      voltage = 18 + (thickness * 0.7);
+      amperage = 90 + (thickness * 12);
+      gasFlow = 12 + (thickness * 0.4);
+      travelSpeed = 250 - (thickness * 4);
+      fillerMaterial = 'ER308L';
+    } else if (material === 'chromoly') {
+      voltage = 19 + (thickness * 0.75);
+      amperage = 95 + (thickness * 13);
+      gasFlow = 14 + (thickness * 0.45);
+      travelSpeed = 280 - (thickness * 4.5);
+      fillerMaterial = 'ER80S-D2';
+    } else { // mild steel
+      voltage = 17 + (thickness * 0.6);
+      amperage = 80 + (thickness * 10);
+      gasFlow = 12 + (thickness * 0.3);
+      travelSpeed = 300 - (thickness * 6);
+      fillerMaterial = 'ER70S-6';
+    }
+    
+    // Adjust parameters based on process
+    if (process === 'tig') {
+      voltage *= 0.8;
+      amperage *= 0.9;
+      gasFlow *= 1.2;
+      travelSpeed *= 0.7;
+    } else if (process === 'stick') {
+      voltage *= 1.1;
+      amperage *= 1.2;
+      gasFlow = 0; // No gas for stick
+      travelSpeed *= 0.8;
+    } else if (process === 'flux') {
+      voltage *= 1.05;
+      amperage *= 1.1;
+      gasFlow = 0; // No gas for flux core
+      travelSpeed *= 0.9;
+    }
+    
+    // Adjust parameters based on joint type
+    if (joint === 'lap') {
+      voltage *= 0.9;
+      amperage *= 0.9;
+      travelSpeed *= 1.1;
+    } else if (joint === 't') {
+      voltage *= 0.95;
+      amperage *= 0.95;
+      travelSpeed *= 1.05;
+    } else if (joint === 'corner') {
+      voltage *= 0.85;
+      amperage *= 0.85;
+      travelSpeed *= 1.15;
+    }
+    
+    // Round values
+    voltage = Math.round(voltage);
+    amperage = Math.round(amperage);
+    gasFlow = Math.round(gasFlow * 10) / 10;
+    travelSpeed = Math.round(travelSpeed);
+    
+    return {
+      voltage,
+      amperage,
+      gasFlow,
+      travelSpeed,
+      fillerMaterial
+    };
+  }
+  
+  // Material Estimator Tab
+  const complexityBtns = document.querySelectorAll('.complexity-btn');
+  const calculateMaterialBtn = document.getElementById('calculate-material');
+  
+  complexityBtns.forEach(button => {
+    button.addEventListener('click', function() {
+      complexityBtns.forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = '#1a1a1a';
+        btn.style.color = '#e0e0e0';
+        btn.style.border = '1px solid #444';
+      });
+      
+      this.classList.add('active');
+      this.style.background = '#ff6400';
+      this.style.color = '#000';
+      this.style.border = 'none';
+    });
+  });
+  
+  calculateMaterialBtn.addEventListener('click', function() {
+    const projectType = document.getElementById('project-type').value;
+    const vehicleType = document.getElementById('vehicle-type').value;
+    const complexity = document.querySelector('.complexity-btn.active').getAttribute('data-level');
+    const length = parseFloat(document.getElementById('custom-length').value) || 0;
+    const width = parseFloat(document.getElementById('custom-width').value) || 0;
+    const height = parseFloat(document.getElementById('custom-height').value) || 0;
+    
+    // Calculate materials based on inputs
+    const materials = calculateMaterials(projectType, vehicleType, complexity, length, width, height);
+    
+    // Display results
+    document.getElementById('material-placeholder').style.display = 'none';
+    document.getElementById('material-results').style.display = 'block';
+    
+    document.getElementById('material-weight').textContent = materials.totalWeight + ' kg';
+    document.getElementById('material-cost').textContent = '$' + materials.totalCost;
+    
+    // Generate material list
+    const materialList = document.getElementById('material-list');
+    materialList.innerHTML = '';
+    
+    materials.items.forEach(item => {
+      const materialItem = document.createElement('div');
+      materialItem.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #333;';
+      materialItem.innerHTML = `
+        <div>
+          <div style="font-weight: bold;">${item.name}</div>
+          <div style="font-size: 12px; color: #aaa;">${item.specs}</div>
+        </div>
+        <div style="text-align: right;">
+          <div>${item.quantity}</div>
+          <div style="font-size: 12px; color: #aaa;">$${item.cost}</div>
+        </div>
+      `;
+      materialList.appendChild(materialItem);
+    });
+  });
+  
+  function calculateMaterials(projectType, vehicleType, complexity, length, width, height) {
+    // Base materials for different project types
+    const baseMaterials = {
+      'roll-cage': [
+        { name: 'Chromoly Tubing', specs: '1.75" x 0.095"', baseQty: 60, unitCost: 12 },
+        { name: 'Mild Steel Plates', specs: '3mm x 12" x 12"', baseQty: 4, unitCost: 15 },
+        { name: 'Tube Notcher', specs: 'Hole Saw 1.75"', baseQty: 2, unitCost: 25 },
+        { name: 'Welding Rods', specs: 'ER70S-6 0.035"', baseQty: 5, unitCost: 20 }
+      ],
+      'bumper': [
+        { name: 'Steel Plate', specs: '6mm x 48" x 12"', baseQty: 2, unitCost: 80 },
+        { name: 'Square Tubing', specs: '2" x 2" x 0.125"', baseQty: 10, unitCost: 15 },
+        { name: 'D-Rings', specs: '3/4" Rated', baseQty: 4, unitCost: 12 },
+        { name: 'Welding Wire', specs: 'ER70S-6 0.045"', baseQty: 2, unitCost: 25 }
+      ],
+      'exhaust': [
+        { name: 'Stainless Tubing', specs: '3" x 0.065"', baseQty: 15, unitCost: 25 },
+        { name: 'Mufflers', specs: 'Stainless Steel', baseQty: 1, unitCost: 120 },
+        { name: 'Flanges', specs: 'Stainless 3-bolt', baseQty: 2, unitCost: 30 },
+        { name: 'Welding Wire', specs: 'ER308L 0.030"', baseQty: 1, unitCost: 30 }
+      ],
+      'chassis': [
+        { name: 'Rectangular Tubing', specs: '4" x 2" x 0.125"', baseQty: 30, unitCost: 25 },
+        { name: 'Steel Plate', specs: '10mm x 24" x 24"', baseQty: 2, unitCost: 120 },
+        { name: 'Suspension Mounts', specs: 'Heavy Duty', baseQty: 4, unitCost: 40 },
+        { name: 'Welding Wire', specs: 'ER70S-6 0.045"', baseQty: 3, unitCost: 25 }
+      ],
+      'custom': [
+        { name: 'Steel Plate', specs: '5mm x 48" x 24"', baseQty: 2, unitCost: 100 },
+        { name: 'Square Tubing', specs: '1.5" x 1.5" x 0.083"', baseQty: 20, unitCost: 12 },
+        { name: 'Angle Iron', specs: '2" x 2" x 0.125"', baseQty: 15, unitCost: 10 },
+        { name: 'Welding Wire', specs: 'ER70S-6 0.035"', baseQty: 2, unitCost: 20 }
+      ]
+    };
+    
+    // Get base materials for project type
+    let items = [...baseMaterials[projectType]];
+    
+    // Adjust quantities based on vehicle type
+    const vehicleMultipliers = {
+      'car': 1.0,
+      'truck': 1.3,
+      'suv': 1.2,
+      'buggy': 1.5,
+      'motorcycle': 0.6
+    };
+    
+    const vehicleMultiplier = vehicleMultipliers[vehicleType];
+    
+    // Adjust quantities based on complexity
+    const complexityMultipliers = {
+      'basic': 0.8,
+      'intermediate': 1.0,
+      'advanced': 1.3
+    };
+    
+    const complexityMultiplier = complexityMultipliers[complexity];
+    
+    // Adjust quantities based on custom dimensions
+    let dimensionMultiplier = 1.0;
+    if (length > 0 && width > 0 && height > 0) {
+      const volume = length * width * height;
+      // Normalize volume (assuming average project volume is 1,000,000 mm³)
+      dimensionMultiplier = Math.max(0.5, Math.min(2.0, volume / 1000000));
+    }
+    
+    // Calculate final quantities and costs
+    let totalWeight = 0;
+    let totalCost = 0;
+    
+    items = items.map(item => {
+      const quantity = Math.round(item.baseQty * vehicleMultiplier * complexityMultiplier * dimensionMultiplier);
+      const cost = Math.round(quantity * item.unitCost);
+      
+      // Estimate weight (rough approximation)
+      let weight = 0;
+      if (item.name.includes('Tubing') || item.name.includes('Pipe')) {
+        weight = quantity * 2.5; // kg per unit
+      } else if (item.name.includes('Plate')) {
+        weight = quantity * 5; // kg per unit
+      } else {
+        weight = quantity * 0.5; // kg per unit
+      }
+      
+      totalWeight += weight;
+      totalCost += cost;
+      
+      return {
+        name: item.name,
+        specs: item.specs,
+        quantity: quantity,
+        cost: cost
+      };
+    });
+    
+    return {
+      items,
+      totalWeight: Math.round(totalWeight),
+      totalCost: totalCost
+    };
+  }
+  
+  // Heat Input Calculator Tab
+  const efficiencySlider = document.getElementById('heat-efficiency');
+  const efficiencyValue = document.getElementById('efficiency-value');
+  const calculateHeatBtn = document.getElementById('calculate-heat');
+  
+  efficiencySlider.addEventListener('input', function() {
+    efficiencyValue.textContent = this.value + '%';
+  });
+  
+  calculateHeatBtn.addEventListener('click', function() {
+    const voltage = parseFloat(document.getElementById('heat-voltage').value);
+    const current = parseFloat(document.getElementById('heat-current').value);
+    const speed = parseFloat(document.getElementById('heat-speed').value);
+    const efficiency = parseFloat(document.getElementById('heat-efficiency').value) / 100;
+    
+    if (!voltage || !current || !speed) {
+      alert('Please enter all required values');
+      return;
+    }
+    
+    // Calculate heat input
+    const heatInput = (voltage * current * 60 * efficiency) / (speed * 1000); // kJ/mm
+    
+    // Calculate heat affected zone (HAZ)
+    const haz = Math.sqrt(heatInput * 10); // Simplified calculation
+    
+    // Calculate cooling time (simplified)
+    const coolingTime = Math.round(heatInput * 20);
+    
+    // Determine distortion risk
+    let distortionRisk;
+    if (heatInput < 1.0) {
+      distortionRisk = 'LOW';
+    } else if (heatInput < 2.0) {
+      distortionRisk = 'MEDIUM';
+    } else {
+      distortionRisk = 'HIGH';
+    }
+    
+    // Display results
+    document.getElementById('heat-placeholder').style.display = 'none';
+    document.getElementById('heat-results').style.display = 'block';
+    
+    document.getElementById('heat-input-result').textContent = heatInput.toFixed(2) + ' kJ/mm';
+    document.getElementById('haz-result').textContent = haz.toFixed(1) + ' mm';
+    document.getElementById('cooling-time-result').textContent = coolingTime + ' sec';
+    document.getElementById('distortion-risk-result').textContent = distortionRisk;
+    
+    // Color code distortion risk
+    const riskElement = document.getElementById('distortion-risk-result');
+    if (distortionRisk === 'LOW') {
+      riskElement.style.color = '#2ecc71';
+    } else if (distortionRisk === 'MEDIUM') {
+      riskElement.style.color = '#f39c12';
+    } else {
+      riskElement.style.color = '#e74c3c';
+    }
+  });
+  
+  // Distortion Predictor Tab
+  const distortionThicknessSlider = document.getElementById('distortion-thickness');
+  const distortionThicknessValue = document.getElementById('distortion-thickness-value');
+  const calculateDistortionBtn = document.getElementById('calculate-distortion');
+  
+  distortionThicknessSlider.addEventListener('input', function() {
+    distortionThicknessValue.textContent = this.value + 'mm';
+  });
+  
+  calculateDistortionBtn.addEventListener('click', function() {
+    const material = document.getElementById('distortion-material').value;
+    const thickness = parseFloat(document.getElementById('distortion-thickness').value);
+    const weldLength = parseFloat(document.getElementById('weld-length').value);
+    const restraint = document.getElementById('joint-restraint').value;
+    const passes = parseInt(document.getElementById('weld-passes').value);
+    
+    if (!weldLength) {
+      alert('Please enter weld length');
+      return;
+    }
+    
+    // Calculate distortion based on inputs
+    const distortion = calculateDistortion(material, thickness, weldLength, restraint, passes);
+    
+    // Display results
+    document.getElementById('distortion-placeholder').style.display = 'none';
+    document.getElementById('distortion-results').style.display = 'block';
+    
+    document.getElementById('angular-distortion').textContent = distortion.angular.toFixed(2) + '°';
+    document.getElementById('long-shrinkage').textContent = distortion.longitudinal.toFixed(2) + ' mm';
+    document.getElementById('trans-shrinkage').textContent = distortion.transverse.toFixed(2) + ' mm';
+    
+    // Display mitigation strategies
+    const strategiesElement = document.getElementById('mitigation-strategies');
+    strategiesElement.innerHTML = '';
+    
+    distortion.strategies.forEach(strategy => {
+      const strategyItem = document.createElement('div');
+      strategyItem.style.cssText = 'margin-bottom: 8px; padding-left: 15px; position: relative;';
+      strategyItem.innerHTML = `<span style="position: absolute; left: 0; top: 0;">•</span> ${strategy}`;
+      strategiesElement.appendChild(strategyItem);
+    });
+  });
+  
+  function calculateDistortion(material, thickness, weldLength, restraint, passes) {
+    // Material factors
+    const materialFactors = {
+      'mild-steel': 1.0,
+      'stainless': 1.3,
+      'aluminum': 1.8,
+      'chromoly': 1.1
+    };
+    
+    // Restraint factors
+    const restraintFactors = {
+      'none': 1.0,
+      'minimal': 0.7,
+      'moderate': 0.4,
+      'high': 0.2
+    };
+    
+    // Base calculations
+    const materialFactor = materialFactors[material];
+    const restraintFactor = restraintFactors[restraint];
+    
+    // Angular distortion (degrees)
+    const angular = (0.5 * thickness * materialFactor * restraintFactor * Math.sqrt(passes)).toFixed(2);
+    
+    // Longitudinal shrinkage (mm)
+    const longitudinal = (0.1 * weldLength * materialFactor * restraintFactor * passes / thickness).toFixed(2);
+    
+    // Transverse shrinkage (mm)
+    const transverse = (0.05 * thickness * materialFactor * restraintFactor * passes).toFixed(2);
+    
+    // Determine mitigation strategies
+    const strategies = [];
+    
+    if (parseFloat(angular) > 2) {
+      strategies.push('Use backstep welding technique');
+      strategies.push('Consider pre-setting the joint');
+    }
+    
+    if (parseFloat(longitudinal) > 1) {
+      strategies.push('Use intermittent welding instead of continuous');
+      strategies.push('Balance welds around neutral axis');
+    }
+    
+    if (parseFloat(transverse) > 0.5) {
+      strategies.push('Use strongback clamps');
+      strategies.push('Reduce weld volume with proper joint design');
+    }
+    
+    if (passes > 2) {
+      strategies.push('Allow cooling between passes');
+      strategies.push('Use lower heat input for subsequent passes');
+    }
+    
+    if (restraint === 'none') {
+      strategies.push('Increase joint restraint with clamps or fixtures');
+    }
+    
+    // Always include general strategies
+    strategies.push('Use proper welding sequence');
+    strategies.push('Minimize weld volume');
+    
+    return {
+      angular: parseFloat(angular),
+      longitudinal: parseFloat(longitudinal),
+      transverse: parseFloat(transverse),
+      strategies: strategies
+    };
+  }
+  
+  // WPS Generator Tab
+  const generateWpsBtn = document.getElementById('generate-wps');
+  const exportWpsBtn = document.getElementById('export-wps');
+  
+  generateWpsBtn.addEventListener('click', function() {
+    const wpsNumber = document.getElementById('wps-number').value || 'WPS-001';
+    const process = document.getElementById('wps-process').value;
+    const joint = document.getElementById('wps-joint').value;
+    const baseMetal = document.getElementById('wps-base-metal').value;
+    const thicknessMin = document.getElementById('thickness-min').value || '1';
+    const thicknessMax = document.getElementById('thickness-max').value || '10';
+    const position = document.getElementById('wps-position').value;
+    const current = document.getElementById('wps-current').value || '150';
+    const voltage = document.getElementById('wps-voltage').value || '20';
+    const speed = document.getElementById('wps-speed').value || '200';
+    
+    // Generate WPS content
+    const wpsContent = generateWpsContent(
+      wpsNumber, process, joint, baseMetal, 
+      thicknessMin, thicknessMax, position, 
+      current, voltage, speed
+    );
+    
+    // Display WPS
+    document.getElementById('wps-content').innerHTML = wpsContent;
+    document.getElementById('wps-results').style.display = 'block';
+    exportWpsBtn.style.display = 'block';
+  });
+  
+  function generateWpsContent(number, process, joint, baseMetal, thicknessMin, thicknessMax, position, current, voltage, speed) {
+    // Process names
+    const processNames = {
+      'gtaw': 'Gas Tungsten Arc Welding (GTAW/TIG)',
+      'gmaw': 'Gas Metal Arc Welding (GMAW/MIG)',
+      'fcaw': 'Flux Cored Arc Welding (FCAW)',
+      'smaw': 'Shielded Metal Arc Welding (SMAW/Stick)'
+    };
+    
+    // Joint names
+    const jointNames = {
+      'butt': 'Butt Joint',
+      'lap': 'Lap Joint',
+      't': 'T-Joint',
+      'corner': 'Corner Joint'
+    };
+    
+    // Position names
+    const positionNames = {
+      'flat': 'Flat (1G)',
+      'horizontal': 'Horizontal (2G)',
+      'vertical': 'Vertical (3G)',
+      'overhead': 'Overhead (4G)'
+    };
+    
+    // Base metal names
+    const baseMetalNames = {
+      'astm-a36': 'ASTM A36 Carbon Steel',
+      'astm-a516': 'ASTM A516 Pressure Vessel Steel',
+      'aisi-304': 'AISI 304 Stainless Steel',
+      'aisi-316': 'AISI 316 Stainless Steel',
+      'aa-6061': 'AA 6061 Aluminum'
+    };
+    
+    // Calculate heat input
+    const heatInput = (voltage * current * 60) / (speed * 1000); // kJ/mm
+    
+    // Determine filler material based on base metal
+    let fillerMaterial = 'ER70S-6';
+    if (baseMetal === 'aisi-304' || baseMetal === 'aisi-316') {
+      fillerMaterial = 'ER308L';
+    } else if (baseMetal === 'aa-6061') {
+      fillerMaterial = 'ER4043';
+    }
+    
+    // Determine gas type based on process
+    let gasType = '75% Argon / 25% CO2';
+    if (process === 'gtaw') {
+      gasType = '100% Argon';
+    } else if (baseMetal === 'aa-6061') {
+      gasType = '100% Argon';
+    } else if (baseMetal === 'aisi-304' || baseMetal === 'aisi-316') {
+      gasType = '98% Argon / 2% Oxygen';
+    }
+    
+    // Generate WPS content
+    return `
+      <div style="margin-bottom: 15px;">
+        <strong>WPS Number:</strong> ${number}<br>
+        <strong>Process:</strong> ${processNames[process]}<br>
+        <strong>Joint Design:</strong> ${jointNames[joint]}<br>
+        <strong>Base Metal:</strong> ${baseMetalNames[baseMetal]}<br>
+        <strong>Thickness Range:</strong> ${thicknessMin}mm - ${thicknessMax}mm<br>
+        <strong>Position:</strong> ${positionNames[position]}
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong>WELDING PARAMETERS</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          Current: ${current}A<br>
+          Voltage: ${voltage}V<br>
+          Travel Speed: ${speed}mm/min<br>
+          Heat Input: ${heatInput.toFixed(2)}kJ/mm
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong>FILLER METAL</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          Classification: ${fillerMaterial}<br>
+          Diameter: 0.035" (0.9mm)<br>
+          Deposition Rate: 3.5 kg/hr
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong>SHIELDING GAS</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          Composition: ${gasType}<br>
+          Flow Rate: 15-20 L/min
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong>JOINT PREPARATION</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          Root Opening: 1.5mm<br>
+          Root Face: 1.0mm<br>
+          Included Angle: 60°
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong>TECHNIQUE</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          Direction: Forehand<br>
+          Oscillation: None<br>
+          Interpass Temperature: 150°C max
+        </div>
+      </div>
+      
+      <div>
+        <strong>QUALIFICATION</strong><br>
+        <div style="margin-left: 15px; margin-top: 5px;">
+          This WPS is qualified in accordance with AWS D1.1<br>
+          Essential variables shall not be changed without requalification
+        </div>
+      </div>
+    `;
+  }
+  
+  // Export WPS
+  exportWpsBtn.addEventListener('click', function() {
+    const wpsContent = document.getElementById('wps-content').innerText;
+    const wpsNumber = document.getElementById('wps-number').value || 'WPS-001';
+    
+    // Create a blob and download
+    const blob = new Blob([wpsContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${wpsNumber.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  
+  // Export Materials
+  document.getElementById('export-materials').addEventListener('click', function() {
+    const projectType = document.getElementById('project-type').value;
+    const vehicleType = document.getElementById('vehicle-type').value;
+    const complexity = document.querySelector('.complexity-btn.active').getAttribute('data-level');
+    
+    let materialText = `MATERIAL LIST FOR ${projectType.toUpperCase()} - ${vehicleType.toUpperCase()}\n`;
+    materialText += `Complexity: ${complexity.toUpperCase()}\n`;
+    materialText += `=========================================\n\n`;
+    
+    const materialItems = document.querySelectorAll('#material-list > div');
+    materialItems.forEach(item => {
+      const name = item.querySelector('div > div').textContent;
+      const specs = item.querySelector('div > div:nth-child(2)').textContent;
+      const quantity = item.querySelector('div:nth-child(2) > div').textContent;
+      const cost = item.querySelector('div:nth-child(2) > div:nth-child(2)').textContent;
+      
+      materialText += `${name} (${specs})\n`;
+      materialText += `Quantity: ${quantity}\n`;
+      materialText += `Cost: ${cost}\n\n`;
+    });
+    
+    materialText += `Total Weight: ${document.getElementById('material-weight').textContent}\n`;
+    materialText += `Total Cost: ${document.getElementById('material-cost').textContent}\n`;
+    
+    // Create a blob and download
+    const blob = new Blob([materialText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${projectType}_${vehicleType}_Materials.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    
 	    
         <footer>
             <div class="contact-info">
