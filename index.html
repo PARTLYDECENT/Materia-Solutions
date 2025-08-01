@@ -856,7 +856,412 @@
 
 
 
-
+	<div id="contractor-estimator" style="width: 100%; max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;">
+	  <div style="background: linear-gradient(90deg, #2c3e50, #3498db); color: white; padding: 20px; text-align: center;">
+	    <h2 style="margin: 0; font-size: 24px;">Contractor Project Cost Estimator</h2>
+	    <p style="margin: 5px 0 0 0; opacity: 0.8;">Calculate labor, materials, and overhead costs</p>
+	  </div>
+	  <div style="padding: 25px;">
+	    <!-- Project Details -->
+	    <div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+	      <h3 style="margin-top: 0; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px;">Project Details</h3>
+	      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+	        <div>
+	          <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Project Name</label>
+	          <input type="text" id="project-name" placeholder="Enter project name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+	        </div>
+	        <div>
+	          <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Project Type</label>
+	          <select id="project-type" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+	            <option value="residential">Residential</option>
+	            <option value="commercial">Commercial</option>
+	            <option value="industrial">Industrial</option>
+	            <option value="renovation">Renovation</option>
+	          </select>
+	        </div>
+	        <div>
+	          <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Project Duration (days)</label>
+	          <input type="number" id="project-duration" placeholder="Estimated days" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+	        </div>
+	        <div>
+	          <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Profit Margin (%)</label>
+	          <input type="number" id="profit-margin" placeholder="e.g. 20" value="20" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+	        </div>
+	      </div>
+	    </div>
+	    <!-- Labor Costs -->
+	    <div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+	      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+	        <h3 style="margin: 0; color: #2c3e50;">Labor Costs</h3>
+	        <button id="add-labor-btn" style="background: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">+ Add Labor</button>
+	      </div>
+	      <div id="labor-items" style="margin-bottom: 15px;">
+	        <!-- Labor items will be added here dynamically -->
+	      </div>
+	      <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #eee;">
+	        <div style="font-weight: bold;">Total Labor: $<span id="total-labor">0.00</span></div>
+	      </div>
+	    </div>
+	    <!-- Material Costs -->
+	    <div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+	      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+	        <h3 style="margin: 0; color: #2c3e50;">Material Costs</h3>
+	        <button id="add-material-btn" style="background: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">+ Add Material</button>
+	      </div>
+	      <div id="material-items" style="margin-bottom: 15px;">
+	        <!-- Material items will be added here dynamically -->
+	      </div>
+	      <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #eee;">
+	        <div style="font-weight: bold;">Total Materials: $<span id="total-materials">0.00</span></div>
+	      </div>
+	    </div>
+	    <!-- Other Costs -->
+	    <div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+	      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+	        <h3 style="margin: 0; color: #2c3e50;">Other Costs</h3>
+	        <button id="add-other-btn" style="background: #3498db; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">+ Add Cost</button>
+	      </div>
+	      <div id="other-items" style="margin-bottom: 15px;">
+	        <!-- Other cost items will be added here dynamically -->
+	      </div>
+	      <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid #eee;">
+	        <div style="font-weight: bold;">Total Other: $<span id="total-other">0.00</span></div>
+	      </div>
+	    </div>
+	    <!-- Calculate Button -->
+	    <div style="text-align: center; margin-bottom: 25px;">
+	      <button id="calculate-costs-btn" style="background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
+	        Calculate Total Project Cost
+	      </button>
+	    </div>
+	    <!-- Results -->
+	    <div id="cost-results" style="display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+	      <h3 style="margin-top: 0; color: #2c3e50; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">Project Cost Estimate</h3>
+	      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+	        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px;">
+	          <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Subtotal</div>
+	          <div style="font-size: 20px; font-weight: bold;">$<span id="subtotal">0.00</span></div>
+	        </div>
+	        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px;">
+	          <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Profit (<span id="profit-percent">20</span>%)</div>
+	          <div style="font-size: 20px; font-weight: bold;">$<span id="profit-amount">0.00</span></div>
+	        </div>
+	      </div>
+	      <div style="background: #e8f4f8; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+	        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Project Cost</div>
+	        <div style="font-size: 28px; font-weight: bold; color: #2c3e50;">$<span id="total-cost">0.00</span></div>
+	      </div>
+	      <div style="background: #f8f9fa; padding: 15px; border-radius: 6px;">
+	        <h4 style="margin-top: 0; margin-bottom: 10px; color: #2c3e50;">Cost Breakdown</h4>
+	        <div style="margin-bottom: 8px; display: flex; justify-content: space-between;">
+	          <span>Labor:</span>
+	          <span>$<span id="labor-breakdown">0.00</span> (<span id="labor-percent">0</span>%)</span>
+	        </div>
+	        <div style="margin-bottom: 8px; display: flex; justify-content: space-between;">
+	          <span>Materials:</span>
+	          <span>$<span id="materials-breakdown">0.00</span> (<span id="materials-percent">0</span>%)</span>
+	        </div>
+	        <div style="margin-bottom: 8px; display: flex; justify-content: space-between;">
+	          <span>Other Costs:</span>
+	          <span>$<span id="other-breakdown">0.00</span> (<span id="other-percent">0</span>%)</span>
+	        </div>
+	        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; font-weight: bold;">
+	          <span>Subtotal:</span>
+	          <span>$<span id="subtotal-breakdown">0.00</span></span>
+	        </div>
+	      </div>
+	      <div style="margin-top: 20px; text-align: center;">
+	        <button id="export-estimate-btn" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">
+	          Export Estimate
+	        </button>
+	        <button id="reset-estimate-btn" style="background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+	          Reset
+	        </button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  // Labor items array
+	  let laborItems = [];
+	  let materialItems = [];
+	  let otherItems = [];
+	  // DOM elements
+	  const addLaborBtn = document.getElementById('add-labor-btn');
+	  const addMaterialBtn = document.getElementById('add-material-btn');
+	  const addOtherBtn = document.getElementById('add-other-btn');
+	  const calculateBtn = document.getElementById('calculate-costs-btn');
+	  const exportBtn = document.getElementById('export-estimate-btn');
+	  const resetBtn = document.getElementById('reset-estimate-btn');
+	  const resultsDiv = document.getElementById('cost-results');
+	  // Add initial labor item
+	  addLaborItem();
+	  // Add initial material item
+	  addMaterialItem();
+	  // Add initial other cost item
+	  addOtherItem();
+	  // Event listeners
+	  addLaborBtn.addEventListener('click', addLaborItem);
+	  addMaterialBtn.addEventListener('click', addMaterialItem);
+	  addOtherBtn.addEventListener('click', addOtherItem);
+	  calculateBtn.addEventListener('click', calculateTotalCost);
+	  exportBtn.addEventListener('click', exportEstimate);
+	  resetBtn.addEventListener('click', resetEstimate);
+	  // Functions to add items
+	  function addLaborItem() {
+	    const laborContainer = document.getElementById('labor-items');
+	    const itemId = Date.now();
+	    const laborItem = document.createElement('div');
+	    laborItem.className = 'labor-item';
+	    laborItem.dataset.id = itemId;
+	    laborItem.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;';
+	    laborItem.innerHTML = `
+	      <input type="text" placeholder="Labor description" class="labor-desc" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <input type="number" placeholder="Hours" class="labor-hours" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <input type="number" placeholder="Rate ($)" class="labor-rate" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <button class="remove-labor" data-id="${itemId}" style="background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">×</button>
+	    `;
+	    laborContainer.appendChild(laborItem);
+	    // Add event listener for remove button
+	    laborItem.querySelector('.remove-labor').addEventListener('click', function() {
+	      removeItem('labor', itemId);
+	    });
+	    // Add event listeners for input changes
+	    laborItem.querySelectorAll('input').forEach(input => {
+	      input.addEventListener('input', updateLaborTotal);
+	    });
+	    // Add to labor items array
+	    laborItems.push({
+	      id: itemId,
+	      element: laborItem
+	    });
+	  }
+	  function addMaterialItem() {
+	    const materialContainer = document.getElementById('material-items');
+	    const itemId = Date.now();
+	    const materialItem = document.createElement('div');
+	    materialItem.className = 'material-item';
+	    materialItem.dataset.id = itemId;
+	    materialItem.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;';
+	    materialItem.innerHTML = `
+	      <input type="text" placeholder="Material description" class="material-desc" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <input type="number" placeholder="Quantity" class="material-qty" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <input type="number" placeholder="Unit Price ($)" class="material-price" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <button class="remove-material" data-id="${itemId}" style="background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">×</button>
+	    `;
+	    materialContainer.appendChild(materialItem);
+	    // Add event listener for remove button
+	    materialItem.querySelector('.remove-material').addEventListener('click', function() {
+	      removeItem('material', itemId);
+	    });
+	    // Add event listeners for input changes
+	    materialItem.querySelectorAll('input').forEach(input => {
+	      input.addEventListener('input', updateMaterialTotal);
+	    });
+	    // Add to material items array
+	    materialItems.push({
+	      id: itemId,
+	      element: materialItem
+	    });
+	  }
+	  function addOtherItem() {
+	    const otherContainer = document.getElementById('other-items');
+	    const itemId = Date.now();
+	    const otherItem = document.createElement('div');
+	    otherItem.className = 'other-item';
+	    otherItem.dataset.id = itemId;
+	    otherItem.style.cssText = 'display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;';
+	    otherItem.innerHTML = `
+	      <input type="text" placeholder="Cost description" class="other-desc" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <input type="number" placeholder="Amount ($)" class="other-amount" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+	      <button class="remove-other" data-id="${itemId}" style="background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">×</button>
+	    `;
+	    otherContainer.appendChild(otherItem);
+	    // Add event listener for remove button
+	    otherItem.querySelector('.remove-other').addEventListener('click', function() {
+	      removeItem('other', itemId);
+	    });
+	    // Add event listeners for input changes
+	    otherItem.querySelectorAll('input').forEach(input => {
+	      input.addEventListener('input', updateOtherTotal);
+	    });
+	    // Add to other items array
+	    otherItems.push({
+	      id: itemId,
+	      element: otherItem
+	    });
+	  }
+	  // Functions to remove items
+	  function removeItem(type, itemId) {
+	    if (type === 'labor') {
+	      const index = laborItems.findIndex(item => item.id === itemId);
+	      if (index !== -1) {
+	        laborItems[index].element.remove();
+	        laborItems.splice(index, 1);
+	        updateLaborTotal();
+	      }
+	    } else if (type === 'material') {
+	      const index = materialItems.findIndex(item => item.id === itemId);
+	      if (index !== -1) {
+	        materialItems[index].element.remove();
+	        materialItems.splice(index, 1);
+	        updateMaterialTotal();
+	      }
+	    } else if (type === 'other') {
+	      const index = otherItems.findIndex(item => item.id === itemId);
+	      if (index !== -1) {
+	        otherItems[index].element.remove();
+	        otherItems.splice(index, 1);
+	        updateOtherTotal();
+	      }
+	    }
+	  }
+	  // Functions to update totals
+	  function updateLaborTotal() {
+	    let total = 0;
+	    laborItems.forEach(item => {
+	      const hours = parseFloat(item.element.querySelector('.labor-hours').value) || 0;
+	      const rate = parseFloat(item.element.querySelector('.labor-rate').value) || 0;
+	      total += hours * rate;
+	    });
+	    document.getElementById('total-labor').textContent = total.toFixed(2);
+	  }
+	  function updateMaterialTotal() {
+	    let total = 0;
+	    materialItems.forEach(item => {
+	      const qty = parseFloat(item.element.querySelector('.material-qty').value) || 0;
+	      const price = parseFloat(item.element.querySelector('.material-price').value) || 0;
+	      total += qty * price;
+	    });
+	    document.getElementById('total-materials').textContent = total.toFixed(2);
+	  }
+	  function updateOtherTotal() {
+	    let total = 0;
+	    otherItems.forEach(item => {
+	      const amount = parseFloat(item.element.querySelector('.other-amount').value) || 0;
+	      total += amount;
+	    });
+	    document.getElementById('total-other').textContent = total.toFixed(2);
+	  }
+	  // Function to calculate total cost
+	  function calculateTotalCost() {
+	    const laborTotal = parseFloat(document.getElementById('total-labor').textContent) || 0;
+	    const materialTotal = parseFloat(document.getElementById('total-materials').textContent) || 0;
+	    const otherTotal = parseFloat(document.getElementById('total-other').textContent) || 0;
+	    const profitMargin = parseFloat(document.getElementById('profit-margin').value) || 20;
+	    const subtotal = laborTotal + materialTotal + otherTotal;
+	    const profitAmount = subtotal * (profitMargin / 100);
+	    const totalCost = subtotal + profitAmount;
+	    // Update results
+	    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+	    document.getElementById('profit-percent').textContent = profitMargin;
+	    document.getElementById('profit-amount').textContent = profitAmount.toFixed(2);
+	    document.getElementById('total-cost').textContent = totalCost.toFixed(2);
+	    // Update breakdown
+	    document.getElementById('labor-breakdown').textContent = laborTotal.toFixed(2);
+	    document.getElementById('labor-percent').textContent = subtotal > 0 ? (laborTotal / subtotal * 100).toFixed(1) : '0';
+	    document.getElementById('materials-breakdown').textContent = materialTotal.toFixed(2);
+	    document.getElementById('materials-percent').textContent = subtotal > 0 ? (materialTotal / subtotal * 100).toFixed(1) : '0';
+	    document.getElementById('other-breakdown').textContent = otherTotal.toFixed(2);
+	    document.getElementById('other-percent').textContent = subtotal > 0 ? (otherTotal / subtotal * 100).toFixed(1) : '0';
+	    document.getElementById('subtotal-breakdown').textContent = subtotal.toFixed(2);
+	    // Show results
+	    resultsDiv.style.display = 'block';
+	    // Scroll to results
+	    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+	  }
+	  // Function to export estimate
+	  function exportEstimate() {
+	    const projectName = document.getElementById('project-name').value || 'Unnamed Project';
+	    const projectType = document.getElementById('project-type').value;
+	    const projectDuration = document.getElementById('project-duration').value || 'Not specified';
+	    const profitMargin = document.getElementById('profit-margin').value || 20;
+	    const laborTotal = parseFloat(document.getElementById('total-labor').textContent) || 0;
+	    const materialTotal = parseFloat(document.getElementById('total-materials').textContent) || 0;
+	    const otherTotal = parseFloat(document.getElementById('total-other').textContent) || 0;
+	    const subtotal = laborTotal + materialTotal + otherTotal;
+	    const profitAmount = subtotal * (profitMargin / 100);
+	    const totalCost = subtotal + profitAmount;
+	    let estimateText = `PROJECT COST ESTIMATE\n`;
+	    estimateText += `=====================\n\n`;
+	    estimateText += `Project Name: ${projectName}\n`;
+	    estimateText += `Project Type: ${projectType}\n`;
+	    estimateText += `Estimated Duration: ${projectDuration} days\n`;
+	    estimateText += `Profit Margin: ${profitMargin}%\n\n`;
+	    estimateText += `LABOR COSTS\n`;
+	    estimateText += `-----------\n`;
+	    laborItems.forEach(item => {
+	      const desc = item.element.querySelector('.labor-desc').value || 'Unnamed labor';
+	      const hours = item.element.querySelector('.labor-hours').value || '0';
+	      const rate = item.element.querySelector('.labor-rate').value || '0';
+	      const cost = (parseFloat(hours) || 0) * (parseFloat(rate) || 0);
+	      estimateText += `${desc}: ${hours} hours × $${rate} = $${cost.toFixed(2)}\n`;
+	    });
+	    estimateText += `Total Labor: $${laborTotal.toFixed(2)}\n\n`;
+	    estimateText += `MATERIAL COSTS\n`;
+	    estimateText += `--------------\n`;
+	    materialItems.forEach(item => {
+	      const desc = item.element.querySelector('.material-desc').value || 'Unnamed material';
+	      const qty = item.element.querySelector('.material-qty').value || '0';
+	      const price = item.element.querySelector('.material-price').value || '0';
+	      const cost = (parseFloat(qty) || 0) * (parseFloat(price) || 0);
+	      estimateText += `${desc}: ${qty} × $${price} = $${cost.toFixed(2)}\n`;
+	    });
+	    estimateText += `Total Materials: $${materialTotal.toFixed(2)}\n\n`;
+	    estimateText += `OTHER COSTS\n`;
+	    estimateText += `-----------\n`;
+	    otherItems.forEach(item => {
+	      const desc = item.element.querySelector('.other-desc').value || 'Unnamed cost';
+	      const amount = item.element.querySelector('.other-amount').value || '0';
+	      estimateText += `${desc}: $${amount}\n`;
+	    });
+	    estimateText += `Total Other: $${otherTotal.toFixed(2)}\n\n`;
+	    estimateText += `SUMMARY\n`;
+	    estimateText += `-------\n`;
+	    estimateText += `Subtotal: $${subtotal.toFixed(2)}\n`;
+	    estimateText += `Profit (${profitMargin}%): $${profitAmount.toFixed(2)}\n`;
+	    estimateText += `Total Project Cost: $${totalCost.toFixed(2)}\n`;
+	    // Create a blob and download
+	    const blob = new Blob([estimateText], { type: 'text/plain' });
+	    const url = URL.createObjectURL(blob);
+	    const a = document.createElement('a');
+	    a.href = url;
+	    a.download = `${projectName.replace(/\s+/g, '_')}_Estimate.txt`;
+	    document.body.appendChild(a);
+	    a.click();
+	    document.body.removeChild(a);
+	    URL.revokeObjectURL(url);
+	  }
+	  // Function to reset estimate
+	  function resetEstimate() {
+	    if (confirm('Are you sure you want to reset all data?')) {
+	      // Reset form fields
+	      document.getElementById('project-name').value = '';
+	      document.getElementById('project-type').value = 'residential';
+	      document.getElementById('project-duration').value = '';
+	      document.getElementById('profit-margin').value = '20';
+	      // Clear all items
+	      laborItems.forEach(item => item.element.remove());
+	      materialItems.forEach(item => item.element.remove());
+	      otherItems.forEach(item => item.element.remove());
+	      laborItems = [];
+	      materialItems = [];
+	      otherItems = [];
+	      // Reset totals
+	      document.getElementById('total-labor').textContent = '0.00';
+	      document.getElementById('total-materials').textContent = '0.00';
+	      document.getElementById('total-other').textContent = '0.00';
+	      // Hide results
+	      resultsDiv.style.display = 'none';
+	      // Add initial items
+	      addLaborItem();
+	      addMaterialItem();
+	      addOtherItem();
+	    }
+	  }
+	});
+	</script>
 
 
 
