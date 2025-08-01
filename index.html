@@ -497,6 +497,109 @@
 	    <!-- Crypto data will be inserted here by JavaScript -->
 	  </div>
 	</div>
+
+
+	<div id="commodity-ticker-widget" style="width: 100%; overflow: hidden; background-color: #f5f5f5; color: #333; padding: 15px 0; font-family: Arial, sans-serif; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd;">
+	  <div id="commodity-ticker-content" style="display: flex; white-space: nowrap;">
+	    <!-- Commodity data will be inserted here by JavaScript -->
+	  </div>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	  // Configuration - customize these values
+	  const config = {
+	    commodities: [
+	      { name: 'Lumber', symbol: 'LBR', unit: 'per 1,000 board feet' },
+	      { name: 'Aluminum', symbol: 'ALU', unit: 'per metric ton' }
+	    ],
+	    currency: 'usd',
+	    updateInterval: 300000, // Update every 5 minutes
+	    speed: 1.5, // Ticker speed (lower is faster)
+	    showChange: true, // Show price change
+	    showUnit: true // Show unit measurement
+	  };
+	  const tickerContent = document.getElementById('commodity-ticker-content');
+	  // Mock data function - replace with actual API calls in production
+	  function fetchCommodityData() {
+	    // In a real implementation, you would fetch data from a commodity API
+	    // For demonstration, we'll use mock data with random fluctuations
+	    const mockData = [
+	      {
+	        name: 'Lumber',
+	        symbol: 'LBR',
+	        price: 550 + Math.random() * 100, // Random price between 550-650
+	        change: (Math.random() * 10 - 5), // Random change between -5% to +5%
+	        unit: 'per 1,000 board feet'
+	      },
+	      {
+	        name: 'Aluminum',
+	        symbol: 'ALU',
+	        price: 2200 + Math.random() * 300, // Random price between 2200-2500
+	        change: (Math.random() * 6 - 3), // Random change between -3% to +3%
+	        unit: 'per metric ton'
+	      }
+	    ];
+	    updateTicker(mockData);
+	  }
+	  function updateTicker(data) {
+	    tickerContent.innerHTML = '';
+	    data.forEach(commodity => {
+	      const priceChangeClass = commodity.change >= 0 ? 'positive' : 'negative';
+	      const priceChangeIcon = commodity.change >= 0 ? '▲' : '▼';
+	      const commodityElement = document.createElement('div');
+	      commodityElement.style.display = 'inline-flex';
+	      commodityElement.style.alignItems = 'center';
+	      commodityElement.style.padding = '0 20px';
+	      commodityElement.style.marginRight = '30px';
+	      commodityElement.innerHTML = `
+	        <span style="font-weight: bold; margin-right: 8px;">${commodity.name}</span>
+	        <span style="margin-right: 8px;">$${commodity.price.toFixed(2)}</span>
+	        ${config.showUnit ? `<span style="font-size: 0.8em; margin-right: 8px; color: #666;">${commodity.unit}</span>` : ''}
+	        ${config.showChange ? `<span class="${priceChangeClass}" style="color: ${commodity.change >= 0 ? '#4caf50' : '#f44336'}">${priceChangeIcon} ${Math.abs(commodity.change).toFixed(2)}%</span>` : ''}
+	      `;
+	      tickerContent.appendChild(commodityElement);
+	    });
+	    // Duplicate content for seamless scrolling
+	    tickerContent.innerHTML += tickerContent.innerHTML;
+	    // Start animation
+	    animateTicker();
+	  }
+	  function animateTicker() {
+	    const contentWidth = tickerContent.scrollWidth / 2;
+	    let position = 0;
+	    function scroll() {
+	      position -= config.speed;
+	      if (position <= -contentWidth) {
+	        position = 0;
+	      }
+	      tickerContent.style.transform = `translateX(${position}px)`;
+	      requestAnimationFrame(scroll);
+	    }
+	    scroll();
+	  }
+	  // Initial fetch
+	  fetchCommodityData();
+	  // Set up periodic updates
+	  setInterval(fetchCommodityData, config.updateInterval);
+	});
+	</script>
+	<style>
+	#commodity-ticker-widget {
+	  border-radius: 6px;
+	  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	.positive {
+	  font-weight: bold;
+	}
+	.negative {
+	  font-weight: bold;
+	}
+	</style>
+
+
+
+
+		
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
 	  // Configuration - customize these values
