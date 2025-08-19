@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <script src="shader.js" defer></script>
     <style>
         :root {
             --primary-color: #00e5ff;
@@ -32,7 +33,7 @@
         html, body {
             height: 100%;
             overflow-x: hidden;
-            background: var(--bg-color);
+            background: transparent;
         }
 
         body {
@@ -41,6 +42,15 @@
             line-height: 1.7;
             position: relative;
             cursor: none;
+        }
+
+        /* Ensure content appears above shader */
+        .page-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            background: rgba(10, 10, 11, 0.5);
+            backdrop-filter: blur(10px);
         }
 
         /* Custom Cursor */
@@ -64,16 +74,6 @@
         .cursor.clicked {
             transform: scale(1.5);
             border-color: var(--secondary-color);
-        }
-
-        /* Background Canvas */
-        #background-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
         }
 
         .container {
@@ -469,22 +469,189 @@
 </head>
 <body>
     <div class="cursor"></div>
-    <canvas id="background-canvas"></canvas>
+    <div class="page-content">
+        <div class="container">
+            <header>
+                <div class="logo">MATERIA<span>_</span>SYSTEMS</div>
+                <div class="status-indicator">ONLINE</div>
+            </header>
 
-    <div class="container">
-        <header>
-            <div class="logo">MATERIA<span>_</span>SYSTEMS</div>
-            <div class="status-indicator">ONLINE</div>
-        </header>
+            <main class="main-content">
+                <nav class="services-nav">
+                    <button class="service-btn active" data-target="overview">OVERVIEW</button>
+                    <button class="service-btn" data-target="structural">STRUCTURAL</button>
+                    <button class="service-btn" data-target="automotive">AUTOMOTIVE</button>
+                    <button class="service-btn" data-target="fabrication">FABRICATION</button>
+                    <button class="service-btn" data-target="finishing">FINISHING</button>
+                </nav>
+                
+                <div class="content-area">
+                    <div class="content-panel visible" id="overview">
+                        <div class="panel-header">
+                            <p class="subtitle">Mission Critical Solutions</p>
+                            <h2>SYSTEM OVERVIEW</h2>
+                        </div>
+                        <div class="image-container">
+                            <img src="image1.jpg" alt="Overview of Materia Systems operations" onerror="this.style.display='none'">
+                        </div>
+                        <div class="panel-content">
+                            <p>Materia Systems provides mission-critical services across multiple operational theaters. We deploy robust, high-performance solutions engineered for reliability and endurance, from foundational infrastructure to complex vehicular systems and bespoke component fabrication.</p>
+                        </div>
+                    </div>
 
-        <main class="main-content">
-            <nav class="services-nav">
-                <button class="service-btn active" data-target="overview">OVERVIEW</button>
-                <button class="service-btn" data-target="structural">STRUCTURAL</button>
-                <button class="service-btn" data-target="automotive">AUTOMOTIVE</button>
-                <button class="service-btn" data-target="fabrication">FABRICATION</button>
-                <button class="service-btn" data-target="finishing">FINISHING</button>
-            </nav>
+                    <div class="content-panel" id="structural">
+                        <div class="panel-header">
+                            <p class="subtitle">Infrastructure & Integrity</p>
+                            <h2>STRUCTURAL SYSTEMS</h2>
+                        </div>
+                        <div class="image-container">
+                            <img src="image2.jpg" alt="Structural engineering schematics" onerror="this.style.display='none'">
+                        </div>
+                         <div class="panel-content">
+                            <p>We provide robust structural repair and renovation services that ensure the safety, integrity, and long-term value of client assets. We manage all phases from foundational assessment to final commissioning, utilizing advanced materials and predictive analysis.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-panel" id="automotive">
+                        <div class="panel-header">
+                            <p class="subtitle">Mobility & Readiness</p>
+                            <h2>AUTOMOTIVE SYSTEMS</h2>
+                        </div>
+                        <div class="image-container">
+                            <img src="image3.jpg" alt="High-performance vehicle in maintenance" onerror="this.style.display='none'">
+                        </div>
+                         <div class="panel-content">
+                            <p>Our automotive division provides professional maintenance and repair to keep vehicular assets at peak operational readiness. We utilize advanced diagnostic systems and mil-grade components for all services, ensuring performance in demanding environments.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-panel" id="fabrication">
+                         <div class="panel-header">
+                            <p class="subtitle">Custom Engineering</p>
+                            <h2>BESPOKE FABRICATION</h2>
+                        </div>
+                        <div class="image-container">
+                            <img src="image4.jpg" alt="CNC machine in operation" onerror="this.style.display='none'">
+                        </div>
+                         <div class="panel-content">
+                            <p>From prototype to production, our custom fabrication service delivers bespoke engineered solutions. </p>
+                        </div>
+                    </div>
+
+                    <div class="content-panel" id="finishing">
+                        <div class="panel-header">
+                            <p class="subtitle">Protective Coatings</p>
+                            <h2>APPLIED FINISHES</h2>
+                        </div>
+                        <div class="image-container">
+                            <img src="image5.jpg" alt="Robotic arm applying a finishing coat" onerror="this.style.display='none'">
+                        </div>
+                         <div class="panel-content">
+                            <p>Our finishing services provide durable, protective coatings for aesthetic and functional enhancement. We apply premium, resilient materials designed for extreme environments and long-term durability, including ceramic coatings and thermal barriers.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                <div class="contact-info">
+                    <div class="contact-item"><a href="#">CONTACT</a></div>
+                    <div class="contact-item"><a href="#">STATUS</a></div>
+                    <div class="contact-item"><a href="#">DOCUMENTATION</a></div>
+                </div>
+                <div class="copyright">&copy; 2025 Materia Systems. All rights reserved.</div>
+            </footer>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <div id="youtube-player-container"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const serviceBtns = document.querySelectorAll('.service-btn');
+            const contentPanels = document.querySelectorAll('.content-panel');
+
+            serviceBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    serviceBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const targetId = btn.getAttribute('data-target');
+                    contentPanels.forEach(panel => {
+                        if (panel.id === targetId) {
+                            panel.classList.add('visible');
+                        } else {
+                            panel.classList.remove('visible');
+                        }
+                    });
+                });
+            });
+
+            // Custom cursor
+            const cursor = document.querySelector('.cursor');
+            if (window.matchMedia("(pointer: fine)").matches) {
+                document.addEventListener('mousemove', e => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    cursor.classList.add('active');
+                });
+
+                document.addEventListener('mousedown', () => {
+                    cursor.classList.add('clicked');
+                });
+
+                document.addEventListener('mouseup', () => {
+                    cursor.classList.remove('clicked');
+                });
+
+                document.body.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('active');
+                });
+            }
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2413,705 +2580,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-	    
-	    
-        <footer>
-            <div class="contact-info">
-                <div class="contact-item"><a href="tel:724-964-2936">(724) 964-2936</a></div>
-                <div class="contact-item"><a href="mailto:chainswasversuslions@gmail.com">chainswasversuslions@gmail.com</a></div>
-                <div class="contact-item"><a href="https://www.patreon.com/c/DamionRichter" target="_blank">Patreon</a></div>
-            </div>
-            <p class="copyright">&copy; 2025 MATERIA SYSTEMS // ALL RIGHTS RESERVED</p>
-        </footer>
-    </div>
-    
-    <div class="video-container" id="video-container">
-        <div id="youtube-player-container"></div>
-    </div>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            /**
-             * Enhanced Custom Cursor
-             */
-            const cursor = document.querySelector('.cursor');
-            let mouseX = 0, mouseY = 0;
-            let cursorX = 0, cursorY = 0;
-
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                cursor.classList.add('active');
-            });
-
-            document.addEventListener('mousedown', () => {
-                cursor.classList.add('clicked');
-            });
-
-            document.addEventListener('mouseup', () => {
-                cursor.classList.remove('clicked');
-            });
-
-            document.addEventListener('mouseleave', () => {
-                cursor.classList.remove('active');
-            });
-
-            // Smooth cursor animation
-            function animateCursor() {
-                const ease = 0.15;
-                cursorX += (mouseX - cursorX) * ease;
-                cursorY += (mouseY - cursorY) * ease;
-                
-                cursor.style.left = cursorX + 'px';
-                cursor.style.top = cursorY + 'px';
-                
-                requestAnimationFrame(animateCursor);
-            }
-            animateCursor();
-
-            /**
-             * Enhanced Background Animation
-             */
-            const canvas = document.getElementById('background-canvas');
-            const ctx = canvas.getContext('2d');
-
-            let width, height, grid, particles, nodes;
-            const GRID_SIZE = 50;
-            const PARTICLE_COUNT = 60;
-            const NODE_COUNT = 30;
-
-            class Particle {
-                constructor() {
-                    this.reset();
-                }
-
-                reset() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.5;
-                    this.vy = (Math.random() - 0.5) * 0.5;
-                    this.life = Math.random() * 300 + 200;
-                    this.maxLife = this.life;
-                    this.size = Math.random() * 2 + 1;
-                }
-
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    this.life--;
-
-                    if (this.life <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-                        this.reset();
-                    }
-                }
-
-                draw() {
-                    const opacity = this.life / this.maxLife;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 229, 255, ${opacity * 0.6})`;
-                    ctx.fill();
-                }
-            }
-
-            class Node {
-                constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.3;
-                    this.vy = (Math.random() - 0.5) * 0.3;
-                    this.connections = [];
-                }
-
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-
-                    if (this.x < 0 || this.x > width) this.vx *= -1;
-                    if (this.y < 0 || this.y > height) this.vy *= -1;
-
-                    this.connections = [];
-                    nodes.forEach(node => {
-                        if (node !== this) {
-                            const dx = this.x - node.x;
-                            const dy = this.y - node.y;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-                            
-                            if (distance < 150) {
-                                this.connections.push({
-                                    node: node,
-                                    distance: distance
-                                });
-                            }
-                        }
-                    });
-                }
-
-                draw() {
-                    // Draw connections
-                    this.connections.forEach(conn => {
-                        const opacity = 1 - (conn.distance / 150);
-                        ctx.beginPath();
-                        ctx.moveTo(this.x, this.y);
-                        ctx.lineTo(conn.node.x, conn.node.y);
-                        ctx.strokeStyle = `rgba(0, 229, 255, ${opacity * 0.2})`;
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                    });
-
-                    // Draw node
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
-                    ctx.fill();
-                }
-            }
-
-            function initCanvas() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-                
-                // Create grid
-                grid = [];
-                for (let x = 0; x < width; x += GRID_SIZE) {
-                    grid.push({ x1: x, y1: 0, x2: x, y2: height, opacity: Math.random() * 0.1 });
-                }
-                for (let y = 0; y < height; y += GRID_SIZE) {
-                    grid.push({ x1: 0, y1: y, x2: width, y2: y, opacity: Math.random() * 0.1 });
-                }
-
-                // Create particles
-                particles = [];
-                for (let i = 0; i < PARTICLE_COUNT; i++) {
-                    particles.push(new Particle());
-                }
-
-                // Create nodes
-                nodes = [];
-                for (let i = 0; i < NODE_COUNT; i++) {
-                    nodes.push(new Node());
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-
-                // Draw grid with subtle animation
-                grid.forEach(line => {
-                    if (Math.random() < 0.01) {
-                        line.opacity = Math.random() * 0.15;
-                    }
-                    ctx.beginPath();
-                    ctx.moveTo(line.x1, line.y1);
-                    ctx.lineTo(line.x2, line.y2);
-                    ctx.strokeStyle = `rgba(0, 229, 255, ${line.opacity})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                });
-
-                // Update and draw particles
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-
-                // Update and draw nodes
-                nodes.forEach(n => {
-                    n.update();
-                    n.draw();
-                });
-
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('resize', initCanvas);
-            initCanvas();
-            animate();
-
-            /**
-             * Enhanced Navigation
-             */
-            const serviceButtons = document.querySelectorAll('.service-btn');
-            const contentPanels = document.querySelectorAll('.content-panel');
-
-            function showPanel(targetId) {
-                contentPanels.forEach(panel => panel.classList.remove('visible'));
-                const targetPanel = document.getElementById(targetId);
-                if (targetPanel) {
-                    setTimeout(() => {
-                        targetPanel.classList.add('visible');
-                    }, 100);
-                }
-            }
-
-            serviceButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    serviceButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    showPanel(this.getAttribute('data-target'));
-                });
-            });
-            
-            /**
-             * YouTube Player
-             */
-            let player;
-            const videoId = 'dRne0j9k61w';
-
-            window.onYouTubeIframeAPIReady = function() {
-                if (window.innerWidth <= 992) return;
-
-                player = new YT.Player('youtube-player-container', {
-                    videoId: videoId,
-                    playerVars: {
-                        'autoplay': 1, 'controls': 0, 'showinfo': 0, 'modestbranding': 1,
-                        'loop': 1, 'playlist': videoId, 'fs': 0, 'cc_load_policy': 0,
-                        'iv_load_policy': 3, 'autohide': 0, 'rel': 0, 'origin': window.location.origin,
-                        'mute': 1
-                    },
-                    events: {
-                        'onReady': onPlayerReady
-                    }
-                });
-            };
-
-            function onPlayerReady(event) {
-                event.target.playVideo();
-            }
-        });
-    </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 1rem;">
-
-    <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px;">Material & Part Suppliers</h2>
-
-    <div style="margin-bottom: 2rem;">
-        <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 1rem;">🏠 Home, Workshop & DIY</h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Industrial & Hardware</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.mcmaster.com/" target="_blank" style="color: #007bff; text-decoration: none;">McMaster-Carr</a>
-                    <a href="https://www.grainger.com/" target="_blank" style="color: #007bff; text-decoration: none;">Grainger</a>
-                    <a href="https://www.boltdepot.com/" target="_blank" style="color: #007bff; text-decoration: none;">Bolt Depot</a>
-                    <a href="https://www.fastenal.com/" target="_blank" style="color: #007bff; text-decoration: none;">Fastenal</a>
-                </div>
-            </div>
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Metals & Plastics</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.onlinemetals.com/" target="_blank" style="color: #007bff; text-decoration: none;">OnlineMetals</a>
-                    <a href="https://www.speedymetals.com/" target="_blank" style="color: #007bff; text-decoration: none;">Speedy Metals</a>
-                    <a href="https://www.tapplastics.com/" target="_blank" style="color: #007bff; text-decoration: none;">TAP Plastics</a>
-                    <a href="https://www.estreetplastics.com/" target="_blank" style="color: #007bff; text-decoration: none;">eStreetPlastics</a>
-                </div>
-            </div>
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Woodworking</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.rockler.com/" target="_blank" style="color: #007bff; text-decoration: none;">Rockler</a>
-                    <a href="https://www.woodcraft.com/" target="_blank" style="color: #007bff; text-decoration: none;">Woodcraft</a>
-                    <a href="https://www.woodworkingshop.com/" target="_blank" style="color: #007bff; text-decoration: none;">Woodworker's Supply</a>
-                </div>
-            </div>
-            
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Electronics</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.digikey.com/" target="_blank" style="color: #007bff; text-decoration: none;">Digi-Key</a>
-                    <a href="https://www.mouser.com/" target="_blank" style="color: #007bff; text-decoration: none;">Mouser Electronics</a>
-                    <a href="https://www.adafruit.com/" target="_blank" style="color: #007bff; text-decoration: none;">Adafruit</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div style="margin-bottom: 2rem;">
-        <h3 style="font-size: 1.2rem; color: #333; margin-bottom: 1rem;">🚗 Automotive</h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">General Parts</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.rockauto.com/" target="_blank" style="color: #007bff; text-decoration: none;">RockAuto</a>
-                    <a href="https://www.napaonline.com/" target="_blank" style="color: #007bff; text-decoration: none;">NAPA Auto Parts</a>
-                    <a href="https://www.autozone.com/" target="_blank" style="color: #007bff; text-decoration: none;">AutoZone</a>
-                    <a href="https://shop.advanceautoparts.com/" target="_blank" style="color: #007bff; text-decoration: none;">Advance Auto Parts</a>
-                </div>
-            </div>
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">European Specialty</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.fcpeuro.com/" target="_blank" style="color: #007bff; text-decoration: none;">FCP Euro</a>
-                    <a href="https://www.ecstuning.com/" target="_blank" style="color: #007bff; text-decoration: none;">ECS Tuning</a>
-                    <a href="https://www.pelicanparts.com/" target="_blank" style="color: #007bff; text-decoration: none;">Pelican Parts</a>
-                </div>
-            </div>
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Performance & Racing</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.summitracing.com/" target="_blank" style="color: #007bff; text-decoration: none;">Summit Racing</a>
-                    <a href="https://www.jegs.com/" target="_blank" style="color: #007bff; text-decoration: none;">Jegs</a>
-                    <a href="https://www.turnermotorsport.com/" target="_blank" style="color: #007bff; text-decoration: none;">Turner Motorsport</a>
-                </div>
-            </div>
-
-            <div class="supplier-category">
-                <h4 style="margin-top: 0; margin-bottom: 0.5rem; font-weight: bold;">Tools & Garage</h4>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="https://www.harborfreight.com/" target="_blank" style="color: #007bff; text-decoration: none;">Harbor Freight</a>
-                    <a href="https://www.eastwood.com/" target="_blank" style="color: #007bff; text-decoration: none;">Eastwood</a>
-                    <a href="https://www.griotsgarage.com/" target="_blank" style="color: #007bff; text-decoration: none;">Griot's Garage</a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="toolkit-container" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 800px; margin: 2rem auto; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
-    
-    <div class="toolkit-header" style="background-color: #333; color: white; padding: 15px 20px;">
-        <h3 style="margin: 0; font-size: 1.2rem;">Contractor Toolkit</h3>
-    </div>
-
-    <div class="toolkit-tabs" style="display: flex; border-bottom: 1px solid #ccc; background-color: #f7f7f7;">
-        <button class="toolkit-tab-button" style="flex: 1; padding: 15px 10px; border: none; background-color: #eee; font-size: 1rem; font-weight: bold; cursor: pointer; border-right: 1px solid #ccc;" onclick="openToolkitTab(event, 'Calculators')">Calculators</button>
-        <button class="toolkit-tab-button" style="flex: 1; padding: 15px 10px; border: none; background-color: #f7f7f7; font-size: 1rem; font-weight: bold; cursor: pointer; border-right: 1px solid #ccc;" onclick="openToolkitTab(event, 'Weather')">Weather</button>
-        <button class="toolkit-tab-button" style="flex: 1; padding: 15px 10px; border: none; background-color: #f7f7f7; font-size: 1rem; font-weight: bold; cursor: pointer;" onclick="openToolkitTab(event, 'PunchList')">Punch List</button>
-    </div>
-
-    <div id="Calculators" class="toolkit-tab-content" style="padding: 20px; display: block;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
-            
-            <div>
-                <h4 style="margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Concrete Slab</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;">
-                    <label>Length (ft)</label><input type="number" id="concreteL" oninput="calculateConcrete()" placeholder="e.g., 20" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    <label>Width (ft)</label><input type="number" id="concreteW" oninput="calculateConcrete()" placeholder="e.g., 10" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    <label>Thickness (in)</label><input type="number" id="concreteT" oninput="calculateConcrete()" placeholder="e.g., 4" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                <p style="margin-top: 15px; background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-weight: bold;">Result: <span id="concreteResult">0.00</span> cubic yards</p>
-            </div>
-
-            <div>
-                <h4 style="margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Paint Coverage</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;">
-                    <label>Wall Area (sq ft)</label><input type="number" id="paintArea" oninput="calculatePaint()" placeholder="e.g., 400" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    <label>Coats</label><input type="number" id="paintCoats" value="1" oninput="calculatePaint()" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">Assuming 350 sq ft coverage per gallon.</p>
-                <p style="margin-top: 10px; background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-weight: bold;">Need: <span id="paintResult">0.00</span> gallons</p>
-            </div>
-            
-            <div>
-                <h4 style="margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Right Triangle (a²+b²=c²)</h4>
-                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;">
-                    <label>Side A</label><input type="number" id="triangleA" oninput="calculateTriangle()" placeholder="e.g., 3" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                    <label>Side B</label><input type="number" id="triangleB" oninput="calculateTriangle()" placeholder="e.g., 4" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                <p style="margin-top: 15px; background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-weight: bold;">Side C (Hypotenuse): <span id="triangleResult">0.00</span></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="Weather" class="toolkit-tab-content" style="padding: 20px; display: none;">
-        <h4 style="margin-top: 0; margin-bottom: 15px;">Local Weather Forecast</h4>
-        <a class="weatherwidget-io" href="https://forecast7.com/en/40d71n74d01/new-york/" data-label="New York" data-font="Arial" data-icons="Climacons" data-theme="pure" style="display: block; text-decoration: none; padding: 0; border: 1px solid #ccc; border-radius: 8px;">New York</a>
-    </div>
-
-    <div id="PunchList" class="toolkit-tab-content" style="padding: 20px; display: none;">
-        <h4 style="margin-top: 0; margin-bottom: 15px;">Daily Punch List</h4>
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <input type="text" id="punchListItemInput" placeholder="Add a new task..." onkeydown="if(event.key==='Enter'){addPunchListItem()}" style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-            <button onclick="addPunchListItem()" style="padding: 10px 15px; border: none; background-color: #28a745; color: white; font-weight: bold; border-radius: 4px; cursor: pointer;">Add</button>
-        </div>
-        <ul id="punchListUL" style="list-style-type: none; padding: 0; margin: 0;">
-            </ul>
-    </div>
-
-</div>
-
-<script>
-    // --- JAVASCRIPT FOR TOOLKIT ---
-
-    // Initialize the first tab
-    document.addEventListener("DOMContentLoaded", function() {
-        // Trigger a click on the first tab button to set the initial state
-        document.querySelector('.toolkit-tab-button').click();
-
-        // Load the weather widget script if it doesn't already exist
-        if (!document.getElementById('weatherwidget-io-js')) {
-            let script = document.createElement('script');
-            script.id = 'weatherwidget-io-js';
-            script.src = 'https://weatherwidget.io/js/widget.min.js';
-            document.body.appendChild(script);
-        }
-    });
-
-    // --- Tab Switching Logic ---
-    function openToolkitTab(evt, tabName) {
-        let i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("toolkit-tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("toolkit-tab-button");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].style.backgroundColor = "#f7f7f7";
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.style.backgroundColor = "#eee";
-    }
-
-    // --- Calculator Logic ---
-    function calculateConcrete() {
-        const l = parseFloat(document.getElementById('concreteL').value) || 0;
-        const w = parseFloat(document.getElementById('concreteW').value) || 0;
-        const t = parseFloat(document.getElementById('concreteT').value) || 0;
-        const cubicFeet = l * w * (t / 12);
-        const cubicYards = cubicFeet / 27;
-        document.getElementById('concreteResult').textContent = cubicYards.toFixed(2);
-    }
-
-    function calculatePaint() {
-        const area = parseFloat(document.getElementById('paintArea').value) || 0;
-        const coats = parseFloat(document.getElementById('paintCoats').value) || 0;
-        const gallons = (area / 350) * coats;
-        document.getElementById('paintResult').textContent = gallons.toFixed(2);
-    }
-    
-    function calculateTriangle() {
-        const a = parseFloat(document.getElementById('triangleA').value) || 0;
-        const b = parseFloat(document.getElementById('triangleB').value) || 0;
-        const c = Math.sqrt(a*a + b*b);
-        document.getElementById('triangleResult').textContent = c.toFixed(2);
-    }
-
-    // --- Punch List Logic ---
-    function addPunchListItem() {
-        const input = document.getElementById('punchListItemInput');
-        const text = input.value.trim();
-        if (text === "") return;
-
-        const ul = document.getElementById('punchListUL');
-        const li = document.createElement('li');
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
-        li.style.padding = '10px';
-        li.style.borderBottom = '1px solid #eee';
-        
-        const taskText = document.createElement('span');
-        taskText.textContent = text;
-        taskText.style.flexGrow = '1';
-        taskText.style.cursor = 'pointer';
-        taskText.onclick = function() {
-            this.style.textDecoration = this.style.textDecoration === 'line-through' ? 'none' : 'line-through';
-        };
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '✖';
-        deleteBtn.style.border = 'none';
-        deleteBtn.style.background = 'transparent';
-        deleteBtn.style.color = '#dc3545';
-        deleteBtn.style.cursor = 'pointer';
-        deleteBtn.style.fontWeight = 'bold';
-        deleteBtn.onclick = function() {
-            li.remove();
-        };
-
-        li.appendChild(taskText);
-        li.appendChild(deleteBtn);
-        ul.appendChild(li);
-
-        input.value = '';
-        input.focus();
-    }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-	
 </body>
 </html>
