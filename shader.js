@@ -1,6 +1,6 @@
 // =================================================================================================
-// [SYSTEM BOOTSTRAP] :: IMMEDIATE-INVOKED FUNCTION EXPRESSION (IIFE)
-// Creative WebGL rendering system with completely new visual effects
+// [CONSTRUCTION DESIGN SHADER SYSTEM] :: INDUSTRIAL WEBGL BACKGROUND
+// Blueprint-inspired, architectural, and construction-themed visual effects
 // Only the `window.updateShader` function is intentionally exposed for external control.
 // =================================================================================================
 (function() {
@@ -14,7 +14,7 @@
 
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
-        console.log("[DEBUG] Creating WebGL canvas element.");
+        console.log("[DEBUG] Creating Construction Design WebGL canvas element.");
         // Create canvas element programmatically
         webglCanvas = document.createElement('canvas');
         webglCanvas.id = 'webglCanvas';
@@ -28,10 +28,10 @@
         webglCanvas.style.pointerEvents = 'none'; // Don't intercept mouse events
         webglCanvas.style.transform = 'translate3d(0,0,0)'; // Force GPU acceleration
 
-        console.log("[DEBUG] Inserting WebGL canvas into DOM.");
+        console.log("[DEBUG] Inserting Construction WebGL canvas into DOM.");
         // Insert canvas as first child of body to ensure it's behind everything
         document.body.insertBefore(webglCanvas, document.body.firstChild);
-        console.log("[DEBUG] WebGL canvas successfully inserted into DOM.");
+        console.log("[DEBUG] Construction WebGL canvas successfully inserted into DOM.");
 
         initWebGL();
     });
@@ -69,13 +69,13 @@
 
         } catch (e) {
             console.error("[FATAL] WebGL Initialization Error:", e);
-            if (document.body) document.body.style.backgroundColor = '#050511';
+            if (document.body) document.body.style.backgroundColor = '#0a0f1a';
             return;
         }
     }
 
     // =================================================================================================
-    // [SHADER SOURCE CODE] :: GLSL 3.00 ES - COMPLETELY NEW CREATIVE EFFECTS
+    // [CONSTRUCTION SHADER SOURCE CODE] :: GLSL 3.00 ES - INDUSTRIAL & BLUEPRINT EFFECTS
     // =================================================================================================
 
     const vertexShaderSource = `#version 300 es
@@ -98,9 +98,13 @@
 
         const float PI = 3.14159265359;
         const float TWO_PI = 6.28318530718;
-        const float TOTAL_PHASES_F = 15.0;
 
-        float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        // Hash function for noise generation
+        float hash(vec2 p) { 
+            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); 
+        }
+        
+        // Smooth noise function
         float noise(vec2 p) {
             vec2 i = floor(p), f = fract(p);
             f = f * f * (3.0 - 2.0 * f);
@@ -108,29 +112,149 @@
                        mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
         }
 
-        float fbm(vec2 p) {
-            float v = 0.0, a = 0.5;
-            for(int i = 0; i < 4; i++) {
-                v += a * noise(p);
-                p *= 2.0; a *= 0.5;
-            }
-            return v;
+        // Grid pattern for blueprint aesthetic
+        float grid(vec2 uv, float scale) {
+            vec2 grid = abs(fract(uv * scale) - 0.5);
+            return min(grid.x, grid.y);
         }
 
-        mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+        // Technical line patterns
+        float technicalLines(vec2 uv, float time) {
+            float lines1 = sin(uv.x * 40.0 + time * 0.5) * 0.5 + 0.5;
+            float lines2 = sin(uv.y * 60.0 + time * 0.3) * 0.5 + 0.5;
+            return min(lines1 * 0.1, lines2 * 0.1);
+        }
 
-        vec3 plasmaStorm(vec2 uv, float t) {
-            float v1 = sin(uv.x * 8.0 + t * 2.0);
-            float v2 = sin(10.0 * (uv.x * sin(t * 0.5) + uv.y * cos(t * 0.7)) + t * 1.5);
-            float v3 = sin(sqrt(50.0 * dot(uv, uv) + 1.0) + t * 3.0);
-            float plasma = (v1 + v2 + v3) / 3.0;
-            return mix(vec3(1.0, 0.1, 0.8), vec3(0.1, 0.8, 1.0), sin(plasma * PI + t) * 0.5 + 0.5);
+        // Blueprint grid with construction lines
+        vec3 blueprintGrid(vec2 uv, float time) {
+            // Base dark blue blueprint background
+            vec3 baseColor = vec3(0.05, 0.1, 0.2);
+            
+            // Main grid lines
+            float mainGrid = grid(uv, 10.0);
+            float subGrid = grid(uv, 50.0);
+            
+            // Construction grid color (light blue/cyan)
+            vec3 gridColor = vec3(0.2, 0.6, 0.9);
+            
+            // Add grid lines
+            float gridIntensity = 1.0 - smoothstep(0.0, 0.02, mainGrid);
+            gridIntensity += (1.0 - smoothstep(0.0, 0.005, subGrid)) * 0.5;
+            
+            return mix(baseColor, gridColor, gridIntensity * 0.3);
+        }
+
+        // Animated construction elements
+        vec3 constructionElements(vec2 uv, float time) {
+            vec3 color = vec3(0.0);
+            
+            // Moving construction lines
+            float movingLine1 = sin(uv.x * 8.0 - time * 2.0) * 0.5 + 0.5;
+            float movingLine2 = sin(uv.y * 12.0 - time * 1.5) * 0.5 + 0.5;
+            
+            // Construction beam effect
+            float beam1 = abs(sin(uv.x * 20.0 + time)) < 0.1 ? 1.0 : 0.0;
+            float beam2 = abs(sin(uv.y * 15.0 + time * 0.7)) < 0.1 ? 1.0 : 0.0;
+            
+            // Orange construction warning color
+            vec3 constructionOrange = vec3(1.0, 0.5, 0.1);
+            vec3 constructionYellow = vec3(1.0, 0.9, 0.2);
+            
+            color += constructionOrange * beam1 * 0.2;
+            color += constructionYellow * beam2 * 0.15;
+            
+            // Pulsing construction lights
+            float pulse = sin(time * 3.0) * 0.5 + 0.5;
+            color += constructionOrange * pulse * 0.1 * smoothstep(0.8, 1.0, movingLine1);
+            
+            return color;
+        }
+
+        // Industrial pipe/structure patterns
+        vec3 industrialStructure(vec2 uv, float time) {
+            vec3 color = vec3(0.0);
+            
+            // Rotating structural elements
+            vec2 center = vec2(0.0);
+            vec2 rotUV = uv;
+            float angle = time * 0.2;
+            rotUV = mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * (uv - center) + center;
+            
+            // Structural cross-beams
+            float crossBeam1 = abs(rotUV.x + rotUV.y) < 0.02 ? 1.0 : 0.0;
+            float crossBeam2 = abs(rotUV.x - rotUV.y) < 0.02 ? 1.0 : 0.0;
+            
+            // Metallic steel color
+            vec3 steelColor = vec3(0.6, 0.6, 0.7);
+            
+            color += steelColor * (crossBeam1 + crossBeam2) * 0.3;
+            
+            // Rivets and bolts
+            vec2 rivetUV = fract(uv * 20.0) - 0.5;
+            float rivet = 1.0 - smoothstep(0.1, 0.15, length(rivetUV));
+            color += steelColor * rivet * 0.1;
+            
+            return color;
+        }
+
+        // Safety warning stripes
+        vec3 safetyStripes(vec2 uv, float time) {
+            vec3 color = vec3(0.0);
+            
+            // Diagonal warning stripes
+            float stripePattern = sin((uv.x + uv.y) * 30.0 + time) * 0.5 + 0.5;
+            float stripe = step(0.5, stripePattern);
+            
+            // Warning colors
+            vec3 warningYellow = vec3(1.0, 1.0, 0.0);
+            vec3 warningBlack = vec3(0.1, 0.1, 0.1);
+            
+            // Apply stripes in certain areas
+            float stripeArea = smoothstep(0.7, 0.9, abs(uv.y));
+            color += mix(warningBlack, warningYellow, stripe) * stripeArea * 0.2;
+            
+            return color;
+        }
+
+        // Main construction design function
+        vec3 constructionDesign(vec2 uv, float time) {
+            vec3 color = vec3(0.0);
+            
+            // Layer 1: Blueprint grid base
+            color += blueprintGrid(uv, time);
+            
+            // Layer 2: Construction elements
+            color += constructionElements(uv, time);
+            
+            // Layer 3: Industrial structure
+            color += industrialStructure(uv, time);
+            
+            // Layer 4: Safety stripes
+            color += safetyStripes(uv, time);
+            
+            // Add some ambient lighting effect
+            float ambient = 0.1 + 0.05 * sin(time * 0.5);
+            color += vec3(ambient * 0.1, ambient * 0.15, ambient * 0.2);
+            
+            return color;
         }
 
         void main() {
             vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.y, u_resolution.x);
-            vec3 color = vec3(0.02, 0.02, 0.1);
-            color = plasmaStorm(uv, u_time);
+            
+            // Apply mouse interaction
+            vec2 mouse = u_mouse;
+            uv += (mouse - 0.5) * 0.2;
+            
+            // Apply speed and intensity controls
+            float adjustedTime = u_time * u_speed;
+            
+            vec3 color = constructionDesign(uv, adjustedTime);
+            
+            // Apply intensity
+            color *= u_intensity;
+            
+            // Final color output with clamping
             outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
         }
     `;
@@ -268,13 +392,38 @@
             window.shaderMouse.y = 1.0 - (e.clientY / window.innerHeight);
         });
 
+        // Initialize shader controls with construction-appropriate defaults
+        if (window.shaderIntensity === undefined) window.shaderIntensity = 0.8;
+        if (window.shaderSpeed === undefined) window.shaderSpeed = 1.2;
+
         // Start the render loop
         animationFrameId = requestAnimationFrame(render);
+        console.log("[INFO] Construction Design WebGL render loop started successfully.");
     }
 
+    // =================================================================================================
+    // [PUBLIC API] :: Expose controls for external manipulation
+    // =================================================================================================
+    
     // Expose shader control interface
-    window.updateShader = function(newShaderCode) {
-        console.warn("Dynamic shader updates are complex and not fully implemented in this version.");
+    window.updateShader = function(options = {}) {
+        if (options.intensity !== undefined) {
+            window.shaderIntensity = Math.max(0, Math.min(2, options.intensity));
+        }
+        if (options.speed !== undefined) {
+            window.shaderSpeed = Math.max(0, Math.min(5, options.speed));
+        }
+        console.log(`[SHADER UPDATE] Intensity: ${window.shaderIntensity}, Speed: ${window.shaderSpeed}`);
     };
+
+    // Additional construction-themed controls
+    window.constructionControls = {
+        setBlueprintMode: function() { window.updateShader({intensity: 0.6, speed: 0.8}); },
+        setActiveConstructionMode: function() { window.updateShader({intensity: 1.2, speed: 1.5}); },
+        setMaintenanceMode: function() { window.updateShader({intensity: 0.4, speed: 0.5}); },
+        setEmergencyMode: function() { window.updateShader({intensity: 1.8, speed: 2.5}); }
+    };
+
+    console.log("[INIT] Construction Design WebGL Shader System loaded and ready.");
 
 })();
