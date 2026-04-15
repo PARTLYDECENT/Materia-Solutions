@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materia Solutions | Cinematic Intro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            cursor: default;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-origin: center center;
+            will-change: transform, filter;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Upgraded Cinematic Vignette with color tinting */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 20%, rgba(0, 5, 10, 0.85) 100%);
+            z-index: 2;
+            pointer-events: none;
+            transition: background 2s ease;
+        }
+
+        /* Post-processing Flash for intense transitions */
+        #flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            opacity: 0;
+            z-index: 10;
+            pointer-events: none;
+            will-change: opacity;
+        }
+
+        /* --- New Audio/Start Screen Overlay --- */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #start-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 200;
+            letter-spacing: 0.5em;
+            color: #fff;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #start-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
+        }
+        
+        /* Final Text Fade-in */
+        #tagline {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 200;
+            font-size: 1.2rem;
+            letter-spacing: 0.8em;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 4s ease;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Initializing...</div>
+    
+    <!-- New Start Screen -->
+    <div id="start-screen" style="display: none;">
+        <button id="start-btn">Initiate Sequence</button>
+    </div>
+
+    <!-- Final Tagline -->
+    <div id="tagline">Welcome to the future</div>
+
+    <div id="canvas-container">
+        <canvas id="materiaCanvas"></canvas>
+    </div>
+    <div class="vignette" id="vignette"></div>
+    <div id="flash"></div>
+
+    <script>
+        // --- System Configuration ---
+        const PARTICLE_COUNT = 3000;
+        
+        // Precise Timeline sequence (in milliseconds)
+        const T = {
+            P1: 4000,   // End Komorebi -> Morph to Heavy Text
+            P2: 6500,   // End Morph Heavy -> Hold Heavy Text
+            P3: 9000,   // End Hold Heavy -> Explode to Giant Sphere
+            P4: 11000,  // End Explode Sphere -> Hold Rotating Sphere
+            P5: 14000,  // End Hold Sphere -> Morph to Sleek Text & Mini Sphere
+            P6: 16000   // End Morph Sleek Text -> Final Infinite Hold
+        };
+
+        // --- DOM Elements & Canvas ---
+        const canvasContainer = document.getElementById('canvas-container');
+        const flashDiv = document.getElementById('flash');
+        const vignetteDiv = document.getElementById('vignette');
+        const canvas = document.getElementById('materiaCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        let cw, ch;
+        
+        // Cinematic Camera State
+        let camScale = 1;
+        let camX = 0, camY = 0;
+        let shakeIntensity = 0;
+        
+        let mouse = { x: -1000, y: -1000, radius: 100 };
+        window.addEventListener('mousemove', (e) => {
+            // Adjust mouse coordinates based on camera scale for accurate interaction
+            mouse.x = (e.clientX - cw/2) / camScale + cw/2;
+            mouse.y = (e.clientY - ch/2) / camScale + ch/2;
+        });
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = (e.touches[0].clientX - cw/2) / camScale + cw/2;
+            mouse.y = (e.touches[0].clientY - ch/2) / camScale + ch/2;
+        });
+
+        // --- Offscreen Canvases for Color Graded Light Orbs ---
+        function createOrb(r, g, b) {
+            const oc = document.createElement('canvas');
+            const size = 120;
+            oc.width = size; oc.height = size;
+            const octx = oc.getContext('2d');
+            const grad = octx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+            grad.addColorStop(0, `rgba(255, 255, 255, 1)`);
+            grad.addColorStop(0.1, `rgba(${r}, ${g}, ${b}, 0.8)`);
+            grad.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.2)`);
+            grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+            octx.fillStyle = grad;
+            octx.fillRect(0, 0, size, size);
+            return oc;
+        }
+        
+        const orbWarm = createOrb(255, 200, 150); // Golden hour for Phase 0
+        const orbWhite = createOrb(255, 255, 255); // Pure white for Phase 1
+        const orbCyan = createOrb(0, 200, 255);   // Electric cyan for Phase 3/4
+
+        function easeInOutQuint(t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2; }
+        function easeInExpo(t) { return t === 0 ? 0 : Math.pow(2, 10 * t - 10); }
+
+        // --- 3D Projection Helper ---
+        function getProjectedSpherePos(base3D, globalTime, centerX, centerY, radius, isMini) {
+            const rotSpeedX = isMini ? 0.002 : 0.0005;
+            const rotSpeedY = isMini ? 0.003 : 0.0008;
+            const angleX = globalTime * rotSpeedX; 
+            const angleY = globalTime * rotSpeedY;
+            
+            let y1 = base3D.y * Math.cos(angleX) - base3D.z * Math.sin(angleX);
+            let z1 = base3D.z * Math.cos(angleX) + base3D.y * Math.sin(angleX);
+            let x2 = base3D.x * Math.cos(angleY) - z1 * Math.sin(angleY);
+            let z2 = z1 * Math.cos(angleY) + base3D.x * Math.sin(angleY);
+            
+            const perspective = 1000;
+            const scale = perspective / (perspective + z2 * radius * 0.5); 
+            
+            return { x: centerX + x2 * radius * scale, y: centerY + y1 * radius * scale, scale: scale, z: z2 };
+        }
+
+        // --- State Management ---
+        let particles = [];
+        let textTargetsHeavy = [];
+        let textTargetsLight = [];
+        let oCenterX = 0, oCenterY = 0, oRadius = 0;
+        let giantSphereRadius = 0;
+        let currentPhase = 0; 
+        let animationStartTime = null;
+        let flashOpacity = 0;
+
+        // --- Web Audio API Synth Engine ---
+        let audioCtx;
+        let masterGain;
+
+        function createNoiseBuffer() {
+            const bufferSize = audioCtx.sampleRate * 2; // 2 seconds
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            return buffer;
+        }
+
+        // Epic Synthesizer Brass
+        function playBrassChord(freqs, startTime, duration, isHigh = false) {
+            freqs.forEach(f => {
+                // Layer multiple oscillators per note for a thick, wide "orchestral" feel
+                [f*0.995, f, f*1.005].forEach(detunedFreq => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    const filter = audioCtx.createBiquadFilter();
+
+                    osc.type = isHigh ? 'square' : 'sawtooth';
+                    osc.frequency.value = detunedFreq;
+
+                    // Envelope for the filter (Brass Swell)
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(isHigh ? 800 : 300, startTime);
+                    filter.frequency.exponentialRampToValueAtTime(isHigh ? 6000 : 3000, startTime + 0.2);
+                    filter.frequency.exponentialRampToValueAtTime(isHigh ? 2000 : 800, startTime + duration);
+
+                    // Envelope for volume (ADSR)
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.15, startTime + 0.1); // Attack
+                    gain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.3); // Decay to Sustain
+                    gain.gain.linearRampToValueAtTime(0.001, startTime + duration); // Release
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                });
+            });
+        }
+
+        // Cinematic Impact Boom
+        function playImpact(startTime) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            // Massive pitch drop
+            osc.frequency.setValueAtTime(150, startTime);
+            osc.frequency.exponentialRampToValueAtTime(0.01, startTime + 2);
+            
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 2);
+
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(startTime);
+            osc.stop(startTime + 2);
+
+            // Add an explosive noise burst
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer();
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.setValueAtTime(1000, startTime);
+            noiseFilter.frequency.exponentialRampToValueAtTime(100, startTime + 1);
+            
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.6, startTime);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
+
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(masterGain);
+            noise.start(startTime);
+            noise.stop(startTime + 1.5);
+        }
+
+        // Military Snare Roll (21st Century Fox style rhythm intro)
+        function playSnareHit(time, vol) {
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = createNoiseBuffer();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 800;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(vol, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+            
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(masterGain);
+            noise.start(time);
+            noise.stop(time + 0.1);
+        }
+
+        // Shimmering Futuristic Arpeggio for the ending
+        function playArpeggio(startTime) {
+            // C Major 9 chord sweeping up multiple octaves
+            const notes = [261.63, 329.63, 392.00, 493.88, 587.33, 783.99, 987.77, 1174.66, 1567.98, 1975.53, 2349.32];
+            notes.forEach((freq, i) => {
+                const noteTime = startTime + (i * 0.12); // Rapid sweep timing
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle'; // Bell-like tone
+                osc.frequency.value = freq;
+                
+                gain.gain.setValueAtTime(0, noteTime);
+                gain.gain.linearRampToValueAtTime(0.08, noteTime + 0.05); // Quick attack
+                gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 3.0); // Long ringing tail
+                
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.start(noteTime);
+                osc.stop(noteTime + 3.0);
+            });
+        }
+
+        // Cinematic Text-To-Speech Voice
+        function playTTSVoice() {
+            if ('speechSynthesis' in window) {
+                // Cancel any currently playing speech to ensure immediate playback
+                window.speechSynthesis.cancel(); 
+
+                const msg = new SpeechSynthesisUtterance("Welcome to the future.");
+                msg.rate = 0.85; // Slowed down for a dramatic, cinematic feel
+                msg.pitch = 0.2; // Deep pitch for a massive, robotic/AI tone
+                msg.volume = 1.0;
+                
+                // Try to grab a deep or male voice if available in the browser
+                const voices = window.speechSynthesis.getVoices();
+                const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+                const preferredVoice = englishVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Male')) || englishVoices[0];
+                
+                if (preferredVoice) {
+                    msg.voice = preferredVoice;
+                }
+
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        function scheduleCinematicScore(t0) {
+            // Intro: Rolling snare building up tension (0s to 3.5s)
+            for(let i = 0; i < 20; i++) {
+                let hitTime = t0 + (i * 0.18);
+                let vol = 0.05 + (i * 0.01); // Build up volume
+                playSnareHit(hitTime, vol);
+                // Fox style double hits occasionally
+                if (i % 4 === 0) playSnareHit(hitTime + 0.06, vol * 0.8);
+            }
+
+            // Phase 1 (4.0s) - Morph starts: Grandiose C Major Intro Chord + Boom
+            const tMorph = t0 + (T.P1 / 1000);
+            playImpact(tMorph);
+            playBrassChord([130.81, 196.00, 261.63, 329.63, 392.00], tMorph, 2.5); // C3, G3, C4, E4, G4
+
+            // Phase 2 (6.5s) - Heavy Text forms: Higher, triumphant G Major Chord
+            const tHeavy = t0 + (T.P2 / 1000);
+            playImpact(tHeavy);
+            playBrassChord([196.00, 293.66, 392.00, 493.88, 587.33], tHeavy, 2.5); // G3, D4, G4, B4, D5
+
+            // Phase 3 (9.0s) - Explode to Sphere: Massive dissonant hit resolving to F Major
+            const tExplode = t0 + (T.P3 / 1000);
+            playImpact(tExplode);
+            playImpact(tExplode + 0.1); // Double boom
+            playBrassChord([87.31, 174.61, 261.63, 349.23, 440.00], tExplode, 3.5); // F2, F3, C4, F4, A4
+            
+            // Phase 5 (14.0s) - Morph to Sleek: FULL SPECTRUM MULTI-TONE LONG PAD
+            const tSleek = t0 + (T.P5 / 1000);
+            playImpact(tSleek);
+            // Deep sub bass all the way up to high shimmering synth frequencies
+            playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 12.0, true); 
+
+            // The End (18.5s) - Futuristic Arpeggio to cap it off
+            const tArp = t0 + 18.5;
+            playArpeggio(tArp);
+        }
+
+        // --- Particle Class ---
+        class Particle {
+            constructor() {
+                this.x = Math.random() * cw;
+                this.y = Math.random() * ch;
+                this.komorebiSize = Math.random() * 80 + 40; 
+                this.size = this.komorebiSize;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.noiseOffsetX = Math.random() * 1000;
+                this.noiseOffsetY = Math.random() * 1000;
+                this.flickerSpeed = Math.random() * 0.05 + 0.01;
+                this.flickerOffset = Math.random() * Math.PI * 2;
+                
+                this.baseTextSize = Math.random() * 1.5 + 0.5;
+                this.morphStartX = 0; this.morphStartY = 0; this.morphStartSize = 0;
+                this.currentScale = 1;
+                this.depthZ = 0; // For depth-sorting color
+            }
+
+            update(globalTime, phase, phaseProgress) {
+                let dxMouse = mouse.x - this.x;
+                let dyMouse = mouse.y - this.y;
+                let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                let pushX = 0, pushY = 0;
+                
+                if (distanceMouse < mouse.radius && (phase === 2 || phase === 4 || phase === 6)) {
+                    let force = (mouse.radius - distanceMouse) / mouse.radius;
+                    pushX = -(dxMouse / distanceMouse) * force * 15;
+                    pushY = -(dyMouse / distanceMouse) * force * 15;
+                }
+
+                if (phase === 0) {
+                    this.x += this.vx + Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 1.5;
+                    this.y += this.vy + Math.cos(globalTime * 0.001 + this.noiseOffsetY) * 1.5;
+                    if (this.x < -100) this.x = cw + 100; if (this.x > cw + 100) this.x = -100;
+                    if (this.y < -100) this.y = ch + 100; if (this.y > ch + 100) this.y = -100;
+                    this.size = this.komorebiSize * (0.3 + ((Math.sin(globalTime * this.flickerSpeed + this.flickerOffset) + 1) / 2) * 0.7);
+                    
+                } else if (phase === 1) {
+                    const ease = easeInOutQuint(phaseProgress);
+                    this.x = this.morphStartX + (this.heavyX - this.morphStartX) * ease;
+                    this.y = this.morphStartY + (this.heavyY - this.morphStartY) * ease;
+                    this.size = this.morphStartSize + (this.baseTextSize - this.morphStartSize) * ease;
+                    
+                } else if (phase === 2) {
+                    // Pre-explosion anticipation: pull in slightly at the end of phase 2
+                    let anticipation = 0;
+                    if (globalTime > T.P3 - 500) {
+                        anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 15;
+                    }
+                    
+                    let dirX = (cw/2 - this.heavyX);
+                    let dirY = (ch/2 - this.heavyY);
+                    let mag = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
+                    
+                    this.x = this.heavyX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 1 + (dirX/mag)*anticipation;
+                    this.y = this.heavyY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 1 + (dirY/mag)*anticipation;
+                    this.size = this.baseTextSize + ((Math.sin(globalTime * this.flickerSpeed * 2 + this.flickerOffset) + 1) / 2);
+                    
+                } else if (phase === 3) {
+                    const ease = easeInOutQuint(phaseProgress);
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
+                    this.x = this.morphStartX + (proj.x - this.morphStartX) * ease;
+                    this.y = this.morphStartY + (proj.y - this.morphStartY) * ease;
+                    this.currentScale = proj.scale;
+                    this.depthZ = proj.z;
+                    this.size = this.morphStartSize + ((3 * proj.scale) - this.morphStartSize) * ease;
+                    
+                } else if (phase === 4) {
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
+                    this.x = proj.x + pushX;
+                    this.y = proj.y + pushY;
+                    this.currentScale = proj.scale;
+                    this.depthZ = proj.z;
+                    this.size = 3 * proj.scale;
+                    
+                } else if (phase === 5) {
+                    const ease = easeInOutQuint(phaseProgress);
+                    let tX, tY, tSize;
+                    if (this.isMiniSphere) {
+                        let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
+                        tX = proj.x; tY = proj.y; tSize = 1.8 * proj.scale;
+                        this.currentScale = proj.scale;
+                        this.depthZ = proj.z;
+                    } else {
+                        tX = this.lightX; tY = this.lightY; tSize = 1.2;
+                    }
+                    this.x = this.morphStartX + (tX - this.morphStartX) * ease;
+                    this.y = this.morphStartY + (tY - this.morphStartY) * ease;
+                    this.size = this.morphStartSize + (tSize - this.morphStartSize) * ease;
+                    
+                } else if (phase === 6) {
+                    if (this.isMiniSphere) {
+                        let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
+                        this.x = proj.x + pushX;
+                        this.y = proj.y + pushY;
+                        this.size = 1.8 * proj.scale;
+                        this.currentScale = proj.scale;
+                        this.depthZ = proj.z;
+                    } else {
+                        this.x = this.lightX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 0.5;
+                        this.y = this.lightY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 0.5;
+                        this.size = 1.2 + ((Math.sin(globalTime * this.flickerSpeed * 2 + this.flickerOffset) + 1) / 2) * 0.5;
+                    }
+                }
+            }
+
+            draw(phase, phaseProgress) {
+                if (phase === 0) {
+                    ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                } else if (phase === 1 && this.size > 5) {
+                    // Crossfade orb colors during morph
+                    ctx.globalAlpha = 1 - phaseProgress;
+                    ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    ctx.globalAlpha = phaseProgress;
+                    ctx.drawImage(orbWhite, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    ctx.globalAlpha = 1;
+                } else {
+                    let alpha = 1;
+                    let r = 255, g = 255, b = 255;
+                    
+                    if (phase === 3 || phase === 4 || (phase >= 5 && this.isMiniSphere)) {
+                        // Depth fading for 3D sphere
+                        alpha = Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
+                        
+                        // Color grade the sphere based on depth (front is white/cyan, back is deep blue)
+                        let depthFactor = (this.depthZ + 1) / 2; // Normalize roughly 0 to 1
+                        r = Math.floor(100 + 155 * depthFactor);
+                        g = Math.floor(200 + 55 * depthFactor);
+                        b = 255;
+                    }
+
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // --- Target Extraction ---
+        function extractHeavyTextTargets() {
+            const tCanvas = document.createElement('canvas');
+            tCanvas.width = cw; tCanvas.height = ch;
+            const tCtx = tCanvas.getContext('2d');
+            let fontSize = Math.min(cw / 7, 180);
+            tCtx.font = `900 ${fontSize}px Montserrat`;
+            tCtx.fillStyle = 'white'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
+            
+            const lineHeight = fontSize * 1.1;
+            tCtx.fillText("MATERIA", cw / 2, ch / 2 - lineHeight / 2);
+            tCtx.fillText("SOLUTIONS", cw / 2, ch / 2 + lineHeight / 2);
+            
+            const imgData = tCtx.getImageData(0, 0, cw, ch).data;
+            textTargetsHeavy = [];
+            const step = Math.ceil(cw / 300);
+            
+            for (let y = 0; y < ch; y += step) {
+                for (let x = 0; x < cw; x += step) {
+                    if (imgData[(y * cw + x) * 4 + 3] > 128) textTargetsHeavy.push({ x, y });
+                }
+            }
+        }
+
+        function extractLightTextTargets() {
+            const tCanvas = document.createElement('canvas');
+            tCanvas.width = cw; tCanvas.height = ch;
+            const tCtx = tCanvas.getContext('2d');
+            let fontSize = Math.min(cw / 8, 140);
+            tCtx.font = `200 ${fontSize}px Montserrat`;
+            tCtx.fillStyle = 'white'; tCtx.textBaseline = 'middle';
+            
+            const lineHeight = fontSize * 1.1;
+            const textY1 = ch / 2 - lineHeight / 2;
+            const textY2 = ch / 2 + lineHeight / 2;
+            
+            tCtx.textAlign = 'center';
+            tCtx.fillText("MATERIA", cw / 2, textY1);
+            
+            tCtx.textAlign = 'left';
+            const p1 = "S";
+            const p2 = "LUTIONS";
+            const gap = fontSize * 0.7; 
+            const totalW = tCtx.measureText(p1).width + gap + tCtx.measureText(p2).width;
+            let startX = cw / 2 - totalW / 2;
+            
+            tCtx.fillText(p1, startX, textY2);
+            
+            oCenterX = startX + tCtx.measureText(p1).width + gap / 2;
+            oCenterY = textY2;
+            oRadius = gap * 0.45;
+            
+            tCtx.fillText(p2, startX + tCtx.measureText(p1).width + gap, textY2);
+
+            const imgData = tCtx.getImageData(0, 0, cw, ch).data;
+            textTargetsLight = [];
+            const step = Math.ceil(cw / 300);
+            for (let y = 0; y < ch; y += step) {
+                for (let x = 0; x < cw; x += step) {
+                    if (imgData[(y * cw + x) * 4 + 3] > 128) textTargetsLight.push({ x, y });
+                }
+            }
+        }
+
+        function assignRolesAndShapes() {
+            const lats = 24;
+            const lons = 48;
+            const miniSphereCount = Math.floor(PARTICLE_COUNT * 0.30); // 30% for the 'O' makes it dense
+            let lightIndex = 0;
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                if (textTargetsHeavy.length > 0) {
+                    let hTarget = textTargetsHeavy[i % textTargetsHeavy.length];
+                    particles[i].heavyX = hTarget.x + (Math.random()-0.5)*2;
+                    particles[i].heavyY = hTarget.y + (Math.random()-0.5)*2;
+                } else {
+                    particles[i].heavyX = cw / 2; particles[i].heavyY = ch / 2;
+                }
+
+                let theta, phi;
+                const noise = (Math.random() - 0.5) * 0.05; 
+                if (Math.random() > 0.5) {
+                    theta = (Math.floor(Math.random() * lats) / lats) * Math.PI + noise;
+                    phi = Math.random() * Math.PI * 2;
+                } else {
+                    theta = Math.random() * Math.PI;
+                    phi = (Math.floor(Math.random() * lons) / lons) * Math.PI * 2 + noise;
+                }
+                particles[i].sphere3D = { x: Math.sin(theta) * Math.cos(phi), y: Math.cos(theta), z: Math.sin(theta) * Math.sin(phi) };
+
+                if (i < miniSphereCount) {
+                    particles[i].isMiniSphere = true;
+                } else {
+                    particles[i].isMiniSphere = false;
+                    if (textTargetsLight.length > 0) {
+                        let lTarget = textTargetsLight[lightIndex % textTargetsLight.length];
+                        particles[i].lightX = lTarget.x + (Math.random()-0.5)*1.5;
+                        particles[i].lightY = lTarget.y + (Math.random()-0.5)*1.5;
+                        lightIndex++;
+                    } else {
+                        particles[i].lightX = cw / 2; particles[i].lightY = ch / 2;
+                    }
+                }
+            }
+        }
+
+        function init() {
+            cw = canvas.width = Math.max(window.innerWidth, 1);
+            ch = canvas.height = Math.max(window.innerHeight, 1);
+            giantSphereRadius = Math.min(cw, ch) * 0.40; // Slightly bigger for cinematic feel
+            
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+            
+            extractHeavyTextTargets();
+            extractLightTextTargets();
+            assignRolesAndShapes();
+        }
+
+        function triggerMorph() {
+            particles.forEach(p => { p.morphStartX = p.x; p.morphStartY = p.y; p.morphStartSize = p.size; });
+        }
+
+        // --- Main Animation Loop ---
+        function animate(timestamp) {
+            if (!animationStartTime) animationStartTime = timestamp;
+            let globalTime = timestamp - animationStartTime;
+            
+            let phaseProgress = 0;
+            let newPhase = 0;
+
+            if (globalTime < T.P1) {
+                newPhase = 0;
+            } else if (globalTime < T.P2) {
+                newPhase = 1; phaseProgress = (globalTime - T.P1) / (T.P2 - T.P1);
+            } else if (globalTime < T.P3) {
+                newPhase = 2;
+            } else if (globalTime < T.P4) {
+                newPhase = 3; phaseProgress = (globalTime - T.P3) / (T.P4 - T.P3);
+            } else if (globalTime < T.P5) {
+                newPhase = 4;
+            } else if (globalTime < T.P6) {
+                newPhase = 5; phaseProgress = (globalTime - T.P5) / (T.P6 - T.P5);
+            } else {
+                newPhase = 6;
+            }
+
+            // --- CINEMATIC DIRECTOR (Camera, Shakes, Flashes) ---
+            if (newPhase !== currentPhase) {
+                triggerMorph();
+                
+                // Triggers exactly on phase change
+                if (newPhase === 2) {
+                    shakeIntensity = 25; // Massive slam when Heavy Text forms
+                    flashOpacity = 0.3; // Quick white flash
+                }
+                if (newPhase === 3) {
+                    flashOpacity = 1; // Blinding flash bang when sphere explodes
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 10%, rgba(0, 15, 30, 0.95) 100%)"; // Shift vignette to deep cyan/black
+                }
+                if (newPhase === 5) {
+                    shakeIntensity = 10; // Small snap
+                    flashOpacity = 0.5;
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%)"; // Shift back to dark minimal
+                }
+                
+                currentPhase = newPhase;
+            }
+
+            // Camera Motion Logic
+            if (currentPhase === 0) {
+                camScale = 1 + (globalTime / T.P1) * 0.15; // Slow push in during Komorebi
+            } else if (currentPhase === 1) {
+                camScale = 1.15 - easeInOutQuint(phaseProgress) * 0.15; // Pull back sharply as text forms
+            } else if (currentPhase === 2) {
+                camScale = 1 + (globalTime - T.P2) * 0.00002; // Micro drift
+            } else if (currentPhase === 3) {
+                camScale = 1 + easeInOutQuint(phaseProgress) * 0.2; // Push in aggressively as sphere expands
+            } else if (currentPhase === 4) {
+                camScale = 1.2 + (globalTime - T.P4) * 0.00003; // Continue drifting in
+            } else if (currentPhase === 5) {
+                camScale = 1.2 - easeInOutQuint(phaseProgress) * 0.2; // Snap back out to reveal final text
+            }
+
+            // Screen Shake Decay
+            if (shakeIntensity > 0.1) {
+                camX = (Math.random() - 0.5) * shakeIntensity;
+                camY = (Math.random() - 0.5) * shakeIntensity;
+                shakeIntensity *= 0.85; // Decay
+            } else {
+                camX = 0; camY = 0;
+            }
+
+            // Flash Decay
+            if (flashOpacity > 0.01) {
+                flashOpacity *= 0.9;
+            } else {
+                flashOpacity = 0;
+            }
+
+            // Apply Camera and Flash
+            canvasContainer.style.transform = `translate(${camX}px, ${camY}px) scale(${camScale})`;
+            flashDiv.style.opacity = flashOpacity;
+
+            // Trigger "Welcome to the future" text and Voice slightly before the arpeggio hits
+            if (globalTime > 18000 && !window.taglineShown) {
+                document.getElementById('tagline').style.opacity = 1;
+                playTTSVoice(); // Trigger the robotic voice!
+                window.taglineShown = true;
+                
+                // Final cinematic hold before redirect
+                setTimeout(() => {
+                    // Start fading out the entire cinematic for a smooth transition
+                    canvasContainer.style.transition = 'opacity 3s ease, filter 3s ease';
+                    canvasContainer.style.opacity = '0';
+                    canvasContainer.style.filter = 'blur(20px)';
+                    document.getElementById('tagline').style.transition = 'opacity 2s ease';
+                    document.getElementById('tagline').style.opacity = '0';
+                }, 5000);
+
+                setTimeout(() => {
+                    window.location.href = 'STORE.HTML';
+                }, 8500); // Redirect after fade completes
+            }
+
+            // --- CANVAS RENDERING ---
+            ctx.globalCompositeOperation = 'source-over';
+            if (currentPhase === 0) ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            else if (currentPhase === 1 || currentPhase === 3 || currentPhase === 5) ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            else ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            ctx.fillRect(0, 0, cw, ch);
+
+            ctx.globalCompositeOperation = 'lighter';
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(globalTime, currentPhase, phaseProgress);
+                particles[i].draw(currentPhase, phaseProgress);
+            }
+            
+            // Keep the animation loop running indefinitely for the final state
+            requestAnimationFrame(animate);
+        }
+
+        // --- Initialization & Audio Context Boot ---
+        document.fonts.ready.then(() => {
+            document.getElementById('loading').style.display = 'none';
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.display = 'flex';
+
+            // Pre-warm Speech Synthesis to ensure voices are loaded into the browser early
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+            }
+
+            document.getElementById('start-btn').addEventListener('click', () => {
+                // Initialize Web Audio API on user gesture
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.6; // Master Volume
+                
+                // Add a soft compressor to prevent clipping when massive chords hit
+                const compressor = audioCtx.createDynamicsCompressor();
+                compressor.threshold.value = -10;
+                compressor.ratio.value = 4;
+                masterGain.connect(compressor);
+                compressor.connect(audioCtx.destination);
+
+                startScreen.style.opacity = 0;
+                setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
+
+                init();
+                
+                // Schedule the audio score perfectly synced with the visual phases
+                scheduleCinematicScore(audioCtx.currentTime);
+                
+                // Start visual animation loop
+                requestAnimationFrame(animate);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            if (particles.length === 0) return; // Prevent error if resized before init
+            cw = canvas.width = Math.max(window.innerWidth, 1);
+            ch = canvas.height = Math.max(window.innerHeight, 1);
+            giantSphereRadius = Math.min(cw, ch) * 0.40;
+            extractHeavyTextTargets();
+            extractLightTextTargets();
+            assignRolesAndShapes();
+            triggerMorph();
+        });
+    </script>
+</body>
+</html>
