@@ -306,8 +306,8 @@ window.addEventListener('load', function () {
     let buttonController = null;
     if (window.MatrixButtonController) {
         buttonController = new MatrixButtonController(scene, camera);
-        document.querySelectorAll('.flower-card').forEach(el => {
-            buttonController.register(el);
+        document.querySelectorAll('.flower-card').forEach((el, index) => {
+            buttonController.register(el, index);
         });
     }
 

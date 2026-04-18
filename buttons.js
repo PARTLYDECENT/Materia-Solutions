@@ -2,7 +2,7 @@
 // Framework for unifying PointCloud and SDF Matrix into single controllable entities
 
 class MatrixButton {
-    constructor(scene, camera) {
+    constructor(scene, camera, index = 0) {
         this.group = new THREE.Group();
         this.scene = scene;
         this.camera = camera;
@@ -16,7 +16,9 @@ class MatrixButton {
             u_hover: { value: 0 },
             u_click: { value: 0 },
             u_inverseModelMatrix: { value: new THREE.Matrix4() },
-            u_cameraPos: { value: new THREE.Vector3(0, 0, 1) } // Ortho camera position
+            u_cameraPos: { value: new THREE.Vector3(0, 0, 1) }, // Ortho camera position
+            u_seed: { value: index * 13.37 },
+            u_type: { value: index } // Map index to specific elemental effect
         };
 
         // --- 1. Point Cloud Structure ---
@@ -37,23 +39,40 @@ class MatrixButton {
                 uniform float u_time;
                 uniform float u_hover;
                 uniform float u_click;
+                uniform float u_seed;
+                uniform float u_type;
                 attribute vec3 aRandom;
                 varying float vAlpha;
+                varying vec3 vColor;
                 void main() {
                     vec3 pos = position;
                     
-                    // Shape into a matrix shell
                     float r = length(pos);
                     if(r > 0.1) {
                         pos = normalize(pos) * (0.5 + aRandom.x * 0.2);
                     }
                     
-                    // Orbiting physics
                     float speed = 1.0 + aRandom.y;
-                    float angle = u_time * speed * mix(0.2, 1.5, u_hover);
+                    float angle = (u_time + u_seed) * speed * mix(0.2, 1.5, u_hover);
                     float s = sin(angle), c = cos(angle);
                     mat2 rot = mat2(c, -s, s, c);
                     pos.xy *= rot;
+                    
+                    int type = int(u_type + 0.1);
+                    
+                    // Elemental motion overrides for Point Cloud
+                    if (type == 0) { // Scarlet / Burning
+                        pos.y += fract(u_time * speed + aRandom.z) * 1.5 - 0.75;
+                        pos.x += s * 0.1;
+                    } else if (type == 2) { // Void / Singularity
+                        float suck = fract(1.0 - (u_time * speed * 0.5 + aRandom.z));
+                        pos *= suck;
+                    } else if (type == 3) { // Aero / Wind
+                        pos.x += fract(u_time * speed * 1.5 + aRandom.z) * 2.0 - 1.0;
+                        pos.y += s * 0.1;
+                    } else if (type == 5) { // Ghost / Frost
+                        pos.y -= fract(u_time * speed * 0.4 + aRandom.z) * 1.5 - 0.75;
+                    }
                     
                     // Expansion on hover & click ripple
                     pos *= 1.0 + (u_hover * 0.4) + (u_click * sin(u_time*20.0 - r*10.0)*0.2);
@@ -62,19 +81,26 @@ class MatrixButton {
                     vAlpha *= mix(0.1, 1.0, u_hover); // Much more visible on hover
                     
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                    
-                    // Dynamic point sizes based on interaction
                     gl_PointSize = (1.0 + aRandom.x * 3.0) * mix(1.0, 3.0, u_hover);
+                    
+                    // Assign particle color
+                    vColor = vec3(1.0, 1.0, 1.0);
+                    if(type==0) vColor = vec3(1.0, 0.4, 0.1); // Fire
+                    else if(type==1) vColor = vec3(0.1, 1.0, 0.5); // Cyber Green
+                    else if(type==2) vColor = vec3(0.6, 0.1, 1.0); // Void Purple
+                    else if(type==3) vColor = vec3(0.7, 0.9, 1.0); // Aero Blue
+                    else if(type==4) vColor = vec3(0.9, 0.5, 1.0); // Prism Magenta
+                    else if(type==5) vColor = vec3(0.4, 0.8, 1.0); // Frost Cyan
                 }
             `,
             fragmentShader: `
                 varying float vAlpha;
+                varying vec3 vColor;
                 void main() {
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
                     
-                    // Piercing white/cyan data points
-                    gl_FragColor = vec4(0.95, 0.98, 1.0, vAlpha);
+                    gl_FragColor = vec4(vColor, vAlpha);
                 }
             `,
             transparent: true,
@@ -86,7 +112,6 @@ class MatrixButton {
         this.group.add(this.points);
 
         // --- 2. Raymarched SDF Core ---
-        // Bound box for the raymarcher: 1x1x1 local space limits
         const sdfGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
         const sdfMat = new THREE.ShaderMaterial({
             uniforms: this.uniforms,
@@ -101,6 +126,8 @@ class MatrixButton {
                 uniform float u_time;
                 uniform float u_hover;
                 uniform float u_click;
+                uniform float u_seed;
+                uniform float u_type;
                 uniform mat4 u_inverseModelMatrix;
                 uniform vec3 u_cameraPos;
                 varying vec3 vLocalPos;
@@ -119,24 +146,53 @@ class MatrixButton {
                     p *= scale;
                     return abs(dot(sin(p), cos(p.zxy))) / scale;
                 }
+                
+                float box(vec3 p, vec3 b) {
+                    vec3 d = abs(p) - b;
+                    return length(max(d,0.0)) + min(max(d.x,max(d.y,d.z)),0.0);
+                }
 
                 float map(vec3 p) {
+                    float ut = u_time + u_seed;
+                    int t = int(u_type + 0.1);
+                    
                     // Interaction rotations
-                    p.xy *= rot(u_time * mix(0.5, 2.0, u_hover));
-                    p.yz *= rot(u_time * 0.3);
+                    p.xy *= rot(ut * mix(0.5, 2.0, u_hover));
+                    p.yz *= rot(ut * 0.3);
                     
-                    // Liquid metallic core
-                    float d = length(p) - mix(0.2, 0.4, u_hover);
+                    float d = length(p) - mix(0.2, 0.4, u_hover); // Base core
                     
-                    // Complex orbital nodes activating on hover
-                    float nodes = length(p - vec3(0.3 * sin(u_time*3.0), 0.0, 0.0)) - 0.1;
-                    d = smin(d, nodes, 0.2);
+                    if (t == 0) { // Burning/Fire Core
+                        d -= gyroid(p + vec3(0.0, -ut*2.0, 0.0), 5.0) * 0.1 * u_hover;
+                        d += gyroid(p + vec3(ut*3.0), 10.0) * 0.05 * u_hover;
+                    } else if (t == 1) { // Cyber Core
+                        vec3 bp = p;
+                        float b = box(bp, vec3(mix(0.15, 0.35, u_hover)));
+                        d = mix(d, b, 0.6); // morph to blocky
+                        d -= gyroid(p, 15.0) * 0.03 * u_hover; // circuits
+                    } else if (t == 2) { // Void Core
+                        float nodes = length(p - vec3((0.4 - u_hover*0.2) * sin(ut*4.0), 0.0, 0.0)) - 0.05;
+                        d = smin(d, nodes, 0.3); // violent inward suck
+                    } else if (t == 3) { // Aero Core
+                        d -= sin(p.y * 20.0 + ut * 10.0) * 0.02 * u_hover; // wind ripples
+                        float stringy = length(p.xz) - 0.1;
+                        d = mix(d, stringy, 0.2 * u_hover);
+                    } else if (t == 4) { // Prism / Geometric Core
+                        vec3 p2 = p;
+                        p2.xy *= rot(ut * 2.0);
+                        float c1 = box(p, vec3(mix(0.15, 0.3, u_hover)));
+                        float c2 = box(p2, vec3(mix(0.15, 0.3, u_hover)));
+                        d = min(c1, c2) - 0.02; // jagged crystals
+                    } else if (t == 5) { // Frost / Ethereal Core
+                        d += gyroid(p + vec3(0.0, ut*0.5, 0.0), 8.0) * 0.08 * u_hover; // soft fuzz
+                    } else { // Fallback
+                        float nodes = length(p - vec3(0.3 * sin(ut*3.0), 0.0, 0.0)) - 0.1;
+                        d = smin(d, nodes, 0.2);
+                        d -= gyroid(p + vec3(ut*1.0), 10.0) * 0.05 * u_hover;
+                    }
                     
-                    // High-frequency detail
-                    d -= gyroid(p + vec3(u_time*1.0), 10.0) * 0.05 * u_hover;
-                    
-                    // Click ripple deformation
-                    d += sin(length(p)*40.0 - u_time*30.0) * 0.02 * u_click;
+                    // Click ripple deformation globally
+                    d += sin(length(p)*40.0 - ut*30.0) * 0.02 * u_click;
                     
                     return d;
                 }
@@ -151,14 +207,9 @@ class MatrixButton {
                 }
 
                 void main() {
-                    // Start ray from the bounding box surface
                     vec3 ro = vLocalPos; 
-                    
-                    // Ortho camera looks down -Z globally
-                    // Transform global direction into local space
                     vec3 worldRayDir = vec3(0.0, 0.0, -1.0); 
-                    vec3 localRayDir = normalize((u_inverseModelMatrix * vec4(worldRayDir, 0.0)).xyz);
-                    vec3 rd = localRayDir;
+                    vec3 rd = normalize((u_inverseModelMatrix * vec4(worldRayDir, 0.0)).xyz);
                     
                     float t = 0.0;
                     float d = 0.0;
@@ -170,10 +221,8 @@ class MatrixButton {
                         t += d;
                     }
                     
-                    // If ray escaped bounds without hitting SDF
                     if(d >= 0.01) discard;
                     
-                    // Shading (Sleek Mundane White Plastic / Liquid Data)
                     vec3 n = calcNormal(p);
                     vec3 localCamPos = (u_inverseModelMatrix * vec4(u_cameraPos, 1.0)).xyz;
                     vec3 viewDir = normalize(localCamPos - p);
@@ -181,14 +230,41 @@ class MatrixButton {
                     float diff = max(dot(n, normalize(vec3(2,3,2))), 0.0);
                     float fresnel = pow(1.0 - max(dot(n, viewDir), 0.0), 3.0);
                     
-                    // Base pearl white
-                    vec3 albedo = mix(vec3(0.85, 0.88, 0.9), vec3(0.95, 0.98, 1.0), diff);
+                    // Select Colors based on element
+                    int iType = int(u_type + 0.1);
+                    vec3 baseLight = vec3(0.95, 0.98, 1.0);
+                    vec3 baseDark = vec3(0.85, 0.88, 0.9);
+                    vec3 envRim = vec3(1.0, 1.0, 1.0);
+                    vec3 coreGlow = vec3(0.0);
+                    
+                    if(iType == 0) { // Burning
+                        baseDark = vec3(0.4, 0.05, 0.0); baseLight = vec3(1.0, 0.3, 0.05);
+                        coreGlow = vec3(1.0, 0.2, 0.0);
+                        envRim = vec3(1.0, 0.6, 0.2);
+                    } else if(iType == 1) { // Cyber
+                        baseDark = vec3(0.0, 0.2, 0.1); baseLight = vec3(0.1, 0.9, 0.4);
+                        coreGlow = vec3(0.0, 1.0, 0.5);
+                        envRim = vec3(0.4, 1.0, 0.7);
+                    } else if(iType == 2) { // Void
+                        baseDark = vec3(0.05, 0.0, 0.1); baseLight = vec3(0.3, 0.1, 0.5);
+                        coreGlow = vec3(0.6, 0.0, 1.0);
+                        envRim = vec3(0.3, 0.0, 0.8);
+                    } else if(iType == 3) { // Aero
+                        baseDark = vec3(0.6, 0.8, 0.9); baseLight = vec3(0.9, 0.95, 1.0);
+                        coreGlow = vec3(0.3, 0.8, 1.0);
+                    } else if(iType == 4) { // Prism
+                        baseDark = vec3(0.3, 0.2, 0.4); baseLight = vec3(0.9, 0.8, 0.9);
+                        coreGlow = abs(n); // Iridescent based on normals
+                    } else if(iType == 5) { // Frost
+                        baseDark = vec3(0.4, 0.7, 0.9); baseLight = vec3(0.85, 0.95, 1.0);
+                        coreGlow = vec3(0.1, 0.5, 1.0);
+                    }
+                    
+                    vec3 albedo = mix(baseDark, baseLight, diff);
                     vec3 finalCol = albedo;
                     
-                    // Intense energy rim
-                    finalCol += vec3(1.0, 1.0, 1.0) * fresnel * mix(0.4, 2.0, u_hover);
-                    // Blue-ish core resonance on hover
-                    finalCol += vec3(0.1, 0.5, 1.0) * (1.0 - diff) * u_hover * 0.2;
+                    finalCol += envRim * fresnel * mix(0.4, 2.0, u_hover);
+                    finalCol += coreGlow * (1.0 - diff) * u_hover * 0.5;
                     
                     gl_FragColor = vec4(finalCol, mix(0.3, 0.9, u_hover));
                 }
@@ -206,32 +282,27 @@ class MatrixButton {
         this.click = 0;
     }
 
-    // Effects API
     triggerHover(isHovering) {
         this.targetHover = isHovering ? 1.0 : 0.0;
     }
 
     triggerClick() {
-        this.click = 1.0; // Snap to 1, then smooth decay back to 0
+        this.click = 1.0; 
     }
 
-    // Frame update
     update(dt, time) {
-        // Smooth state transitions
         this.hover += (this.targetHover - this.hover) * 8.0 * dt;
-        this.click += (0.0 - this.click) * 5.0 * dt; // decay click
+        this.click += (0.0 - this.click) * 5.0 * dt; 
 
         this.uniforms.u_hover.value = this.hover;
         this.uniforms.u_click.value = this.click;
         this.uniforms.u_time.value = time;
 
-        // Update matrices so shaders know the 3D transforms
         this.group.updateMatrixWorld();
         this.uniforms.u_inverseModelMatrix.value.copy(this.group.matrixWorld).invert();
     }
 }
 
-// Controller that tracks DOM elements and maps them to WebGL Unified Buttons
 class MatrixButtonController {
     constructor(scene, camera) {
         this.scene = scene;
@@ -241,18 +312,16 @@ class MatrixButtonController {
         this.lastTime = 0;
     }
 
-    register(domElement) {
-        const btn = new MatrixButton(this.scene, this.camera);
+    register(domElement, index = 0) {
+        const btn = new MatrixButton(this.scene, this.camera, index);
         this.buttons.push(btn);
         this.domElements.push(domElement);
 
-        // Wire up programmable effects via DOM events!
         domElement.addEventListener('mouseenter', () => btn.triggerHover(true));
         domElement.addEventListener('mouseleave', () => btn.triggerHover(false));
         domElement.addEventListener('mousedown', () => btn.triggerClick());
         domElement.addEventListener('touchstart', () => btn.triggerClick(), { passive: true });
 
-        // Ensure initial sizing
         this._updatePositions();
     }
 
@@ -263,28 +332,23 @@ class MatrixButtonController {
 
             const rect = el.getBoundingClientRect();
 
-            // Map Screen Space to WebGL NDC Space (-1 to 1) for OrthographicCamera
             const nx = ((rect.left + rect.width / 2) / window.innerWidth) * 2 - 1;
             const ny = -((rect.top + rect.height / 2) / window.innerHeight) * 2 + 1;
 
             btn.group.position.set(nx, ny, 0.1);
 
-            // Scale dynamically based on DOM size width vs camera frustum
             const sx = (rect.width / window.innerWidth) * 2;
             const sy = (rect.height / window.innerHeight) * 2;
 
-            const scale = Math.max(sx, sy) * 0.8; // Cover the card smoothly
+            const scale = Math.max(sx, sy) * 0.8; 
             btn.group.scale.set(scale, scale, scale);
         }
     }
 
-    // Call in the main render loop
     update(time) {
         const dt = Math.max(0.001, time - this.lastTime);
         this.lastTime = time;
 
-        // To be safe against dynamic resizing, continuously sync position
-        // Could be optimized to only run on resize/scroll, but this guarantees perfect sync.
         this._updatePositions();
 
         for (let i = 0; i < this.buttons.length; i++) {
@@ -293,5 +357,5 @@ class MatrixButtonController {
     }
 }
 
-// Expose globally
 window.MatrixButtonController = MatrixButtonController;
+
