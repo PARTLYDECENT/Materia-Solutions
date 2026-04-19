@@ -8,6 +8,7 @@
     <meta name="twitter:title" content="Materia Solutions | Cinematic Intro">
     <meta name="twitter:description" content="Welcome to the future.">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;900&display=swap" rel="stylesheet">
@@ -683,9 +684,18 @@
         }
 
         function init() {
-            cw = canvas.width = Math.max(window.innerWidth, 1);
-            ch = canvas.height = Math.max(window.innerHeight, 1);
-            giantSphereRadius = Math.min(cw, ch) * 0.40; // Slightly bigger for cinematic feel
+            const dpr = window.devicePixelRatio || 1;
+            const logicalW = Math.max(window.innerWidth, 1);
+            const logicalH = Math.max(window.innerHeight, 1);
+            
+            canvas.width = logicalW * dpr;
+            canvas.height = logicalH * dpr;
+            ctx.scale(dpr, dpr);
+            
+            cw = logicalW;
+            ch = logicalH;
+            
+            giantSphereRadius = Math.min(cw, ch) * 0.40; 
             
             particles = [];
             for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
