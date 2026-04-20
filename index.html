@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Materia Solutions | Cinematic Intro</title>
@@ -267,7 +268,7 @@
                 // Layer multiple oscillators per note for a thick, wide "orchestral" feel
                 [f*0.995, f, f*1.005].forEach(detunedFreq => {
                     const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
+                    const gain = audioCtx.createBiquadFilter();
                     const filter = audioCtx.createBiquadFilter();
 
                     osc.type = isHigh ? 'square' : 'sawtooth';
@@ -298,7 +299,7 @@
         // Cinematic Impact Boom
         function playImpact(startTime) {
             const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+            const gain = audioCtx.createBiquadFilter();
             
             osc.type = 'sine';
             // Massive pitch drop
@@ -322,7 +323,7 @@
             noiseFilter.frequency.setValueAtTime(1000, startTime);
             noiseFilter.frequency.exponentialRampToValueAtTime(100, startTime + 1);
             
-            const noiseGain = audioCtx.createGain();
+            const noiseGain = audioCtx.createBiquadFilter();
             noiseGain.gain.setValueAtTime(0.6, startTime);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
 
@@ -340,7 +341,7 @@
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'highpass';
             filter.frequency.value = 800;
-            const gain = audioCtx.createGain();
+            const gain = audioCtx.createBiquadFilter();
             gain.gain.setValueAtTime(vol, time);
             gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
             
@@ -358,7 +359,7 @@
             notes.forEach((freq, i) => {
                 const noteTime = startTime + (i * 0.12); // Rapid sweep timing
                 const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+                const gain = audioCtx.createBiquadFilter();
                 
                 osc.type = 'triangle'; // Bell-like tone
                 osc.frequency.value = freq;
@@ -844,7 +845,7 @@
             document.getElementById('start-btn').addEventListener('click', () => {
                 // Initialize Web Audio API on user gesture
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                masterGain = audioCtx.createGain();
+                masterGain = audioCtx.createBiquadFilter();
                 masterGain.gain.value = 0.6; // Master Volume
                 
                 // Add a soft compressor to prevent clipping when massive chords hit

@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Materia Solutions | Botanical Excellence</title>
@@ -12,8 +13,8 @@
         content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="tailwind.css">
 
     <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -21,25 +22,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Noto Sans JP"', 'sans-serif'],
-                    },
-                    colors: {
-                        hana: {
-                            sakura: '#ffd1dc',
-                            matcha: '#c5d8a4',
-                            text: '#4a4443',
-                            bg: '#fdfbf7'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 
     <style>
         body {
@@ -704,6 +686,7 @@
     <script src="switcher.js"></script>
     <script src="narrator.js"></script>
     <script src="materia.js"></script>
+    <script src="materia2.js"></script>
     <script src="animator.js"></script>
 </body>
 

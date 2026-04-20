@@ -88,13 +88,13 @@
     function initAudio() {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        masterGain = audioCtx.createGain();
+        masterGain = audioCtx.createBiquadFilter();
         masterGain.gain.value = 0.12;
 
         // Soft reverb via delay feedback
         const delay = audioCtx.createDelay(0.5);
         delay.delayTime.value = 0.08;
-        const feedback = audioCtx.createGain();
+        const feedback = audioCtx.createBiquadFilter();
         feedback.gain.value = 0.15;
         const reverbFilter = audioCtx.createBiquadFilter();
         reverbFilter.type = 'lowpass';
@@ -143,7 +143,7 @@
         // Gentle detune for shimmer
         osc.detune.value = (Math.random() - 0.5) * 20;
 
-        const env = audioCtx.createGain();
+        const env = audioCtx.createBiquadFilter();
         env.gain.setValueAtTime(0, now);
         env.gain.linearRampToValueAtTime(isPunct ? 0.25 : 0.18, now + 0.01);
         env.gain.exponentialRampToValueAtTime(0.001, now + (isPunct ? 0.4 : 0.15));
@@ -168,7 +168,7 @@
             osc2.frequency.value = freq * 2; // octave up
             osc2.detune.value = (Math.random() - 0.5) * 30;
 
-            const env2 = audioCtx.createGain();
+            const env2 = audioCtx.createBiquadFilter();
             env2.gain.setValueAtTime(0, now);
             env2.gain.linearRampToValueAtTime(0.06, now + 0.02);
             env2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
@@ -185,7 +185,7 @@
             sub.type = 'sine';
             sub.frequency.value = freq * 0.25;
 
-            const subEnv = audioCtx.createGain();
+            const subEnv = audioCtx.createBiquadFilter();
             subEnv.gain.setValueAtTime(0, now);
             subEnv.gain.linearRampToValueAtTime(0.1, now + 0.03);
             subEnv.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
@@ -209,7 +209,7 @@
             osc.type = 'sine';
             osc.frequency.value = freq;
 
-            const env = audioCtx.createGain();
+            const env = audioCtx.createBiquadFilter();
             env.gain.setValueAtTime(0, t);
             env.gain.linearRampToValueAtTime(0.1, t + 0.03);
             env.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
