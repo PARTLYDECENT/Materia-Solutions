@@ -570,6 +570,17 @@
         let playing = false;
         btn.addEventListener('click', () => {
             if (!playing) {
+                // Stop other engines
+                if (window.MateriaMusic2 && window.MateriaMusic2.stop) {
+                    try { window.MateriaMusic2.stop(); } catch(e) {}
+                    const b2 = document.getElementById('materia2-music-btn');
+                    if (b2) { b2.classList.remove('playing'); b2.innerHTML = '🔊'; }
+                }
+                if (window.MateriaMusic3 && window.MateriaMusic3.stop) {
+                    try { window.MateriaMusic3.stop(); } catch(e) {}
+                    const b3 = document.getElementById('materia3-music-btn');
+                    if (b3) { b3.classList.remove('playing'); b3.innerHTML = '✨'; }
+                }
                 start();
                 btn.classList.add('playing');
                 btn.innerHTML = '⏸';

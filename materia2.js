@@ -928,6 +928,15 @@
                     origBtn.innerHTML = '♫';
                 }
             }
+            // Stop materia3 engine if it's playing
+            if (window.MateriaMusic3 && window.MateriaMusic3.stop) {
+                try { window.MateriaMusic3.stop(); } catch(e) {}
+                const ambBtn = document.getElementById('materia3-music-btn');
+                if (ambBtn) {
+                    ambBtn.classList.remove('playing');
+                    ambBtn.innerHTML = '✨';
+                }
+            }
 
             if (!playing) {
                 start();
