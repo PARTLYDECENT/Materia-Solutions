@@ -321,6 +321,91 @@
             100% { opacity: 1; filter: blur(2px); }
         }
 
+        /* --- Card 7: GRAVITY FERN — Space-Time Distortion --- */
+        .card-gravity::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0%; height: 0%;
+            background: radial-gradient(circle, rgba(0,0,0,0.8), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: blur(20px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card-gravity::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 150%; height: 150%;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card-gravity:hover::before {
+            width: 150%; height: 150%;
+            opacity: 0.4;
+        }
+        .card-gravity:hover::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        .card-gravity:hover {
+            background: rgba(0, 0, 0, 0.05);
+            backdrop-filter: contrast(1.4) blur(10px) brightness(0.8);
+            transform: scale(1.05) perspective(1000px) rotateX(5deg);
+        }
+
+        /* --- Card 8: NEURAL LILY — Organic Pulse --- */
+        .card-neural::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,0,150,0.2), transparent 40%);
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: neuralRotate 5s linear infinite;
+            filter: url(#neuralJitter);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .card-neural::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(255,0,150,0.15), transparent 60%);
+            animation: neuralPulse 2s ease-in-out infinite;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .card-neural:hover::before, .card-neural:hover::after {
+            opacity: 1;
+        }
+        .card-neural:hover {
+            border-color: rgba(255,0,150,0.4) !important;
+            box-shadow: 0 0 30px rgba(255,0,150,0.2) !important;
+        }
+        @keyframes neuralRotate {
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1.2); }
+        }
+        @keyframes neuralPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
         /* Make card content sit above pseudo-element effects */
         .flower-card > * {
             position: relative;
@@ -551,7 +636,7 @@
 
         <!-- Fixed Main Grid -->
         <main class="flex-1 flex items-center justify-center p-4 md:p-6 min-h-0">
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 w-full h-full max-h-[800px]">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 w-full h-full max-h-[800px]">
 
                 <!-- Card 1: FIRE -->
                 <div class="glass-panel rounded-3xl p-4 flex flex-col items-center justify-center flower-card card-fire group relative overflow-hidden"
@@ -631,6 +716,32 @@
                     </div>
                 </div>
 
+                <!-- Card 7: GRAVITY -->
+                <div class="glass-panel rounded-3xl p-4 flex flex-col items-center justify-center flower-card card-gravity group relative overflow-hidden"
+                    onclick="showModal('Gravity Fern')">
+                    <div
+                        class="text-4xl md:text-4xl text-hana-text mb-2 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                        GRAVITY</div>
+                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-4">FERN</div>
+                    <div
+                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
+                        EXPERIMENTAL
+                    </div>
+                </div>
+
+                <!-- Card 8: NEURAL -->
+                <div class="glass-panel rounded-3xl p-4 flex flex-col items-center justify-center flower-card card-neural group relative overflow-hidden"
+                    onclick="showModal('Neural Lily')">
+                    <div
+                        class="text-4xl md:text-4xl text-hana-text mb-2 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                        NEURAL</div>
+                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-4">LILY</div>
+                    <div
+                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
+                        LIVING TISSUE
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -680,6 +791,15 @@
     </script>
 
     <!-- WebGL Shaders & Logic -->
+    <!-- SVG Filters for unique effects -->
+    <svg style="display: none;">
+        <filter id="neuralJitter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2">
+                <animate attributeName="baseFrequency" values="0.05;0.06;0.05" dur="0.2s" repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" scale="5" />
+        </filter>
+    </svg>
     <script src="buttons.js"></script>
     <script src="omen.js"></script>
     <script src="entity.js"></script>
@@ -688,9 +808,304 @@
     <script src="materia.js"></script>
     <script src="materia2.js"></script>
     <script src="materia3.js"></script>
+    <script src="materia4.js"></script>
     <script src="animator.js"></script>
     <script src="effects.js"></script>
     <script src="devconsole.js"></script>
+
+    <!-- Unified Music Dropdown Controller -->
+    <script>
+    (function() {
+        'use strict';
+
+        const SONGS = [
+            { id: 'materia4', name: 'Echoes of the Abyss',     desc: 'Cinematic Orchestral',   icon: '🎻', api: 'MateriaMusic4', color: 'rgba(255, 215, 0, 0.8)' },
+            { id: 'materia',  name: 'Materia Prime',            desc: 'Ambient C Minor',        icon: '♫',  api: 'MateriaMusic',  color: 'rgba(180, 140, 255, 0.8)' },
+            { id: 'materia2', name: 'Dark Resonance',           desc: 'Industrial Generative',  icon: '🔊', api: 'MateriaMusic2', color: 'rgba(255, 60, 60, 0.8)' },
+            { id: 'materia3', name: 'Luminous Drift',           desc: 'Ethereal Ambient',       icon: '✨', api: 'MateriaMusic3', color: 'rgba(100, 220, 255, 0.8)' },
+        ];
+
+        let currentPlaying = null;
+        let isOpen = false;
+
+        function stopAll() {
+            SONGS.forEach(song => {
+                if (window[song.api] && window[song.api].stop) {
+                    try { window[song.api].stop(); } catch(e) {}
+                }
+            });
+            currentPlaying = null;
+        }
+
+        function playSong(songId) {
+            const song = SONGS.find(s => s.id === songId);
+            if (!song) return;
+
+            if (currentPlaying === songId) {
+                // Toggle off
+                stopAll();
+                updateUI();
+                return;
+            }
+
+            stopAll();
+            if (window[song.api] && window[song.api].start) {
+                window[song.api].start();
+                currentPlaying = songId;
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            const toggleBtn = document.getElementById('music-toggle-btn');
+            const items = document.querySelectorAll('.music-item');
+
+            if (currentPlaying) {
+                const song = SONGS.find(s => s.id === currentPlaying);
+                toggleBtn.innerHTML = `<span style="margin-right:6px">⏸</span><span class="music-toggle-label">${song.name}</span>`;
+                toggleBtn.classList.add('playing');
+            } else {
+                toggleBtn.innerHTML = `<span style="margin-right:6px">♫</span><span class="music-toggle-label">Soundtrack</span>`;
+                toggleBtn.classList.remove('playing');
+            }
+
+            items.forEach(item => {
+                const songId = item.dataset.songId;
+                if (songId === currentPlaying) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function buildDropdown() {
+            // Inject styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .music-dropdown-container {
+                    position: relative;
+                    z-index: 99999;
+                    font-family: 'Noto Sans JP', sans-serif;
+                }
+                #music-toggle-btn {
+                    display: flex;
+                    align-items: center;
+                    padding: 8px 18px;
+                    border-radius: 999px;
+                    border: 1px solid rgba(255,255,255,0.15);
+                    background: rgba(0, 0, 0, 0.30);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    color: rgba(255, 255, 255, 0.75);
+                    font-size: 11px;
+                    letter-spacing: 0.15em;
+                    cursor: pointer;
+                    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                }
+                #music-toggle-btn:hover {
+                    background: rgba(180, 140, 255, 0.12);
+                    border-color: rgba(180, 140, 255, 0.4);
+                    box-shadow: 0 4px 30px rgba(180, 140, 255, 0.15);
+                    color: #fff;
+                }
+                #music-toggle-btn.playing {
+                    border-color: rgba(100, 220, 255, 0.4);
+                    animation: dropdownPulse 2.5s ease-in-out infinite;
+                }
+                @keyframes dropdownPulse {
+                    0%, 100% { box-shadow: 0 4px 20px rgba(100, 220, 255, 0.08); }
+                    50% { box-shadow: 0 4px 30px rgba(100, 220, 255, 0.25); }
+                }
+                .music-toggle-label {
+                    font-size: 10px;
+                    letter-spacing: 0.2em;
+                }
+                .music-dropdown-menu {
+                    position: absolute;
+                    top: calc(100% + 8px);
+                    right: 0;
+                    width: 260px;
+                    background: rgba(10, 10, 15, 0.85);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 16px;
+                    overflow: hidden;
+                    max-height: 0;
+                    opacity: 0;
+                    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                                opacity 0.3s ease;
+                    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4);
+                }
+                .music-dropdown-menu.open {
+                    max-height: 400px;
+                    opacity: 1;
+                }
+                .music-dropdown-header {
+                    padding: 12px 16px 8px;
+                    font-size: 9px;
+                    letter-spacing: 0.3em;
+                    text-transform: uppercase;
+                    color: rgba(255,255,255,0.3);
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                }
+                .music-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    border-bottom: 1px solid rgba(255,255,255,0.03);
+                    position: relative;
+                    overflow: hidden;
+                }
+                .music-item:last-child { border-bottom: none; }
+                .music-item:hover {
+                    background: rgba(255,255,255,0.06);
+                }
+                .music-item.active {
+                    background: rgba(100, 220, 255, 0.08);
+                }
+                .music-item.active::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 3px;
+                    height: 100%;
+                    background: currentColor;
+                    border-radius: 0 2px 2px 0;
+                }
+                .music-item-icon {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    flex-shrink: 0;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    transition: all 0.3s ease;
+                }
+                .music-item:hover .music-item-icon {
+                    transform: scale(1.1);
+                }
+                .music-item-info {
+                    flex: 1;
+                    min-width: 0;
+                }
+                .music-item-name {
+                    font-size: 12px;
+                    color: rgba(255,255,255,0.85);
+                    letter-spacing: 0.05em;
+                    margin-bottom: 2px;
+                }
+                .music-item-desc {
+                    font-size: 9px;
+                    color: rgba(255,255,255,0.35);
+                    letter-spacing: 0.15em;
+                    text-transform: uppercase;
+                }
+                .music-item-status {
+                    font-size: 8px;
+                    letter-spacing: 0.1em;
+                    color: rgba(100, 220, 255, 0.8);
+                    text-transform: uppercase;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+                .music-item.active .music-item-status {
+                    opacity: 1;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Build DOM
+            const container = document.createElement('div');
+            container.className = 'music-dropdown-container';
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'music-toggle-btn';
+            toggleBtn.innerHTML = `<span style="margin-right:6px">♫</span><span class="music-toggle-label">Soundtrack</span>`;
+            container.appendChild(toggleBtn);
+
+            const menu = document.createElement('div');
+            menu.className = 'music-dropdown-menu';
+            menu.id = 'music-dropdown-menu';
+
+            const header = document.createElement('div');
+            header.className = 'music-dropdown-header';
+            header.textContent = 'Generative Soundtracks';
+            menu.appendChild(header);
+
+            SONGS.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'music-item';
+                item.dataset.songId = song.id;
+                item.style.color = song.color;
+
+                item.innerHTML = `
+                    <div class="music-item-icon" style="background: ${song.color.replace('0.8', '0.08')}; color: ${song.color};">
+                        ${song.icon}
+                    </div>
+                    <div class="music-item-info">
+                        <div class="music-item-name">${song.name}</div>
+                        <div class="music-item-desc">${song.desc}</div>
+                    </div>
+                    <div class="music-item-status">Playing</div>
+                `;
+
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    playSong(song.id);
+                });
+
+                menu.appendChild(item);
+            });
+
+            container.appendChild(menu);
+            
+            // Append to header if available, otherwise fallback to body
+            const headerActions = document.querySelector('header .flex.items-center.gap-4');
+            if (headerActions) {
+                headerActions.insertBefore(container, headerActions.firstChild);
+            } else {
+                document.body.appendChild(container);
+            }
+
+            // Toggle dropdown
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isOpen = !isOpen;
+                menu.classList.toggle('open', isOpen);
+            });
+
+            // Close on outside click
+            document.addEventListener('click', () => {
+                if (isOpen) {
+                    isOpen = false;
+                    menu.classList.remove('open');
+                }
+            });
+
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            buildDropdown();
+        } else {
+            window.addEventListener('DOMContentLoaded', buildDropdown);
+        }
+    })();
+    </script>
 </body>
 
 </html>

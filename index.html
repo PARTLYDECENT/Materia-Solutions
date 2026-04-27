@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,25 +90,42 @@
         }
 
         #start-btn {
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            padding: 20px 60px;
+            font-size: 0.9rem;
             font-family: 'Montserrat', sans-serif;
             font-weight: 200;
-            letter-spacing: 0.5em;
-            color: #fff;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.8em;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
             text-transform: uppercase;
-            transition: all 0.3s ease;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        #start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
         }
 
         #start-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
+            letter-spacing: 1em;
+            padding-left: 70px; padding-right: 50px; /* Subtle shift */
+        }
+
+        #start-btn:hover::before {
+            left: 100%;
         }
         
         /* Final Text Fade-in */
@@ -134,15 +152,49 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 1rem;
-            letter-spacing: 0.5em;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            letter-spacing: 1em;
             text-transform: uppercase;
             z-index: 0;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.98); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42NSIgbnVtT2N0YXZlcz0iMyIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==');
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.15;
+            animation: grain 0.5s steps(1) infinite;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -10%); }
+            20% { transform: translate(-15%, 5%); }
+            30% { transform: translate(7%, -25%); }
+            40% { transform: translate(-5%, 25%); }
+            50% { transform: translate(-15%, 10%); }
+            60% { transform: translate(15%, 0%); }
+            70% { transform: translate(0, 15%); }
+            80% { transform: translate(3%, 35%); }
+            90% { transform: translate(-10%, 10%); }
         }
     </style>
 </head>
 <body>
+    <div class="noise"></div>
     <div id="loading">Initializing...</div>
     
     <!-- New Start Screen -->
@@ -163,14 +215,14 @@
         // --- System Configuration ---
         const PARTICLE_COUNT = 3000;
         
-        // Precise Timeline sequence (in milliseconds)
+        // Precise Timeline sequence (in milliseconds) - Tightened for better impact
         const T = {
-            P1: 4000,   // End Komorebi -> Morph to Heavy Text
-            P2: 6500,   // End Morph Heavy -> Hold Heavy Text
-            P3: 9000,   // End Hold Heavy -> Explode to Giant Sphere
-            P4: 11000,  // End Explode Sphere -> Hold Rotating Sphere
-            P5: 14000,  // End Hold Sphere -> Morph to Sleek Text & Mini Sphere
-            P6: 16000   // End Morph Sleek Text -> Final Infinite Hold
+            P1: 3500,   // End Komorebi -> Morph to Heavy Text
+            P2: 6000,   // End Morph Heavy -> Hold Heavy Text
+            P3: 8500,   // End Hold Heavy -> Explode to Giant Sphere
+            P4: 10500,  // End Explode Sphere -> Hold Rotating Sphere
+            P5: 13500,  // End Hold Sphere -> Morph to Sleek Text & Mini Sphere
+            P6: 15500   // End Morph Sleek Text -> Final Infinite Hold
         };
 
         // --- DOM Elements & Canvas ---
@@ -219,6 +271,8 @@
 
         function easeInOutQuint(t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2; }
         function easeInExpo(t) { return t === 0 ? 0 : Math.pow(2, 10 * t - 10); }
+        function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+        function easeOutBack(t) { const c1 = 1.70158; const c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); }
 
         // --- 3D Projection Helper ---
         function getProjectedSpherePos(base3D, globalTime, centerX, centerY, radius, isMini) {
@@ -401,12 +455,11 @@
         }
 
         function scheduleCinematicScore(t0) {
-            // Intro: Rolling snare building up tension (0s to 3.5s)
-            for(let i = 0; i < 20; i++) {
+            // Intro: Rolling snare building up tension
+            for(let i = 0; i < 18; i++) {
                 let hitTime = t0 + (i * 0.18);
-                let vol = 0.05 + (i * 0.01); // Build up volume
+                let vol = 0.05 + (i * 0.015); // Build up volume slightly faster
                 playSnareHit(hitTime, vol);
-                // Fox style double hits occasionally
                 if (i % 4 === 0) playSnareHit(hitTime + 0.06, vol * 0.8);
             }
 
@@ -432,8 +485,8 @@
             // Deep sub bass all the way up to high shimmering synth frequencies
             playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 12.0, true); 
 
-            // The End (18.5s) - Futuristic Arpeggio to cap it off
-            const tArp = t0 + 18.5;
+            // The End - Futuristic Arpeggio to cap it off
+            const tArp = t0 + (T.P6 / 1000) + 2.5;
             playArpeggio(tArp);
         }
 
@@ -442,6 +495,8 @@
             constructor() {
                 this.x = Math.random() * cw;
                 this.y = Math.random() * ch;
+                this.px = this.x; this.py = this.y; // Previous positions for motion blur
+                
                 this.komorebiSize = Math.random() * 80 + 40; 
                 this.size = this.komorebiSize;
                 this.vx = (Math.random() - 0.5) * 2;
@@ -454,10 +509,16 @@
                 this.baseTextSize = Math.random() * 1.5 + 0.5;
                 this.morphStartX = 0; this.morphStartY = 0; this.morphStartSize = 0;
                 this.currentScale = 1;
-                this.depthZ = 0; // For depth-sorting color
+                this.depthZ = 0;
+                
+                // Stagger factor: how much this particle lags/leads in transitions
+                this.stagger = Math.random() * 0.4; 
             }
 
             update(globalTime, phase, phaseProgress) {
+                this.px = this.x;
+                this.py = this.y;
+
                 let dxMouse = mouse.x - this.x;
                 let dyMouse = mouse.y - this.y;
                 let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
@@ -469,6 +530,9 @@
                     pushY = -(dyMouse / distanceMouse) * force * 15;
                 }
 
+                // Apply staggered progress
+                let p = Math.max(0, Math.min(1, (phaseProgress - this.stagger) / (1 - this.stagger)));
+
                 if (phase === 0) {
                     this.x += this.vx + Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 1.5;
                     this.y += this.vy + Math.cos(globalTime * 0.001 + this.noiseOffsetY) * 1.5;
@@ -477,34 +541,33 @@
                     this.size = this.komorebiSize * (0.3 + ((Math.sin(globalTime * this.flickerSpeed + this.flickerOffset) + 1) / 2) * 0.7);
                     
                 } else if (phase === 1) {
-                    const ease = easeInOutQuint(phaseProgress);
+                    const ease = easeOutBack(p);
                     this.x = this.morphStartX + (this.heavyX - this.morphStartX) * ease;
                     this.y = this.morphStartY + (this.heavyY - this.morphStartY) * ease;
-                    this.size = this.morphStartSize + (this.baseTextSize - this.morphStartSize) * ease;
+                    this.size = Math.max(0.1, this.morphStartSize + (this.baseTextSize - this.morphStartSize) * ease);
                     
                 } else if (phase === 2) {
-                    // Pre-explosion anticipation: pull in slightly at the end of phase 2
                     let anticipation = 0;
                     if (globalTime > T.P3 - 500) {
-                        anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 15;
+                        anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 25;
                     }
                     
                     let dirX = (cw/2 - this.heavyX);
                     let dirY = (ch/2 - this.heavyY);
                     let mag = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
                     
-                    this.x = this.heavyX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 1 + (dirX/mag)*anticipation;
-                    this.y = this.heavyY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 1 + (dirY/mag)*anticipation;
+                    this.x = this.heavyX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 1 - (dirX/mag)*anticipation;
+                    this.y = this.heavyY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 1 - (dirY/mag)*anticipation;
                     this.size = this.baseTextSize + ((Math.sin(globalTime * this.flickerSpeed * 2 + this.flickerOffset) + 1) / 2);
                     
                 } else if (phase === 3) {
-                    const ease = easeInOutQuint(phaseProgress);
+                    const ease = easeOutExpo(p);
                     let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
                     this.x = this.morphStartX + (proj.x - this.morphStartX) * ease;
                     this.y = this.morphStartY + (proj.y - this.morphStartY) * ease;
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
-                    this.size = this.morphStartSize + ((3 * proj.scale) - this.morphStartSize) * ease;
+                    this.size = Math.max(0.1, this.morphStartSize + ((3 * proj.scale) - this.morphStartSize) * ease);
                     
                 } else if (phase === 4) {
                     let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
@@ -515,7 +578,7 @@
                     this.size = 3 * proj.scale;
                     
                 } else if (phase === 5) {
-                    const ease = easeInOutQuint(phaseProgress);
+                    const ease = easeInOutQuint(p);
                     let tX, tY, tSize;
                     if (this.isMiniSphere) {
                         let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
@@ -527,7 +590,7 @@
                     }
                     this.x = this.morphStartX + (tX - this.morphStartX) * ease;
                     this.y = this.morphStartY + (tY - this.morphStartY) * ease;
-                    this.size = this.morphStartSize + (tSize - this.morphStartSize) * ease;
+                    this.size = Math.max(0.1, this.morphStartSize + (tSize - this.morphStartSize) * ease);
                     
                 } else if (phase === 6) {
                     if (this.isMiniSphere) {
@@ -546,10 +609,11 @@
             }
 
             draw(phase, phaseProgress) {
+                const velocity = Math.sqrt(Math.pow(this.x - this.px, 2) + Math.pow(this.y - this.py, 2));
+                
                 if (phase === 0) {
                     ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
                 } else if (phase === 1 && this.size > 5) {
-                    // Crossfade orb colors during morph
                     ctx.globalAlpha = 1 - phaseProgress;
                     ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
                     ctx.globalAlpha = phaseProgress;
@@ -560,20 +624,29 @@
                     let r = 255, g = 255, b = 255;
                     
                     if (phase === 3 || phase === 4 || (phase >= 5 && this.isMiniSphere)) {
-                        // Depth fading for 3D sphere
                         alpha = Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
-                        
-                        // Color grade the sphere based on depth (front is white/cyan, back is deep blue)
-                        let depthFactor = (this.depthZ + 1) / 2; // Normalize roughly 0 to 1
+                        let depthFactor = (this.depthZ + 1) / 2;
                         r = Math.floor(100 + 155 * depthFactor);
                         g = Math.floor(200 + 55 * depthFactor);
                         b = 255;
                     }
 
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
+
+                    // Motion Blur: Stretch particle if velocity is high
+                    if (velocity > 5 && (phase === 1 || phase === 3 || phase === 5)) {
+                        ctx.beginPath();
+                        ctx.lineWidth = this.size * 2;
+                        ctx.lineCap = 'round';
+                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.5})`;
+                        ctx.moveTo(this.px, this.py);
+                        ctx.lineTo(this.x, this.y);
+                        ctx.stroke();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
             }
         }
@@ -738,19 +811,22 @@
             if (newPhase !== currentPhase) {
                 triggerMorph();
                 
-                // Triggers exactly on phase change
                 if (newPhase === 2) {
-                    shakeIntensity = 25; // Massive slam when Heavy Text forms
-                    flashOpacity = 0.3; // Quick white flash
+                    shakeIntensity = 40; // Hard slam
+                    flashOpacity = 0.4;
+                    // Chromatic Aberration hit
+                    canvasContainer.style.filter = 'contrast(1.2) saturate(1.5)';
                 }
                 if (newPhase === 3) {
-                    flashOpacity = 1; // Blinding flash bang when sphere explodes
-                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 10%, rgba(0, 15, 30, 0.95) 100%)"; // Shift vignette to deep cyan/black
+                    flashOpacity = 1;
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 0%, rgba(0, 15, 30, 0.95) 100%)";
+                    canvasContainer.style.filter = 'contrast(1.5) saturate(2) hue-rotate(10deg)';
                 }
                 if (newPhase === 5) {
-                    shakeIntensity = 10; // Small snap
-                    flashOpacity = 0.5;
-                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%)"; // Shift back to dark minimal
+                    shakeIntensity = 15;
+                    flashOpacity = 0.6;
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%)";
+                    canvasContainer.style.filter = 'none';
                 }
                 
                 currentPhase = newPhase;
@@ -771,20 +847,23 @@
                 camScale = 1.2 - easeInOutQuint(phaseProgress) * 0.2; // Snap back out to reveal final text
             }
 
-            // Screen Shake Decay
+            // Screen Shake Decay with Frequency (Sine noise)
             if (shakeIntensity > 0.1) {
-                camX = (Math.random() - 0.5) * shakeIntensity;
-                camY = (Math.random() - 0.5) * shakeIntensity;
-                shakeIntensity *= 0.85; // Decay
+                const s = shakeIntensity;
+                const freq = globalTime * 0.05;
+                camX = (Math.sin(freq) + Math.sin(freq * 0.79)) * s * 0.5;
+                camY = (Math.cos(freq * 0.91) + Math.cos(freq * 0.67)) * s * 0.5;
+                shakeIntensity *= 0.92; // Slightly slower decay for "rumble"
             } else {
                 camX = 0; camY = 0;
             }
 
-            // Flash Decay
+            // Flash & Filter Decay
             if (flashOpacity > 0.01) {
-                flashOpacity *= 0.9;
+                flashOpacity *= 0.85;
             } else {
                 flashOpacity = 0;
+                if (currentPhase !== 3) canvasContainer.style.filter = 'none';
             }
 
 
@@ -793,9 +872,9 @@
             flashDiv.style.opacity = flashOpacity;
 
             // Trigger "Welcome to the future" text and Voice slightly before the arpeggio hits
-            if (globalTime > 18000 && !window.taglineShown) {
+            if (globalTime > T.P6 + 2000 && !window.taglineShown) {
                 document.getElementById('tagline').style.opacity = 1;
-                playTTSVoice(); // Trigger the robotic voice!
+                playTTSVoice();
                 window.taglineShown = true;
                 
                 // Final cinematic hold before redirect
@@ -815,9 +894,11 @@
 
             // --- CANVAS RENDERING ---
             ctx.globalCompositeOperation = 'source-over';
-            if (currentPhase === 0) ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-            else if (currentPhase === 1 || currentPhase === 3 || currentPhase === 5) ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-            else ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+            // Variable trailing for different phases
+            let trailOpacity = 0.15;
+            if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0; // Hard clear on hold phases
+            
+            ctx.fillStyle = `rgba(0, 0, 0, ${trailOpacity})`;
             ctx.fillRect(0, 0, cw, ch);
 
             ctx.globalCompositeOperation = 'lighter';
