@@ -239,6 +239,31 @@
         let shakeIntensity = 0;
         
         let mouse = { x: -1000, y: -1000, radius: 100 };
+        let smoothMouse = { x: -1000, y: -1000 };
+        window.shockwaves = [];
+
+        class Shockwave {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = 600;
+                this.life = 1;
+                this.decay = 0.02;
+                this.power = 25;
+            }
+            update() {
+                this.radius += 15;
+                this.life -= this.decay;
+            }
+        }
+
+        window.addEventListener('mousedown', (e) => {
+            const rx = (e.clientX - cw/2) / camScale + cw/2;
+            const ry = (e.clientY - cw/2) / camScale + ch/2;
+            window.shockwaves.push(new Shockwave(rx, ry));
+        });
+
         window.addEventListener('mousemove', (e) => {
             // Adjust mouse coordinates based on camera scale for accurate interaction
             mouse.x = (e.clientX - cw/2) / camScale + cw/2;
@@ -513,14 +538,39 @@
                 
                 // Stagger factor: how much this particle lags/leads in transitions
                 this.stagger = Math.random() * 0.4; 
+
+                // Audio Reactive properties
+                this.audioJitterX = 0;
+                this.audioJitterY = 0;
+                this.audioScale = 1;
+                this.sonicPushX = 0;
+                this.sonicPushY = 0;
+            }
+
+            audioReactiveUpdate(bass, treble) {
+                // Bass drives size and a slow pulse
+                this.audioScale = 1 + bass * 0.5;
+                
+                // Treble drives high-frequency jitter
+                const jitterMag = treble * 15;
+                this.audioJitterX = (Math.random() - 0.5) * jitterMag;
+                this.audioJitterY = (Math.random() - 0.5) * jitterMag;
+
+                // Sonic pressure: push away from center on bass hits
+                const dx = this.x - cw/2;
+                const dy = this.y - ch/2;
+                const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                const force = bass * 20;
+                this.sonicPushX = (dx/dist) * force;
+                this.sonicPushY = (dy/dist) * force;
             }
 
             update(globalTime, phase, phaseProgress) {
                 this.px = this.x;
                 this.py = this.y;
 
-                let dxMouse = mouse.x - this.x;
-                let dyMouse = mouse.y - this.y;
+                let dxMouse = smoothMouse.x - this.x;
+                let dyMouse = smoothMouse.y - this.y;
                 let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
                 let pushX = 0, pushY = 0;
                 
@@ -528,6 +578,19 @@
                     let force = (mouse.radius - distanceMouse) / mouse.radius;
                     pushX = -(dxMouse / distanceMouse) * force * 15;
                     pushY = -(dyMouse / distanceMouse) * force * 15;
+                }
+
+                // Apply Shockwaves
+                for (let sw of window.shockwaves) {
+                    let dxSw = sw.x - this.x;
+                    let dySw = sw.y - this.y;
+                    let distSw = Math.sqrt(dxSw * dxSw + dySw * dySw);
+                    let diff = Math.abs(distSw - sw.radius);
+                    if (diff < 50) {
+                        let force = (1 - diff / 50) * sw.life * sw.power;
+                        pushX -= (dxSw / distSw) * force;
+                        pushY -= (dySw / distSw) * force;
+                    }
                 }
 
                 // Apply staggered progress
@@ -571,8 +634,13 @@
                     
                 } else if (phase === 4) {
                     let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
-                    this.x = proj.x + pushX;
-                    this.y = proj.y + pushY;
+                    
+                    // Add Turbulence
+                    const turbX = Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 2;
+                    const turbY = Math.cos(globalTime * 0.0015 + this.noiseOffsetY) * 2;
+
+                    this.x = proj.x + pushX + turbX;
+                    this.y = proj.y + pushY + turbY;
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
                     this.size = 3 * proj.scale;
@@ -640,11 +708,11 @@
                         ctx.lineCap = 'round';
                         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.5})`;
                         ctx.moveTo(this.px, this.py);
-                        ctx.lineTo(this.x, this.y);
+                        ctx.lineTo(this.x + this.audioJitterX + this.sonicPushX, this.y + this.audioJitterY + this.sonicPushY);
                         ctx.stroke();
                     } else {
                         ctx.beginPath();
-                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.arc(this.x + this.audioJitterX + this.sonicPushX, this.y + this.audioJitterY + this.sonicPushY, this.size * this.audioScale, 0, Math.PI * 2);
                         ctx.fill();
                     }
                 }
@@ -835,7 +903,18 @@
             // Camera Motion Logic
             if (currentPhase === 0) {
                 camScale = 1 + (globalTime / T.P1) * 0.15; // Slow push in during Komorebi
-            } else if (currentPhase === 1) {
+            }
+            // Viscous Input Smoothing (Lerp)
+            const lerpFactor = 0.08; // Lower is more "viscous"
+            if (smoothMouse.x === -1000) {
+                smoothMouse.x = mouse.x;
+                smoothMouse.y = mouse.y;
+            } else {
+                smoothMouse.x += (mouse.x - smoothMouse.x) * lerpFactor;
+                smoothMouse.y += (mouse.y - smoothMouse.y) * lerpFactor;
+            }
+
+            if (currentPhase === 1) {
                 camScale = 1.15 - easeInOutQuint(phaseProgress) * 0.15; // Pull back sharply as text forms
             } else if (currentPhase === 2) {
                 camScale = 1 + (globalTime - T.P2) * 0.00002; // Micro drift
@@ -871,6 +950,15 @@
             canvasContainer.style.transform = `translate(${camX}px, ${camY}px) scale(${camScale})`;
             flashDiv.style.opacity = flashOpacity;
 
+            // Dynamic Atmospheric Filtering based on audio intensity
+            if (window.MateriaAnalyser) {
+                const intensity = (bassEnergy + trebleEnergy) / 2;
+                const hue = intensity * 15; // Subtle color shift
+                const contrast = 100 + intensity * 50;
+                const brightness = 100 + intensity * 20;
+                canvasContainer.style.filter = `hue-rotate(${hue}deg) contrast(${contrast}%) brightness(${brightness}%)`;
+            }
+
             // Trigger "Welcome to the future" text and Voice slightly before the arpeggio hits
             if (globalTime > T.P6 + 2000 && !window.taglineShown) {
                 document.getElementById('tagline').style.opacity = 1;
@@ -896,14 +984,40 @@
             ctx.globalCompositeOperation = 'source-over';
             // Variable trailing for different phases
             let trailOpacity = 0.15;
-            if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0; // Hard clear on hold phases
+            if (currentPhase === 0) trailOpacity = 0.15;
+            else if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0; // Hard clear on hold phases
+            else trailOpacity = 0.4; 
             
             ctx.fillStyle = `rgba(0, 0, 0, ${trailOpacity})`;
             ctx.fillRect(0, 0, cw, ch);
 
             ctx.globalCompositeOperation = 'lighter';
             
+            // --- Audio Reactivity Logic ---
+            let frequencyData = null;
+            if (window.MateriaAnalyser) {
+                frequencyData = new Uint8Array(window.MateriaAnalyser.frequencyBinCount);
+                window.MateriaAnalyser.getByteFrequencyData(frequencyData);
+            }
+
+            // Simple beat detection / energy mapping
+            let bassEnergy = 0;
+            let trebleEnergy = 0;
+            if (frequencyData) {
+                for(let i=0; i<8; i++) bassEnergy += frequencyData[i];
+                bassEnergy /= 8 * 255; // 0 to 1
+                for(let i=16; i<32; i++) trebleEnergy += frequencyData[i];
+                trebleEnergy /= 16 * 255;
+            }
+
+            // Update Shockwaves
+            for (let i = window.shockwaves.length - 1; i >= 0; i--) {
+                window.shockwaves[i].update();
+                if (window.shockwaves[i].life <= 0) window.shockwaves.splice(i, 1);
+            }
+
             for (let i = 0; i < particles.length; i++) {
+                particles[i].audioReactiveUpdate(bassEnergy, trebleEnergy);
                 particles[i].update(globalTime, currentPhase, phaseProgress);
                 particles[i].draw(currentPhase, phaseProgress);
             }
@@ -933,8 +1047,15 @@
                 const compressor = audioCtx.createDynamicsCompressor();
                 compressor.threshold.value = -10;
                 compressor.ratio.value = 4;
+                
+                // --- Audio Bridge for Intro Reactivity ---
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                window.MateriaAnalyser = analyser;
+
                 masterGain.connect(compressor);
-                compressor.connect(audioCtx.destination);
+                compressor.connect(analyser);
+                analyser.connect(audioCtx.destination);
 
                 startScreen.style.opacity = 0;
                 setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
@@ -963,5 +1084,12 @@
     <script src="komorebi.js"></script>
     <script src="effects.js"></script>
     <script src="devconsole.js"></script>
+    <script src="overlay.js"></script>
+    
+    <!-- Secret Trigger for Cookies Overlay -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 200; font-size: 0.5rem; letter-spacing: 0.3em; color: rgba(255,255,255,0.4); cursor: pointer; text-transform: uppercase; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);" 
+         onclick="console.log('Triggering Overlay...'); window.MateriaOverlay.show()">
+        Data Consent / Cookies
+    </div>
 </body>
 </html>

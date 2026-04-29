@@ -132,7 +132,13 @@
         master.gain.setValueAtTime(0, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 8); // Gentle fade in
 
-        compressor.connect(master);
+        // --- Audio Bridge for Reactivity ---
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        window.MateriaAnalyser = analyser;
+
+        compressor.connect(analyser);
+        analyser.connect(master);
         master.connect(ctx.destination);
 
         // ── Cathedral Reverb ──

@@ -747,39 +747,18 @@
     </div>
 
     <!-- Soft Modal -->
-    <div id="info-modal" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
-        <div class="absolute inset-0 bg-white/50 backdrop-blur-md" onclick="closeModal()"></div>
-        <div class="glass-panel rounded-3xl p-8 max-w-sm w-full relative z-10 modal-animate text-center">
-            <div class="w-12 h-12 mx-auto bg-hana-sakura/20 rounded-full flex items-center justify-center mb-4">
-                <svg class="w-5 h-5 text-hana-sakura" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-medium text-hana-text mb-2">Specimen Reserved</h3>
-            <p class="text-gray-500 mb-6 text-sm leading-relaxed">
-                The <span id="modal-item" class="text-hana-text font-medium">specimen</span> is currently allocated to
-                another collector. Please explore our other botanical arrangements.
-            </p>
-            <button onclick="closeModal()"
-                class="w-full py-3 bg-hana-text text-white text-sm tracking-widest rounded-full hover:bg-gray-800 transition-colors">
-                RETURN
-            </button>
-        </div>
-    </div>
+    <!-- Old Modal Removed for Fluid System -->
 
     <script>
         function showModal(itemName) {
-            const modal = document.getElementById('info-modal');
-            document.getElementById('modal-item').innerText = itemName;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            window.MateriaOverlay.show(
+                "SPECIMEN RESERVED",
+                `The <span style="color: #ff3366">${itemName}</span> is currently allocated to another collector. Please explore our other botanical arrangements.`
+            );
         }
 
         function closeModal() {
-            const modal = document.getElementById('info-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            window.MateriaOverlay.hide();
         }
 
         function toggleNav() {
@@ -809,6 +788,7 @@
     <script src="materia2.js"></script>
     <script src="materia3.js"></script>
     <script src="materia4.js"></script>
+    <script src="overlay.js"></script>
     <script src="animator.js"></script>
     <script src="effects.js"></script>
     <script src="devconsole.js"></script>

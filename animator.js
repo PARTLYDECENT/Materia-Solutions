@@ -31,6 +31,8 @@
         { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY' },
         { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY' },
         { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED' },
+        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT' },
+        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY' },
     ];
 
     const HERO_ALT = {

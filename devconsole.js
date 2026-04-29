@@ -136,6 +136,7 @@
 
         const tabs = [
             { id: 'audio', label: 'AUDIO', icon: '🔊' },
+            { id: 'diagnostics', label: 'SYSTEM', icon: '📈' },
             { id: 'entity', label: 'ENTITY', icon: '👁' },
             { id: 'scenes', label: 'SCENES', icon: '🌌' },
             { id: 'help', label: 'HELP', icon: '?' }
@@ -251,6 +252,41 @@
                 </div>
             `;
             attachAudioEvents();
+        } else if (tabId === 'diagnostics') {
+            view.innerHTML = `
+                <h2 style="margin-top:0; font-weight: 200; letter-spacing: 2px">SYSTEM DIAGNOSTICS</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05)">
+                        <span style="font-size: 0.6rem; opacity: 0.5; text-transform: uppercase">Performance</span>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: ${CONFIG.primaryColor}"><span id="diag-fps">--</span> <small style="font-size: 0.6rem; opacity: 0.5">FPS</small></div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05)">
+                        <span style="font-size: 0.6rem; opacity: 0.5; text-transform: uppercase">Audio Bridge</span>
+                        <div id="diag-audio-status" style="font-size: 1.5rem; font-weight: 900; color: #aaa">DISCONNECTED</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px">
+                    <span style="font-size: 0.6rem; opacity: 0.5; text-transform: uppercase; margin-bottom: 15px; display: block">Live Signal Analyzer</span>
+                    <canvas id="diag-waveform" width="600" height="150" style="width: 100%; height: 120px; background: rgba(0,0,0,0.2); border-radius: 5px"></canvas>
+                </div>
+
+                <div style="display: grid; gap: 10px">
+                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.02); border-radius: 8px">
+                        <span style="font-size: 0.7rem; opacity: 0.6">THREAD STATUS</span>
+                        <span style="font-size: 0.7rem; color: #00ff88; font-weight: 900">MAIN / ACTIVE</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.02); border-radius: 8px">
+                        <span style="font-size: 0.7rem; opacity: 0.6">ENTROPY LEVEL</span>
+                        <span id="diag-entropy" style="font-size: 0.7rem; color: ${CONFIG.secondaryColor}; font-weight: 900">0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.02); border-radius: 8px">
+                        <span style="font-size: 0.7rem; opacity: 0.6">SHOCKWAVES</span>
+                        <span id="diag-sw-count" style="font-size: 0.7rem; color: #ff3366; font-weight: 900">0</span>
+                    </div>
+                </div>
+            `;
+            startDiagnosticsLoop();
         } else if (tabId === 'entity') {
             const hasEntity = !!window.MateriaEntity;
             view.innerHTML = `
@@ -431,6 +467,98 @@
             toggleConsole();
         }
     });
+
+    // --- Diagnostics Logic ---
+    let diagLoopActive = false;
+    let fpsHistory = [];
+    let lastTime = performance.now();
+
+    function startDiagnosticsLoop() {
+        if (diagLoopActive) return;
+        diagLoopActive = true;
+        
+        function loop() {
+            if (!isOpen || activeTab !== 'diagnostics') {
+                diagLoopActive = false;
+                return;
+            }
+
+            // FPS Calculation
+            const now = performance.now();
+            const delta = now - lastTime;
+            lastTime = now;
+            const fps = Math.round(1000 / delta);
+            fpsHistory.push(fps);
+            if (fpsHistory.length > 20) fpsHistory.shift();
+            const avgFps = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+            
+            const fpsEl = document.getElementById('diag-fps');
+            if (fpsEl) fpsEl.innerText = avgFps;
+
+            // Waveform Drawing
+            const canvas = document.getElementById('diag-waveform');
+            const audioStatus = document.getElementById('diag-audio-status');
+            const entropyEl = document.getElementById('diag-entropy');
+
+            if (canvas && window.MateriaAnalyser) {
+                const ctx = canvas.getContext('2d');
+                const bufferLength = window.MateriaAnalyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                window.MateriaAnalyser.getByteTimeDomainData(dataArray);
+
+                if (audioStatus) {
+                    audioStatus.innerText = 'SYNCED';
+                    audioStatus.style.color = CONFIG.primaryColor;
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = CONFIG.primaryColor;
+                ctx.beginPath();
+
+                const sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+
+                    x += sliceWidth;
+                }
+
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+
+                // Add a subtle glow
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = CONFIG.primaryColor;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Entropy Readout (Simulated if no direct value)
+                if (entropyEl) {
+                    const avg = dataArray.reduce((a, b) => a + Math.abs(b - 128), 0) / bufferLength;
+                    entropyEl.innerText = (avg / 64).toFixed(3);
+                }
+
+                // Shockwave count readout
+                const swEl = document.getElementById('diag-sw-count');
+                if (swEl && window.shockwaves) {
+                    swEl.innerText = window.shockwaves.length;
+                }
+            } else if (audioStatus) {
+                audioStatus.innerText = 'DISCONNECTED';
+                audioStatus.style.color = '#aaa';
+            }
+
+            requestAnimationFrame(loop);
+        }
+        
+        requestAnimationFrame(loop);
+    }
 
     // --- Initialization ---
     if (document.readyState === 'complete' || document.readyState === 'interactive') {

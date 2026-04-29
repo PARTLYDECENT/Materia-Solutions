@@ -90,7 +90,13 @@
         master.gain.value = 0.0; // Start silent, fade in
         master.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 4);
 
-        compressor.connect(master);
+        // --- Audio Bridge for Reactivity ---
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        window.MateriaAnalyser = analyser;
+
+        compressor.connect(analyser);
+        analyser.connect(master);
         master.connect(ctx.destination);
 
         // Reverb send/return via convolution-like feedback delay network

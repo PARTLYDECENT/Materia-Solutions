@@ -181,7 +181,13 @@
         master.gain.setValueAtTime(0, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.30, ctx.currentTime + 6);
 
-        compressor.connect(master);
+        // --- Audio Bridge for Reactivity ---
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        window.MateriaAnalyser = analyser;
+
+        compressor.connect(analyser);
+        analyser.connect(master);
         master.connect(ctx.destination);
 
         // ── Convolution reverb ──
