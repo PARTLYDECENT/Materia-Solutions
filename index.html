@@ -855,6 +855,23 @@
         function animate(timestamp) {
             if (!animationStartTime) animationStartTime = timestamp;
             let globalTime = timestamp - animationStartTime;
+
+            // --- Audio Reactivity Logic ---
+            let frequencyData = null;
+            if (window.MateriaAnalyser) {
+                frequencyData = new Uint8Array(window.MateriaAnalyser.frequencyBinCount);
+                window.MateriaAnalyser.getByteFrequencyData(frequencyData);
+            }
+
+            // Simple beat detection / energy mapping
+            let bassEnergy = 0;
+            let trebleEnergy = 0;
+            if (frequencyData) {
+                for(let i=0; i<8; i++) bassEnergy += frequencyData[i];
+                bassEnergy /= 8 * 255; // 0 to 1
+                for(let i=16; i<32; i++) trebleEnergy += frequencyData[i];
+                trebleEnergy /= 16 * 255;
+            }
             
             let phaseProgress = 0;
             let newPhase = 0;
@@ -993,23 +1010,6 @@
 
             ctx.globalCompositeOperation = 'lighter';
             
-            // --- Audio Reactivity Logic ---
-            let frequencyData = null;
-            if (window.MateriaAnalyser) {
-                frequencyData = new Uint8Array(window.MateriaAnalyser.frequencyBinCount);
-                window.MateriaAnalyser.getByteFrequencyData(frequencyData);
-            }
-
-            // Simple beat detection / energy mapping
-            let bassEnergy = 0;
-            let trebleEnergy = 0;
-            if (frequencyData) {
-                for(let i=0; i<8; i++) bassEnergy += frequencyData[i];
-                bassEnergy /= 8 * 255; // 0 to 1
-                for(let i=16; i<32; i++) trebleEnergy += frequencyData[i];
-                trebleEnergy /= 16 * 255;
-            }
-
             // Update Shockwaves
             for (let i = window.shockwaves.length - 1; i >= 0; i--) {
                 window.shockwaves[i].update();

@@ -114,6 +114,8 @@ class MateriaOverlay {
         const fsSource = `
             precision highp float;
             uniform float u_time;
+            uniform float u_blobType;
+            uniform vec3 u_color;
             uniform vec2 u_resolution;
             uniform vec2 u_mouse;
 
@@ -121,9 +123,36 @@ class MateriaOverlay {
                 return length(p) - r;
             }
 
+            float sdRoundedBox(vec2 p, vec2 b, float r) {
+                vec2 q = abs(p) - b + r;
+                return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
+            }
+
+            float sdStar(vec2 p, float r, int n, float m) {
+                float an = 3.141593 / float(n);
+                float en = 3.141593 / m;
+                float a = atan(p.y, p.x) + 3.141593 / 2.0;
+                float g = a / an;
+                if (mod(floor(g), 2.0) == 1.0) a = -a;
+                a = mod(a, an);
+                return length(p) - r * cos(a);
+            }
+
+            float sdRing(vec2 p, float r, float th) {
+                return abs(length(p) - r) - th;
+            }
+
             float smin(float a, float b, float k) {
                 float h = clamp(0.5 + 0.5*(b-a)/k, 0.0, 1.0);
                 return mix(b, a, h) - k*h*(1.0-h);
+            }
+
+            float getShape(vec2 p, float r, float t) {
+                if (u_blobType < 0.5) return sdCircle(p, r);
+                if (u_blobType < 1.5) return sdRoundedBox(p, vec2(r), 0.1);
+                if (u_blobType < 2.5) return sdStar(p, r, 5, 2.0);
+                if (u_blobType < 3.5) return length(p) - r * (1.2 + 0.2 * sin(atan(p.y, p.x) * 5.0 + t));
+                return sdRing(p, r, 0.05);
             }
 
             void main() {
@@ -138,7 +167,7 @@ class MateriaOverlay {
                         sin(t * 0.7 + fi) * 0.45,
                         cos(t * 1.1 + fi * 1.5) * 0.45
                     );
-                    d = smin(d, sdCircle(uv - pos, 0.18 + sin(t*0.5)*0.05), 0.2);
+                    d = smin(d, getShape(uv - pos, 0.18 + sin(t*0.5)*0.05, t), 0.2);
                 }
 
                 // Interactive Mouse Blob
@@ -146,19 +175,19 @@ class MateriaOverlay {
                 d = smin(d, sdCircle(uv - mPos, 0.2), 0.2);
 
                 // Central Window Blob
-                d = smin(d, sdCircle(uv, 0.4), 0.25);
+                d = smin(d, getShape(uv, 0.4, u_time), 0.25);
 
                 vec3 color = vec3(0.0);
                 float glow = 0.006 / max(0.001, abs(d));
-                color += glow * vec3(1.0, 0.2, 0.4);
+                color += glow * u_color;
 
                 if (d < 0.0) {
-                    color = mix(vec3(0.02, 0.02, 0.04), vec3(1.0, 0.2, 0.4) * 0.2, clamp(-d * 4.0, 0.0, 1.0));
+                    color = mix(vec3(0.01, 0.01, 0.02), u_color * 0.2, clamp(-d * 4.0, 0.0, 1.0));
                     color += 0.03 * sin(uv.x * 30.0 + u_time) * sin(uv.y * 30.0 - u_time);
                 }
 
                 float border = smoothstep(0.015, 0.0, abs(d));
-                color = mix(color, vec3(1.0, 0.2, 0.4), border);
+                color = mix(color, u_color, border);
 
                 gl_FragColor = vec4(color, clamp(glow + (d < 0.0 ? 0.9 : 0.0), 0.0, 1.0));
             }
@@ -197,6 +226,10 @@ class MateriaOverlay {
         this.gl.enableVertexAttribArray(posAttrib);
         this.gl.vertexAttribPointer(posAttrib, 2, this.gl.FLOAT, false, 0, 0);
 
+        // Default style
+        this.currentColor = { r: 1.0, g: 0.2, b: 0.4 };
+        this.currentBlobType = 0;
+
         this.resize();
         return true;
     }
@@ -221,11 +254,24 @@ class MateriaOverlay {
         if (this.gl) this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    show(title, body) {
+    show(title, body, color, type) {
         if (title) document.getElementById('materia-overlay-title').innerText = title;
         if (body) document.getElementById('materia-overlay-body').innerHTML = body;
         
-        console.log("🚀 Showing Materia Overlay...");
+        // Handle custom colors and types
+        if (color) {
+            this.currentColor = color;
+        } else {
+            this.currentColor = { r: 1.0, g: 0.2, b: 0.4 }; // Reset to pink
+        }
+        
+        if (type !== undefined) {
+            this.currentBlobType = type;
+        } else {
+            this.currentBlobType = 0;
+        }
+
+        console.log("🚀 Showing Materia Overlay with style:", { color, type });
         this.active = true;
         this.container.style.display = 'block';
         // Force reflow
@@ -254,14 +300,19 @@ class MateriaOverlay {
             this.gl.useProgram(this.program);
             
             const timeLoc = this.gl.getUniformLocation(this.program, 'u_time');
+            const typeLoc = this.gl.getUniformLocation(this.program, 'u_blobType');
+            const colorLoc = this.gl.getUniformLocation(this.program, 'u_color');
             const resLoc = this.gl.getUniformLocation(this.program, 'u_resolution');
             const mouseLoc = this.gl.getUniformLocation(this.program, 'u_mouse');
             
             this.gl.uniform1f(timeLoc, time);
+            this.gl.uniform1f(typeLoc, this.currentBlobType);
+            this.gl.uniform3f(colorLoc, this.currentColor.r, this.currentColor.g, this.currentColor.b);
             this.gl.uniform2f(resLoc, this.canvas.width, this.canvas.height);
             this.gl.uniform2f(mouseLoc, this.mouse.x, this.mouse.y);
             
             this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+
         } else {
             // Very simple 2D fallback just in case
             const ctx = this.canvas.getContext('2d');

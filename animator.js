@@ -25,14 +25,14 @@
 
     // ─── ALTERNATE NAME SETS ───
     const COOKIE_SET = [
-        { main: 'SNICKER',  sub: 'DOODLE',  badge: 'FRESH' },
-        { main: 'CHOCO',    sub: 'CHIP',     badge: 'HOT' },
-        { main: 'RED',      sub: 'VELVET',   badge: 'WARM' },
-        { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY' },
-        { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY' },
-        { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED' },
-        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT' },
-        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY' },
+        { main: 'SNICKER',  sub: 'DOODLE',  badge: 'FRESH',  color: {r: 0.9, g: 0.7, b: 0.3}, blobType: 1 }, // Rounded Box (Cookie shape)
+        { main: 'CHOCO',    sub: 'CHIP',     badge: 'HOT',    color: {r: 0.4, g: 0.2, b: 0.1}, blobType: 3 }, // Noisy (Chunky chips)
+        { main: 'RED',      sub: 'VELVET',   badge: 'WARM',   color: {r: 0.8, g: 0.1, b: 0.2}, blobType: 0 }, // Circle (Smooth)
+        { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY', color: {r: 0.8, g: 0.4, b: 0.9}, blobType: 4 }, // Ring (Fancy)
+        { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY',  color: {r: 0.9, g: 0.9, b: 0.7}, blobType: 2 }, // Star (Sugar shape)
+        { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED', color: {r: 0.3, g: 0.1, b: 0.0}, blobType: 1 }, // Box
+        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT',   color: {r: 0.6, g: 0.4, b: 0.2}, blobType: 3 }, // Noisy
+        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY',  color: {r: 1.0, g: 0.5, b: 0.0}, blobType: 2 }, // Star
     ];
 
     const HERO_ALT = {
@@ -402,6 +402,11 @@
         toCookies: () => transitionTo(true),
         toNormal:  () => transitionTo(false),
         isActive:  () => !busy,
+        isAlt:     () => isAlt,
+        getCookieData: (name) => {
+            const cleanName = name.split(' ')[0].toUpperCase();
+            return COOKIE_SET.find(c => c.main === cleanName);
+        }
     };
 
 })();

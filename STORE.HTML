@@ -750,10 +750,47 @@
     <!-- Old Modal Removed for Fluid System -->
 
     <script>
+        // Unique SDF styles per specimen — matched to card elemental themes
+        const SPECIMEN_STYLES = {
+            'Scarlet Cherry': { color: {r: 1.0, g: 0.3, b: 0.1},  blobType: 0, accent: '#ff5030' },  // Fire — smooth circles, hot orange
+            'Cyber Lotus':    { color: {r: 0.0, g: 1.0, b: 0.5},  blobType: 1, accent: '#00ff80' },  // Cyber — rounded boxes, neon green
+            'Void Camellia':  { color: {r: 0.5, g: 0.0, b: 1.0},  blobType: 4, accent: '#8000ff' },  // Void — rings, deep purple
+            'Aero Peony':     { color: {r: 0.4, g: 0.7, b: 1.0},  blobType: 3, accent: '#66b3ff' },  // Aero — organic pulse, sky blue
+            'Prism Mum':      { color: {r: 0.9, g: 0.4, b: 0.9},  blobType: 2, accent: '#e566e5' },  // Prism — stars, prismatic pink
+            'Ghost Orchid':   { color: {r: 0.6, g: 0.9, b: 1.0},  blobType: 0, accent: '#99e6ff' },  // Frost — circles, icy cyan
+            'Gravity Fern':   { color: {r: 0.2, g: 0.2, b: 0.3},  blobType: 4, accent: '#555577' },  // Gravity — rings, dark void
+            'Neural Lily':    { color: {r: 1.0, g: 0.0, b: 0.6},  blobType: 3, accent: '#ff0099' },  // Neural — organic pulse, hot pink
+        };
+
         function showModal(itemName) {
+            let color = null;
+            let type = 0;
+            let accent = '#ff3366';
+
+            // Check if we are in cookie mode first
+            if (window.MateriaAnimator && window.MateriaAnimator.isAlt()) {
+                const cookie = window.MateriaAnimator.getCookieData(itemName);
+                if (cookie) {
+                    color = cookie.color;
+                    type = cookie.blobType;
+                }
+            }
+
+            // Fall back to specimen-specific styles
+            if (!color) {
+                const style = SPECIMEN_STYLES[itemName];
+                if (style) {
+                    color = style.color;
+                    type = style.blobType;
+                    accent = style.accent;
+                }
+            }
+
             window.MateriaOverlay.show(
                 "SPECIMEN RESERVED",
-                `The <span style="color: #ff3366">${itemName}</span> is currently allocated to another collector. Please explore our other botanical arrangements.`
+                `The <span style="color: ${accent}">${itemName}</span> is currently allocated to another collector. Please explore our other botanical arrangements.`,
+                color,
+                type
             );
         }
 
@@ -779,6 +816,7 @@
             <feDisplacementMap in="SourceGraphic" scale="5" />
         </filter>
     </svg>
+    <script src="drip.js"></script>
     <script src="buttons.js"></script>
     <script src="omen.js"></script>
     <script src="entity.js"></script>
