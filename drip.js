@@ -119,20 +119,18 @@ class MateriaDrip {
                 vec2 p = vec2(uv.x * aspect, uv.y);
 
                 float t_tex = texture2D(u_textTex, uv).r;
-                // Soft SDF approximation from blurred texture (r=0 is far, r=1 is inside)
-                // We want d < 0 inside, d > 0 outside.
-                float textDist = (0.5 - t_tex) * 0.12; 
+                // Soft SDF approximation
+                float textDist = (0.5 - t_tex) * 0.15; 
 
                 float CYCLE = 12.0;
                 float t = mod(u_time, CYCLE);
                 
                 float phaseDrip  = 2.0;
-                float phaseHold  = 5.0; // 3 seconds hold (2.0 to 5.0)
-                float phaseMelt  = 7.5;
-                float phasePool  = 9.0;
+                float phaseHold  = 5.5; 
+                float phaseMelt  = 8.0;
+                float phasePool  = 9.5;
                 float phasePipe  = 12.0;
 
-                // Overall distance
                 float d = 1e10;
 
                 // 1. TEXT FILL LOGIC
@@ -140,15 +138,14 @@ class MateriaDrip {
                 float fillBot = 0.0;
 
                 if (t < phaseDrip) {
-                    float prog = t / phaseDrip; // 0 to 1
-                    // ease in-out
-                    prog = prog * prog * (3.0 - 2.0 * prog);
+                    float prog = t / phaseDrip;
+                    prog = pow(prog, 1.5); // Fast start
                     fillBot = prog;
                 } else if (t < phaseHold) {
                     fillBot = 1.0;
                 } else if (t < phaseMelt) {
                     float prog = (t - phaseHold) / (phaseMelt - phaseHold);
-                    prog = prog * prog; // ease in (starts slow)
+                    prog = prog * prog * prog; // Accelerating melt
                     fillTop = prog;
                     fillBot = 1.0;
                 } else {
@@ -156,44 +153,42 @@ class MateriaDrip {
                     fillBot = 1.0;
                 }
 
-                // Apply fill boundary to text
                 float inFill = step(fillTop, uv.y) * step(uv.y, fillBot);
                 float currentTextDist = textDist;
                 
                 if (inFill == 0.0) {
                     currentTextDist = 1e10; 
                 } else {
-                    // Soften the horizontal chop lines
                     float edgeDistTop = uv.y - fillTop;
                     float edgeDistBot = fillBot - uv.y;
                     float edgeDist = min(edgeDistTop, edgeDistBot);
-                    if (edgeDist < 0.04) {
-                        currentTextDist = max(currentTextDist, (0.04 - edgeDist) * 0.5);
+                    if (edgeDist < 0.05) {
+                        // Turbulence on the melt/fill line
+                        float turb = sin(p.x * 25.0 + u_time * 8.0) * 0.005;
+                        currentTextDist = max(currentTextDist, (0.05 - edgeDist + turb) * 0.6);
                     }
                 }
-                d = smin(d, currentTextDist, 0.02);
+                d = smin(d, currentTextDist, 0.025);
 
-                // 2. DROPS (Drip Phase)
+                // 2. INTENSE DRIPS (Drip Phase)
                 if (t < phaseDrip) {
-                    for(int i=0; i<20; i++) {
+                    for(int i=0; i<40; i++) {
                         float fi = float(i);
-                        float x0 = hash(fi * 1.3) * aspect;
-                        // cluster drips slightly towards text
+                        float x0 = hash(fi * 1.37) * aspect;
                         float probe = texture2D(u_textTex, vec2(x0/aspect, fillBot)).r;
-                        if (probe < 0.1 && hash(fi*7.1) > 0.2) continue; // skip some drops that miss text
+                        if (probe < 0.05 && hash(fi*7.13) > 0.3) continue;
 
-                        float delay = hash(fi * 2.7) * 0.4 * phaseDrip;
-                        float speed = 0.6 + hash(fi * 3.1) * 0.8;
+                        float delay = hash(fi * 2.71) * 0.3 * phaseDrip;
+                        float speed = 0.8 + hash(fi * 3.14) * 1.5;
                         
                         float dt = t - delay;
                         if (dt > 0.0 && dt < (phaseDrip - delay)) {
-                            // Gravity curve
-                            float y0 = 1.0 * dt * dt + speed * dt;
-                            x0 += sin(u_time * 4.0 + fi) * 0.003; // subtle wobble
+                            float y0 = 1.5 * dt * dt + speed * dt;
+                            x0 += sin(u_time * 6.0 + fi) * 0.005;
                             
-                            if (y0 < fillBot + 0.05) {
-                                float stretch = min(0.05, y0 * 0.15);
-                                float r = 0.004 + hash(fi)*0.005;
+                            if (y0 < fillBot + 0.08) {
+                                float stretch = 0.03 + dt * 0.2;
+                                float r = 0.003 + hash(fi)*0.007;
                                 float dropD = sdCapsule(p, vec2(x0, y0), vec2(x0, y0 - stretch), r);
                                 d = smin(d, dropD, 0.02);
                             }
@@ -201,25 +196,23 @@ class MateriaDrip {
                     }
                 }
 
-                // 3. MELTING (Melt Phase)
+                // 3. AGGRESSIVE MELTING (Melt Phase)
                 if (t > phaseHold && t < phasePool) {
                     float prog = (t - phaseHold) / (phasePool - phaseHold);
-                    for(int i=0; i<25; i++) {
+                    for(int i=0; i<45; i++) {
                         float fi = float(i);
-                        float x0 = hash(fi * 4.3) * aspect;
-                        
-                        // Only melt from areas that have text
-                        float tprobe = texture2D(u_textTex, vec2(x0/aspect, fillTop - 0.05)).r;
-                        if (tprobe < 0.2) continue;
+                        float x0 = hash(fi * 4.39) * aspect;
+                        float tprobe = texture2D(u_textTex, vec2(x0/aspect, fillTop - 0.1)).r;
+                        if (tprobe < 0.15) continue;
 
-                        float speed = 0.5 + hash(fi * 7.1) * 0.7;
-                        float y0 = fillTop + prog * prog * speed * 2.0; // accelerates
+                        float speed = 0.7 + hash(fi * 7.19) * 1.2;
+                        float y0 = fillTop + prog * prog * speed * 2.5;
                         
                         if (y0 < 1.0) { 
-                            float stretch = 0.02 + prog * 0.08;
-                            float r = 0.003 + hash(fi)*0.006;
+                            float stretch = 0.04 + prog * 0.15;
+                            float r = 0.002 + hash(fi)*0.008;
                             float dropD = sdCapsule(p, vec2(x0, y0), vec2(x0, y0 - stretch), r);
-                            d = smin(d, dropD, 0.015);
+                            d = smin(d, dropD, 0.02);
                         }
                     }
                 }
@@ -230,81 +223,83 @@ class MateriaDrip {
                     float prog;
                     if (t < phaseMelt) {
                         prog = (t - phaseHold) / (phaseMelt - phaseHold);
-                        poolThickness = prog * prog * 0.035; // fills up
+                        poolThickness = prog * prog * 0.05;
                     } else if (t < phasePool) {
-                        poolThickness = 0.035; // holds
+                        poolThickness = 0.05;
                     } else {
                         prog = (t - phasePool) / (phasePipe - phasePool);
-                        // Drains out to the sides
-                        poolThickness = (1.0 - prog) * 0.035; 
+                        poolThickness = (1.0 - prog) * 0.05; 
                     }
                     
                     if (poolThickness > 0.0) {
-                        float wave = sin(p.x * 15.0 + u_time * 4.0) * 0.006 * (poolThickness / 0.035);
+                        float wave = sin(p.x * 20.0 + u_time * 6.0) * 0.008 * (poolThickness / 0.05);
                         float poolDist = (1.0 - uv.y) - (poolThickness + wave);
-                        d = smin(d, -poolDist, 0.03);
+                        d = smin(d, -poolDist, 0.04);
                     }
                 }
 
-                // 5. PIPELINE (Transfer to top)
+                // 5. BOILING PIPELINE
                 if (t > phasePool && t < phasePipe) {
-                    float prog = (t - phasePool) / (phasePipe - phasePool); // 0 to 1
-                    
+                    float prog = (t - phasePool) / (phasePipe - phasePool);
                     float leftDist = p.x;
                     float rightDist = aspect - p.x;
                     float wallDist = min(leftDist, rightDist);
                     
-                    // Fluid blob volume traveling up
-                    float pipeThick = 0.025 * sin(prog * 3.1415);
-                    float wave = sin(uv.y * 15.0 - u_time * 12.0) * 0.004;
+                    float pipeThick = 0.03 * sin(prog * 3.1415);
+                    float wave = sin(uv.y * 20.0 - u_time * 15.0) * 0.006;
                     
-                    // Vertical travel (0.0 to 0.5 covers the vertical walls)
                     float vertProg = clamp(prog * 2.0, 0.0, 1.0); 
                     if (uv.y > (1.0 - vertProg)) {
-                        d = smin(d, wallDist - pipeThick - wave, 0.02);
+                        d = smin(d, wallDist - pipeThick - wave, 0.025);
                     }
                     
-                    // Top horizontal travel (0.5 to 1.0 covers the ceiling)
                     if (prog > 0.4) {
                         float horizProg = clamp((prog - 0.4) * 1.66, 0.0, 1.0); 
                         float topDist = uv.y;
-                        
                         float targetX = 0.5 * aspect;
                         float currentDistFromEdge = horizProg * targetX;
                         if (leftDist < currentDistFromEdge || rightDist < currentDistFromEdge) {
-                             float horizWave = sin(p.x * 20.0 - u_time * 15.0 * sign(aspect/2.0 - p.x)) * 0.004;
-                             d = smin(d, topDist - pipeThick - horizWave, 0.02);
+                             float horizWave = sin(p.x * 25.0 - u_time * 20.0 * sign(aspect/2.0 - p.x)) * 0.006;
+                             d = smin(d, topDist - pipeThick - horizWave, 0.025);
                         }
                     }
                 }
 
-                // Top persistent reservoir
-                d = smin(d, uv.y - 0.008, 0.015);
+                // Reservoir
+                d = smin(d, uv.y - 0.01, 0.02);
 
-                // Rendering
+                // FIREY RENDERING
                 vec3 col = vec3(0.0);
-                vec3 fluidColor = vec3(1.0, 0.25, 0.45); 
-
-                float glow = 0.005 / max(0.001, abs(d));
-                col += glow * fluidColor * 0.7;
+                vec3 fireRed    = vec3(1.0, 0.1, 0.0);
+                vec3 fireOrange = vec3(1.0, 0.4, 0.0);
+                vec3 fireYellow = vec3(1.0, 0.8, 0.2);
+                
+                vec3 fluidColor = mix(fireRed, fireOrange, 0.5 + 0.5 * sin(u_time * 2.0 + p.x * 5.0));
+                
+                float glow = 0.008 / max(0.001, abs(d));
+                col += glow * mix(fireRed, fireOrange, abs(sin(u_time * 1.5)));
 
                 if (d < 0.0) {
-                    float interior = clamp(-d * 20.0, 0.0, 1.0);
-                    col = mix(vec3(0.03, 0.0, 0.01), fluidColor * 0.4, interior);
+                    float interior = clamp(-d * 30.0, 0.0, 1.0);
+                    // Magma core logic
+                    vec3 magma = mix(fireRed * 0.4, fireYellow, pow(interior, 1.5));
+                    
+                    // Heat noise / bubbling
+                    float bubble = sin(p.x * 80.0 + u_time * 10.0) * cos(p.y * 60.0 - u_time * 8.0);
+                    magma += bubble * 0.15 * fireOrange;
+                    
+                    col = magma;
 
-                    // Caustics
-                    float caustic = sin(uv.x * 50.0 + u_time * 2.0) * sin(uv.y * 30.0 - u_time * 2.5) * 0.08;
-                    col += caustic * fluidColor;
-
-                    // Specular highlight
-                    float spec = smoothstep(0.012, 0.0, d + 0.008) * 0.4;
-                    col += spec * vec3(1.0, 0.8, 0.9);
+                    // Intense Specular highlight
+                    float spec = smoothstep(0.012, 0.0, d + 0.006);
+                    col += spec * fireYellow * 0.7;
                 }
 
-                float border = smoothstep(0.006, 0.0, abs(d));
-                col = mix(col, fluidColor, border);
+                // Sharp Outer Rim
+                float rim = smoothstep(0.007, 0.0, abs(d));
+                col = mix(col, fireYellow, rim);
 
-                float alpha = clamp(glow * 0.8 + (d < 0.0 ? 0.95 : 0.0) + border * 0.5, 0.0, 1.0);
+                float alpha = clamp(glow * 0.9 + (d < 0.0 ? 1.0 : 0.0) + rim, 0.0, 1.0);
                 gl_FragColor = vec4(col, alpha);
             }
         `;

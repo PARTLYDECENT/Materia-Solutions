@@ -63,7 +63,7 @@ class MateriaOverlay {
         
         this.ui.innerHTML = `
             <div id="materia-overlay-content" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 40px; border-radius: 30px; backdrop-filter: blur(5px); filter: url(#materia-drip-filter);">
-                <h1 id="materia-overlay-title" style="font-weight: 900; letter-spacing: 0.5em; margin-bottom: 20px; font-size: 0.8rem; color: #ff3366">MATERIA KERNEL</h1>
+                <h1 id="materia-overlay-title" style="font-weight: 900; letter-spacing: 0.5em; margin-bottom: 20px; font-size: 0.8rem; color: #ff5500">MATERIA KERNEL</h1>
                 <p id="materia-overlay-body" style="font-weight: 200; font-size: 0.7rem; line-height: 1.8; letter-spacing: 0.2em; opacity: 0.7; margin-bottom: 40px">
                     WE USE PROCEDURAL TRACKERS TO ENHANCE YOUR BOTANICAL IMMERSION. BY CONTINUING, YOU MERGE WITH THE MATERIA DATASTREAM.
                 </p>
@@ -79,11 +79,11 @@ class MateriaOverlay {
         svg.innerHTML = `
             <defs>
                 <filter id="materia-drip-filter">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" result="warp">
-                        <animate attributeName="baseFrequency" values="0.01 0.02; 0.01 0.04; 0.01 0.02" dur="8s" repeatCount="indefinite" />
+                    <feTurbulence type="fractalNoise" baseFrequency="0.005 0.01" numOctaves="1" result="warp">
+                        <animate attributeName="baseFrequency" values="0.005 0.01; 0.005 0.015; 0.005 0.01" dur="10s" repeatCount="indefinite" />
                     </feTurbulence>
-                    <feGaussianBlur in="warp" stdDeviation="2" result="smoothWarp" />
-                    <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="15" in="SourceGraphic" in2="smoothWarp" />
+                    <feGaussianBlur in="warp" stdDeviation="1" result="smoothWarp" />
+                    <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="3" in="SourceGraphic" in2="smoothWarp" />
                 </filter>
             </defs>
         `;
