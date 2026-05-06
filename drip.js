@@ -268,36 +268,39 @@ class MateriaDrip {
                 // Reservoir
                 d = smin(d, uv.y - 0.01, 0.02);
 
-                // FIREY RENDERING
-                vec3 col = vec3(0.0);
-                vec3 fireRed    = vec3(1.0, 0.1, 0.0);
-                vec3 fireOrange = vec3(1.0, 0.4, 0.0);
-                vec3 fireYellow = vec3(1.0, 0.8, 0.2);
-                
-                vec3 fluidColor = mix(fireRed, fireOrange, 0.5 + 0.5 * sin(u_time * 2.0 + p.x * 5.0));
+                // RAINBOW FLUID RENDERING
+                // Create a phasing rainbow color based on time and position
+                vec3 rainbow(float h) {
+                    vec3 c = cos(6.28318 * (h + vec3(0.0, 0.33, 0.67))) * 0.5 + 0.5;
+                    return c;
+                }
+
+                float hueShift = u_time * 0.2 + p.x * 0.1 + p.y * 0.05;
+                vec3 baseCol = rainbow(hueShift);
+                vec3 highlightCol = rainbow(hueShift + 0.1);
                 
                 float glow = 0.008 / max(0.001, abs(d));
-                col += glow * mix(fireRed, fireOrange, abs(sin(u_time * 1.5)));
+                vec3 col = glow * baseCol;
 
                 if (d < 0.0) {
                     float interior = clamp(-d * 30.0, 0.0, 1.0);
-                    // Magma core logic
-                    vec3 magma = mix(fireRed * 0.4, fireYellow, pow(interior, 1.5));
+                    // Phasing core logic
+                    vec3 core = mix(baseCol * 0.4, highlightCol, pow(interior, 1.5));
                     
-                    // Heat noise / bubbling
+                    // Fluid noise / bubbling
                     float bubble = sin(p.x * 80.0 + u_time * 10.0) * cos(p.y * 60.0 - u_time * 8.0);
-                    magma += bubble * 0.15 * fireOrange;
+                    core += bubble * 0.15 * highlightCol;
                     
-                    col = magma;
+                    col = core;
 
                     // Intense Specular highlight
                     float spec = smoothstep(0.012, 0.0, d + 0.006);
-                    col += spec * fireYellow * 0.7;
+                    col += spec * vec3(1.0) * 0.7;
                 }
 
                 // Sharp Outer Rim
                 float rim = smoothstep(0.007, 0.0, abs(d));
-                col = mix(col, fireYellow, rim);
+                col = mix(col, highlightCol, rim);
 
                 float alpha = clamp(glow * 0.9 + (d < 0.0 ? 1.0 : 0.0) + rim, 0.0, 1.0);
                 gl_FragColor = vec4(col, alpha);
