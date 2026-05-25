@@ -41,6 +41,10 @@
             z-index: 1;
         }
 
+        #canvas-container.gooey-active canvas {
+            filter: url(#gooey-sdf);
+        }
+
         canvas {
             display: block;
             width: 100%;
@@ -197,6 +201,77 @@
             display: none !important;
         }
 
+        /* Ambient Radial Gradient Background */
+        #ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+            z-index: 0;
+            pointer-events: none;
+            transition: background 3.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Cinematic Widescreen Letterbox Bars */
+        .cinematic-bar {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 0vh;
+            background: rgba(1, 2, 4, 0.96);
+            z-index: 9;
+            pointer-events: none;
+            transition: height 2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        #cinematic-bar-top {
+            top: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        #cinematic-bar-bottom {
+            bottom: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* True High-Fidelity Solid Text Overlay */
+        #final-text-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 200;
+            pointer-events: none;
+            z-index: 8;
+            opacity: 0;
+            filter: blur(15px);
+            transition: opacity 2.5s cubic-bezier(0.16, 1, 0.3, 1), filter 2.5s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.25), 0 0 50px rgba(0, 200, 255, 0.15);
+        }
+        #final-text-container.active {
+            opacity: 1;
+            filter: blur(0px);
+        }
+        .final-line {
+            display: block;
+        }
+        .final-line-1 {
+            font-weight: 200;
+            margin-bottom: 0.05em;
+        }
+        .final-line-2 {
+            font-weight: 200;
+        }
+        .final-gap {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
         /* --- Ferris Wheel Bottom-Right Menu --- */
         #ferris-wheel-menu {
             position: fixed;
@@ -344,6 +419,10 @@
     </style>
 </head>
 <body>
+    <div id="ambient-bg"></div>
+    <div id="cinematic-bar-top" class="cinematic-bar"></div>
+    <div id="cinematic-bar-bottom" class="cinematic-bar"></div>
+
     <div class="noise"></div>
     <div id="loading">Initializing...</div>
     
@@ -354,6 +433,22 @@
 
     <!-- Final Tagline -->
     <div id="tagline">Welcome to the future</div>
+
+    <div id="final-text-container">
+        <span class="final-line final-line-1">MATERIA</span>
+        <span class="final-line final-line-2">S<span class="final-gap"></span>LUTIONS</span>
+    </div>
+
+    <!-- SVG Gooey SDF Filter for fluid text transition -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display: none; width: 0; height: 0;">
+        <defs>
+            <filter id="gooey-sdf">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
 
     <div id="canvas-container">
         <canvas id="materiaCanvas"></canvas>
@@ -800,11 +895,11 @@
                     let tX, tY, tSize;
                     if (this.isMiniSphere) {
                         let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
-                        tX = proj.x; tY = proj.y; tSize = 1.8 * proj.scale;
+                        tX = proj.x; tY = proj.y; tSize = 8.5 * proj.scale;
                         this.currentScale = proj.scale;
                         this.depthZ = proj.z;
                     } else {
-                        tX = this.lightX; tY = this.lightY; tSize = 1.2;
+                        tX = this.lightX; tY = this.lightY; tSize = 16.5;
                     }
                     this.x = this.morphStartX + (tX - this.morphStartX) * ease;
                     this.y = this.morphStartY + (tY - this.morphStartY) * ease;
@@ -815,13 +910,16 @@
                         let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
                         this.x = proj.x + pushX;
                         this.y = proj.y + pushY;
-                        this.size = 1.8 * proj.scale;
+                        this.size = 8.5 * proj.scale;
                         this.currentScale = proj.scale;
                         this.depthZ = proj.z;
+                        this.opacity = 1;
                     } else {
-                        this.x = this.lightX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 0.5;
-                        this.y = this.lightY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 0.5;
-                        this.size = 1.2 + ((Math.sin(globalTime * this.flickerSpeed * 2 + this.flickerOffset) + 1) / 2) * 0.5;
+                        // Perfectly static solid SDF text position
+                        this.x = this.lightX + pushX;
+                        this.y = this.lightY + pushY;
+                        this.size = 16.5;
+                        this.opacity = 1;
                     }
                 }
             }
@@ -838,11 +936,11 @@
                     ctx.drawImage(orbWhite, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
                     ctx.globalAlpha = 1;
                 } else {
-                    let alpha = 1;
+                    let alpha = this.opacity !== undefined ? this.opacity : 1;
                     let r = 255, g = 255, b = 255;
                     
                     if (phase === 3 || phase === 4 || (phase >= 5 && this.isMiniSphere)) {
-                        alpha = Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
+                        alpha *= Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
                         let depthFactor = (this.depthZ + 1) / 2;
                         r = Math.floor(100 + 155 * depthFactor);
                         g = Math.floor(200 + 55 * depthFactor);
@@ -981,6 +1079,20 @@
             }
         }
 
+        function syncTextOverlaySize() {
+            const container = document.getElementById('final-text-container');
+            if (!container) return;
+            const fontSize = Math.min(cw / 8, 140);
+            container.style.fontSize = fontSize + 'px';
+            container.style.lineHeight = '1.1';
+            
+            const gap = container.querySelector('.final-gap');
+            if (gap) {
+                gap.style.width = (fontSize * 0.7) + 'px';
+                gap.style.height = (fontSize * 0.7) + 'px';
+            }
+        }
+
         function init() {
             const dpr = window.devicePixelRatio || 1;
             const logicalW = Math.max(window.innerWidth, 1);
@@ -1001,6 +1113,7 @@
             extractHeavyTextTargets();
             extractLightTextTargets();
             assignRolesAndShapes();
+            syncTextOverlaySize();
         }
 
         function triggerMorph() {
@@ -1051,6 +1164,29 @@
             // --- CINEMATIC DIRECTOR (Camera, Shakes, Flashes) ---
             if (newPhase !== currentPhase) {
                 triggerMorph();
+                
+                // Dynamic phase-based ambient background color shifts
+                const ambientBg = document.getElementById('ambient-bg');
+                if (ambientBg) {
+                    if (newPhase === 0) {
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(40, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
+                    } else if (newPhase === 1 || newPhase === 2) {
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(20, 20, 35, 0.3) 0%, rgba(0, 0, 0, 1) 100%)";
+                    } else if (newPhase === 3 || newPhase === 4) {
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(0, 45, 65, 0.35) 0%, rgba(0, 0, 0, 1) 100%)";
+                    } else if (newPhase === 5 || newPhase === 6) {
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(35, 15, 65, 0.4) 0%, rgba(0, 0, 0, 1) 100%)";
+                    }
+                }
+
+                // Gooey SDF filter trigger for letters
+                if (newPhase === 5 || newPhase === 6) {
+                    canvasContainer.classList.add('gooey-active');
+                } else {
+                    canvasContainer.classList.remove('gooey-active');
+                }
+
+
                 
                 if (newPhase === 2) {
                     shakeIntensity = 40; // Hard slam
@@ -1144,8 +1280,23 @@
                     canvasContainer.style.transition = 'opacity 3s ease, filter 3s ease';
                     canvasContainer.style.opacity = '0';
                     canvasContainer.style.filter = 'blur(20px)';
+                    
                     document.getElementById('tagline').style.transition = 'opacity 2s ease';
                     document.getElementById('tagline').style.opacity = '0';
+
+                    // Smoothly fade out final typography
+                    const textContainer = document.getElementById('final-text-container');
+                    if (textContainer) {
+                        textContainer.style.transition = 'opacity 3s ease, filter 3s ease';
+                        textContainer.style.opacity = '0';
+                        textContainer.style.filter = 'blur(20px)';
+                    }
+
+                    // Open cinematic widescreen bars back up
+                    const barTop = document.getElementById('cinematic-bar-top');
+                    const barBottom = document.getElementById('cinematic-bar-bottom');
+                    if (barTop) barTop.style.height = '0vh';
+                    if (barBottom) barBottom.style.height = '0vh';
                 }, 5000);
 
                 setTimeout(() => {
@@ -1166,10 +1317,19 @@
 
             ctx.globalCompositeOperation = 'lighter';
             
-            // Update Shockwaves
+            // Update & Draw Shockwaves
             for (let i = window.shockwaves.length - 1; i >= 0; i--) {
-                window.shockwaves[i].update();
-                if (window.shockwaves[i].life <= 0) window.shockwaves.splice(i, 1);
+                const sw = window.shockwaves[i];
+                sw.update();
+                
+                // Draw dynamic expanding glowing cyan ring for visual punch
+                ctx.beginPath();
+                ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 210, 255, ${sw.life * 0.18})`;
+                ctx.lineWidth = 3 * sw.life;
+                ctx.stroke();
+                
+                if (sw.life <= 0) window.shockwaves.splice(i, 1);
             }
 
             for (let i = 0; i < particles.length; i++) {
@@ -1194,6 +1354,16 @@
             }
 
             document.getElementById('start-btn').addEventListener('click', () => {
+                // Widescreen bars sliding in
+                const barTop = document.getElementById('cinematic-bar-top');
+                const barBottom = document.getElementById('cinematic-bar-bottom');
+                if (barTop) barTop.style.height = '10vh';
+                if (barBottom) barBottom.style.height = '10vh';
+
+                // Immediately set initial Phase 0 ambient background gradient
+                const ambientBg = document.getElementById('ambient-bg');
+                if (ambientBg) ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(40, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
+
                 // Initialize Web Audio API on user gesture
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 masterGain = audioCtx.createBiquadFilter();
@@ -1234,6 +1404,7 @@
             extractHeavyTextTargets();
             extractLightTextTargets();
             assignRolesAndShapes();
+            syncTextOverlaySize();
             triggerMorph();
         });
     </script>
