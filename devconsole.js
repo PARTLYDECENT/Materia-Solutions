@@ -243,6 +243,10 @@
                     ${createAudioRow('Materia IV', 'Cinematic Orchestral abyss engine. Deep and sweeping.', 'MateriaMusic4')}
                     ${createAudioRow('Materia V', 'Hyper-aggressive industrial engine. Intense and stochastic.', 'MateriaMusic5')}
                     ${createAudioRow('Materia VI', 'Dark industrial Phrygian ambient. Tense and gritty (Wicked V2).', 'MateriaMusic6')}
+                    ${createAudioRow('Materia VII', 'Ethereal cinematic synthwave. Heavy beats and celestial chimes.', 'MateriaMusic7')}
+                    ${createAudioRow('Materia VIII', 'Glitch Hop fractal engine. Sweeping wavefolding bitcrusher shader.', 'MateriaMusic8')}
+                    ${createAudioRow('Materia IX', 'Acoustic Singularity ambient engine. Bowed comb-resonator shader.', 'MateriaMusic9')}
+                    ${createAudioRow('Materia X', 'Cybernetic Hivemind rave engine. Gritty ring-mod wavefolder shader.', 'MateriaMusic10')}
                 </div>
 
                 <div style="margin-top: 50px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 2px solid ${CONFIG.primaryColor}">
@@ -405,7 +409,7 @@
                 const engineName = btn.dataset.engine;
                 if (window[engineName] && window[engineName].start) {
                     // Try to stop others (though engines usually handle this internally, we want to be sure)
-                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6'].forEach(name => {
+                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6', 'MateriaMusic7', 'MateriaMusic8', 'MateriaMusic9', 'MateriaMusic10'].forEach(name => {
                         if (name !== engineName && window[name] && window[name].stop) {
                             try { window[name].stop(); } catch(e) {}
                         }
