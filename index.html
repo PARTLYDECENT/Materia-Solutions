@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="fix-audio.js"></script>
@@ -9,7 +10,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Materia Solutions | Cinematic Intro">
     <meta name="twitter:description" content="Welcome to the future.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
+    <meta name="twitter:image"
+        content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +23,8 @@
             box-sizing: border-box;
         }
 
-        body, html {
+        body,
+        html {
             width: 100%;
             height: 100%;
             background-color: #000;
@@ -125,13 +128,15 @@
             border-color: rgba(255, 255, 255, 0.8);
             box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
             letter-spacing: 1em;
-            padding-left: 70px; padding-right: 50px; /* Subtle shift */
+            padding-left: 70px;
+            padding-right: 50px;
+            /* Subtle shift */
         }
 
         #start-btn:hover::before {
             left: 100%;
         }
-        
+
         /* Final Text Fade-in */
         #tagline {
             position: absolute;
@@ -165,8 +170,17 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.98); }
-            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.02); }
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: translate(-50%, -50%) scale(0.98);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1.02);
+            }
         }
 
         /* Noise Overlay */
@@ -184,16 +198,47 @@
         }
 
         @keyframes grain {
-            0%, 100% { transform: translate(0, 0); }
-            10% { transform: translate(-5%, -10%); }
-            20% { transform: translate(-15%, 5%); }
-            30% { transform: translate(7%, -25%); }
-            40% { transform: translate(-5%, 25%); }
-            50% { transform: translate(-15%, 10%); }
-            60% { transform: translate(15%, 0%); }
-            70% { transform: translate(0, 15%); }
-            80% { transform: translate(3%, 35%); }
-            90% { transform: translate(-10%, 10%); }
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-5%, -10%);
+            }
+
+            20% {
+                transform: translate(-15%, 5%);
+            }
+
+            30% {
+                transform: translate(7%, -25%);
+            }
+
+            40% {
+                transform: translate(-5%, 25%);
+            }
+
+            50% {
+                transform: translate(-15%, 10%);
+            }
+
+            60% {
+                transform: translate(15%, 0%);
+            }
+
+            70% {
+                transform: translate(0, 15%);
+            }
+
+            80% {
+                transform: translate(3%, 35%);
+            }
+
+            90% {
+                transform: translate(-10%, 10%);
+            }
         }
 
         /* Hide default dev launcher on index.html so it doesn't overlap the Ferris Wheel */
@@ -225,10 +270,12 @@
             pointer-events: none;
             transition: height 2s cubic-bezier(0.19, 1, 0.22, 1);
         }
+
         #cinematic-bar-top {
             top: 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
+
         #cinematic-bar-bottom {
             bottom: 0;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
@@ -253,20 +300,25 @@
             letter-spacing: 0.15em;
             text-shadow: 0 0 25px rgba(255, 255, 255, 0.25), 0 0 50px rgba(0, 200, 255, 0.15);
         }
+
         #final-text-container.active {
             opacity: 1;
             filter: blur(0px);
         }
+
         .final-line {
             display: block;
         }
+
         .final-line-1 {
             font-weight: 200;
             margin-bottom: 0.05em;
         }
+
         .final-line-2 {
             font-weight: 200;
         }
+
         .final-gap {
             display: inline-block;
             vertical-align: middle;
@@ -315,7 +367,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 
+            box-shadow:
                 0 0 20px rgba(180, 140, 255, 0.15),
                 inset 0 0 10px rgba(180, 140, 255, 0.1);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -325,7 +377,7 @@
         .ferris-hover-area:hover .ferris-hub {
             transform: scale(1.15) rotate(135deg);
             border-color: #b48cff;
-            box-shadow: 
+            box-shadow:
                 0 0 30px rgba(180, 140, 255, 0.4),
                 inset 0 0 15px rgba(180, 140, 255, 0.2);
             color: #fff;
@@ -388,6 +440,7 @@
             border: 1px solid rgba(0, 255, 255, 0.3);
             color: rgba(0, 255, 255, 0.85);
         }
+
         #ferris-item-dev:hover {
             border-color: #00ffff;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
@@ -399,6 +452,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.7);
         }
+
         #ferris-item-cookies:hover {
             border-color: #ffffff;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
@@ -410,6 +464,7 @@
             border: 1px solid rgba(180, 140, 255, 0.3);
             color: rgba(180, 140, 255, 0.85);
         }
+
         #ferris-item-recipe:hover {
             border-color: #b48cff;
             box-shadow: 0 0 20px rgba(180, 140, 255, 0.5);
@@ -418,6 +473,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="ambient-bg"></div>
     <div id="cinematic-bar-top" class="cinematic-bar"></div>
@@ -425,7 +481,7 @@
 
     <div class="noise"></div>
     <div id="loading">Initializing...</div>
-    
+
     <!-- New Start Screen -->
     <div id="start-screen" style="display: none;">
         <button id="start-btn">Initiate Sequence</button>
@@ -436,7 +492,7 @@
 
     <div id="final-text-container">
         <span class="final-line final-line-1">MATERIA</span>
-        <span class="final-line final-line-2">S<span class="final-gap"></span>LUTIONS</span>
+        <span class="final-line final-line-2">SOLUTIONS</span>
     </div>
 
     <!-- SVG Gooey SDF Filter for fluid text transition -->
@@ -444,7 +500,8 @@
         <defs>
             <filter id="gooey-sdf">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
-                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15" result="goo" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15"
+                    result="goo" />
                 <feComposite in="SourceGraphic" in2="goo" operator="atop" />
             </filter>
         </defs>
@@ -459,7 +516,7 @@
     <script>
         // --- System Configuration ---
         const PARTICLE_COUNT = 3000;
-        
+
         // Precise Timeline sequence (in milliseconds) - Tightened for better impact
         const T = {
             P1: 3500,   // End Komorebi -> Morph to Heavy Text
@@ -477,12 +534,12 @@
         const canvas = document.getElementById('materiaCanvas');
         const ctx = canvas.getContext('2d', { alpha: false });
         let cw, ch;
-        
+
         // Cinematic Camera State
         let camScale = 1;
         let camX = 0, camY = 0;
         let shakeIntensity = 0;
-        
+
         let mouse = { x: -1000, y: -1000, radius: 100 };
         let smoothMouse = { x: -1000, y: -1000 };
         window.shockwaves = [];
@@ -504,19 +561,19 @@
         }
 
         window.addEventListener('mousedown', (e) => {
-            const rx = (e.clientX - cw/2) / camScale + cw/2;
-            const ry = (e.clientY - cw/2) / camScale + ch/2;
+            const rx = (e.clientX - cw / 2) / camScale + cw / 2;
+            const ry = (e.clientY - cw / 2) / camScale + ch / 2;
             window.shockwaves.push(new Shockwave(rx, ry));
         });
 
         window.addEventListener('mousemove', (e) => {
             // Adjust mouse coordinates based on camera scale for accurate interaction
-            mouse.x = (e.clientX - cw/2) / camScale + cw/2;
-            mouse.y = (e.clientY - ch/2) / camScale + ch/2;
+            mouse.x = (e.clientX - cw / 2) / camScale + cw / 2;
+            mouse.y = (e.clientY - ch / 2) / camScale + ch / 2;
         });
         window.addEventListener('touchmove', (e) => {
-            mouse.x = (e.touches[0].clientX - cw/2) / camScale + cw/2;
-            mouse.y = (e.touches[0].clientY - ch/2) / camScale + ch/2;
+            mouse.x = (e.touches[0].clientX - cw / 2) / camScale + cw / 2;
+            mouse.y = (e.touches[0].clientY - ch / 2) / camScale + ch / 2;
         });
 
         // --- Offscreen Canvases for Color Graded Light Orbs ---
@@ -525,7 +582,7 @@
             const size = 120;
             oc.width = size; oc.height = size;
             const octx = oc.getContext('2d');
-            const grad = octx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+            const grad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
             grad.addColorStop(0, `rgba(255, 255, 255, 1)`);
             grad.addColorStop(0.1, `rgba(${r}, ${g}, ${b}, 0.8)`);
             grad.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.2)`);
@@ -534,7 +591,7 @@
             octx.fillRect(0, 0, size, size);
             return oc;
         }
-        
+
         const orbWarm = createOrb(255, 200, 150); // Golden hour for Phase 0
         const orbWhite = createOrb(255, 255, 255); // Pure white for Phase 1
         const orbCyan = createOrb(0, 200, 255);   // Electric cyan for Phase 3/4
@@ -548,17 +605,17 @@
         function getProjectedSpherePos(base3D, globalTime, centerX, centerY, radius, isMini) {
             const rotSpeedX = isMini ? 0.002 : 0.0005;
             const rotSpeedY = isMini ? 0.003 : 0.0008;
-            const angleX = globalTime * rotSpeedX; 
+            const angleX = globalTime * rotSpeedX;
             const angleY = globalTime * rotSpeedY;
-            
+
             let y1 = base3D.y * Math.cos(angleX) - base3D.z * Math.sin(angleX);
             let z1 = base3D.z * Math.cos(angleX) + base3D.y * Math.sin(angleX);
             let x2 = base3D.x * Math.cos(angleY) - z1 * Math.sin(angleY);
             let z2 = z1 * Math.cos(angleY) + base3D.x * Math.sin(angleY);
-            
+
             const perspective = 1000;
-            const scale = perspective / (perspective + z2 * radius * 0.5); 
-            
+            const scale = perspective / (perspective + z2 * radius * 0.5);
+
             return { x: centerX + x2 * radius * scale, y: centerY + y1 * radius * scale, scale: scale, z: z2 };
         }
 
@@ -568,7 +625,7 @@
         let textTargetsLight = [];
         let oCenterX = 0, oCenterY = 0, oRadius = 0;
         let giantSphereRadius = 0;
-        let currentPhase = 0; 
+        let currentPhase = 0;
         let animationStartTime = null;
         let flashOpacity = 0;
 
@@ -590,7 +647,7 @@
         function playBrassChord(freqs, startTime, duration, isHigh = false) {
             freqs.forEach(f => {
                 // Layer multiple oscillators per note for a thick, wide "orchestral" feel
-                [f*0.995, f, f*1.005].forEach(detunedFreq => {
+                [f * 0.995, f, f * 1.005].forEach(detunedFreq => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createBiquadFilter();
                     const filter = audioCtx.createBiquadFilter();
@@ -624,12 +681,12 @@
         function playImpact(startTime) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createBiquadFilter();
-            
+
             osc.type = 'sine';
             // Massive pitch drop
             osc.frequency.setValueAtTime(150, startTime);
             osc.frequency.exponentialRampToValueAtTime(0.01, startTime + 2);
-            
+
             gain.gain.setValueAtTime(0, startTime);
             gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.001, startTime + 2);
@@ -646,7 +703,7 @@
             noiseFilter.type = 'lowpass';
             noiseFilter.frequency.setValueAtTime(1000, startTime);
             noiseFilter.frequency.exponentialRampToValueAtTime(100, startTime + 1);
-            
+
             const noiseGain = audioCtx.createBiquadFilter();
             noiseGain.gain.setValueAtTime(0.6, startTime);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
@@ -668,7 +725,7 @@
             const gain = audioCtx.createBiquadFilter();
             gain.gain.setValueAtTime(vol, time);
             gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
-            
+
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(masterGain);
@@ -684,17 +741,17 @@
                 const noteTime = startTime + (i * 0.12); // Rapid sweep timing
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createBiquadFilter();
-                
+
                 osc.type = 'triangle'; // Bell-like tone
                 osc.frequency.value = freq;
-                
+
                 gain.gain.setValueAtTime(0, noteTime);
                 gain.gain.linearRampToValueAtTime(0.08, noteTime + 0.05); // Quick attack
                 gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 3.0); // Long ringing tail
-                
+
                 osc.connect(gain);
                 gain.connect(masterGain);
-                
+
                 osc.start(noteTime);
                 osc.stop(noteTime + 3.0);
             });
@@ -704,18 +761,18 @@
         function playTTSVoice() {
             if ('speechSynthesis' in window) {
                 // Cancel any currently playing speech to ensure immediate playback
-                window.speechSynthesis.cancel(); 
+                window.speechSynthesis.cancel();
 
                 const msg = new SpeechSynthesisUtterance("Welcome to the future.");
                 msg.rate = 0.85; // Slowed down for a dramatic, cinematic feel
                 msg.pitch = 0.2; // Deep pitch for a massive, robotic/AI tone
                 msg.volume = 1.0;
-                
+
                 // Try to grab a deep or male voice if available in the browser
                 const voices = window.speechSynthesis.getVoices();
                 const englishVoices = voices.filter(v => v.lang.startsWith('en'));
                 const preferredVoice = englishVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Male')) || englishVoices[0];
-                
+
                 if (preferredVoice) {
                     msg.voice = preferredVoice;
                 }
@@ -726,7 +783,7 @@
 
         function scheduleCinematicScore(t0) {
             // Intro: Rolling snare building up tension
-            for(let i = 0; i < 18; i++) {
+            for (let i = 0; i < 18; i++) {
                 let hitTime = t0 + (i * 0.18);
                 let vol = 0.05 + (i * 0.015); // Build up volume slightly faster
                 playSnareHit(hitTime, vol);
@@ -748,12 +805,12 @@
             playImpact(tExplode);
             playImpact(tExplode + 0.1); // Double boom
             playBrassChord([87.31, 174.61, 261.63, 349.23, 440.00], tExplode, 3.5); // F2, F3, C4, F4, A4
-            
+
             // Phase 5 (14.0s) - Morph to Sleek: FULL SPECTRUM MULTI-TONE LONG PAD
             const tSleek = t0 + (T.P5 / 1000);
             playImpact(tSleek);
             // Deep sub bass all the way up to high shimmering synth frequencies
-            playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 12.0, true); 
+            playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 12.0, true);
 
             // The End - Futuristic Arpeggio to cap it off
             const tArp = t0 + (T.P6 / 1000) + 2.5;
@@ -766,8 +823,8 @@
                 this.x = Math.random() * cw;
                 this.y = Math.random() * ch;
                 this.px = this.x; this.py = this.y; // Previous positions for motion blur
-                
-                this.komorebiSize = Math.random() * 80 + 40; 
+
+                this.komorebiSize = Math.random() * 80 + 40;
                 this.size = this.komorebiSize;
                 this.vx = (Math.random() - 0.5) * 2;
                 this.vy = (Math.random() - 0.5) * 2;
@@ -775,14 +832,14 @@
                 this.noiseOffsetY = Math.random() * 1000;
                 this.flickerSpeed = Math.random() * 0.05 + 0.01;
                 this.flickerOffset = Math.random() * Math.PI * 2;
-                
+
                 this.baseTextSize = Math.random() * 1.5 + 0.5;
                 this.morphStartX = 0; this.morphStartY = 0; this.morphStartSize = 0;
                 this.currentScale = 1;
                 this.depthZ = 0;
-                
+
                 // Stagger factor: how much this particle lags/leads in transitions
-                this.stagger = Math.random() * 0.4; 
+                this.stagger = Math.random() * 0.4;
 
                 // Audio Reactive properties
                 this.audioJitterX = 0;
@@ -795,19 +852,19 @@
             audioReactiveUpdate(bass, treble) {
                 // Bass drives size and a slow pulse
                 this.audioScale = 1 + bass * 0.5;
-                
+
                 // Treble drives high-frequency jitter
                 const jitterMag = treble * 15;
                 this.audioJitterX = (Math.random() - 0.5) * jitterMag;
                 this.audioJitterY = (Math.random() - 0.5) * jitterMag;
 
                 // Sonic pressure: push away from center on bass hits
-                const dx = this.x - cw/2;
-                const dy = this.y - ch/2;
-                const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                const dx = this.x - cw / 2;
+                const dy = this.y - ch / 2;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
                 const force = bass * 20;
-                this.sonicPushX = (dx/dist) * force;
-                this.sonicPushY = (dy/dist) * force;
+                this.sonicPushX = (dx / dist) * force;
+                this.sonicPushY = (dy / dist) * force;
             }
 
             update(globalTime, phase, phaseProgress) {
@@ -818,7 +875,7 @@
                 let dyMouse = smoothMouse.y - this.y;
                 let distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
                 let pushX = 0, pushY = 0;
-                
+
                 if (distanceMouse < mouse.radius && (phase === 2 || phase === 4 || phase === 6)) {
                     let force = (mouse.radius - distanceMouse) / mouse.radius;
                     pushX = -(dxMouse / distanceMouse) * force * 15;
@@ -847,39 +904,39 @@
                     if (this.x < -100) this.x = cw + 100; if (this.x > cw + 100) this.x = -100;
                     if (this.y < -100) this.y = ch + 100; if (this.y > ch + 100) this.y = -100;
                     this.size = this.komorebiSize * (0.3 + ((Math.sin(globalTime * this.flickerSpeed + this.flickerOffset) + 1) / 2) * 0.7);
-                    
+
                 } else if (phase === 1) {
                     const ease = easeOutBack(p);
                     this.x = this.morphStartX + (this.heavyX - this.morphStartX) * ease;
                     this.y = this.morphStartY + (this.heavyY - this.morphStartY) * ease;
                     this.size = Math.max(0.1, this.morphStartSize + (this.baseTextSize - this.morphStartSize) * ease);
-                    
+
                 } else if (phase === 2) {
                     let anticipation = 0;
                     if (globalTime > T.P3 - 500) {
                         anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 25;
                     }
-                    
-                    let dirX = (cw/2 - this.heavyX);
-                    let dirY = (ch/2 - this.heavyY);
-                    let mag = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
-                    
-                    this.x = this.heavyX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 1 - (dirX/mag)*anticipation;
-                    this.y = this.heavyY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 1 - (dirY/mag)*anticipation;
+
+                    let dirX = (cw / 2 - this.heavyX);
+                    let dirY = (ch / 2 - this.heavyY);
+                    let mag = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
+
+                    this.x = this.heavyX + pushX + Math.sin(globalTime * 0.002 + this.noiseOffsetX) * 1 - (dirX / mag) * anticipation;
+                    this.y = this.heavyY + pushY + Math.cos(globalTime * 0.002 + this.noiseOffsetY) * 1 - (dirY / mag) * anticipation;
                     this.size = this.baseTextSize + ((Math.sin(globalTime * this.flickerSpeed * 2 + this.flickerOffset) + 1) / 2);
-                    
+
                 } else if (phase === 3) {
                     const ease = easeOutExpo(p);
-                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius, false);
                     this.x = this.morphStartX + (proj.x - this.morphStartX) * ease;
                     this.y = this.morphStartY + (proj.y - this.morphStartY) * ease;
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
                     this.size = Math.max(0.1, this.morphStartSize + ((3 * proj.scale) - this.morphStartSize) * ease);
-                    
+
                 } else if (phase === 4) {
-                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw/2, ch/2, giantSphereRadius, false);
-                    
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius, false);
+
                     // Add Turbulence
                     const turbX = Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 2;
                     const turbY = Math.cos(globalTime * 0.0015 + this.noiseOffsetY) * 2;
@@ -889,57 +946,51 @@
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
                     this.size = 3 * proj.scale;
-                    
+
                 } else if (phase === 5) {
+                    // Disperse particles outward as ambient stardust
                     const ease = easeInOutQuint(p);
-                    let tX, tY, tSize;
-                    if (this.isMiniSphere) {
-                        let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
-                        tX = proj.x; tY = proj.y; tSize = 8.5 * proj.scale;
-                        this.currentScale = proj.scale;
-                        this.depthZ = proj.z;
-                    } else {
-                        tX = this.lightX; tY = this.lightY; tSize = 16.5;
+                    if (this.disperseDirX === undefined || this.disperseDirX === null) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 2.5 + 0.5;
+                        this.disperseDirX = Math.cos(angle) * speed;
+                        this.disperseDirY = Math.sin(angle) * speed;
+                        this.targetSize = Math.random() * 1.5 + 0.5;
                     }
-                    this.x = this.morphStartX + (tX - this.morphStartX) * ease;
-                    this.y = this.morphStartY + (tY - this.morphStartY) * ease;
-                    this.size = Math.max(0.1, this.morphStartSize + (tSize - this.morphStartSize) * ease);
-                    
+                    this.x = this.morphStartX + this.disperseDirX * ease * 180 + Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 1.5;
+                    this.y = this.morphStartY + this.disperseDirY * ease * 180 + Math.cos(globalTime * 0.001 + this.noiseOffsetY) * 1.5;
+                    this.size = this.morphStartSize + (this.targetSize - this.morphStartSize) * ease;
+                    this.opacity = 1 - ease * 0.85;
+
                 } else if (phase === 6) {
-                    if (this.isMiniSphere) {
-                        let proj = getProjectedSpherePos(this.sphere3D, globalTime, oCenterX, oCenterY, oRadius, true);
-                        this.x = proj.x + pushX;
-                        this.y = proj.y + pushY;
-                        this.size = 8.5 * proj.scale;
-                        this.currentScale = proj.scale;
-                        this.depthZ = proj.z;
-                        this.opacity = 1;
-                    } else {
-                        // Perfectly static solid SDF text position
-                        this.x = this.lightX + pushX;
-                        this.y = this.lightY + pushY;
-                        this.size = 16.5;
-                        this.opacity = 1;
+                    // Continue drifting slowly as ambient stardust
+                    if (this.disperseDirX === undefined || this.disperseDirX === null) {
+                        this.disperseDirX = (Math.random() - 0.5) * 2;
+                        this.disperseDirY = (Math.random() - 0.5) * 2;
                     }
+                    this.x += this.disperseDirX * 0.15 + pushX * 0.1;
+                    this.y += this.disperseDirY * 0.15 + pushY * 0.1;
+                    this.size = this.targetSize || 1;
+                    this.opacity = 0.15;
                 }
             }
 
             draw(phase, phaseProgress) {
                 const velocity = Math.sqrt(Math.pow(this.x - this.px, 2) + Math.pow(this.y - this.py, 2));
-                
+
                 if (phase === 0) {
-                    ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    ctx.drawImage(orbWarm, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
                 } else if (phase === 1 && this.size > 5) {
                     ctx.globalAlpha = 1 - phaseProgress;
-                    ctx.drawImage(orbWarm, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    ctx.drawImage(orbWarm, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
                     ctx.globalAlpha = phaseProgress;
-                    ctx.drawImage(orbWhite, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    ctx.drawImage(orbWhite, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
                     ctx.globalAlpha = 1;
                 } else {
                     let alpha = this.opacity !== undefined ? this.opacity : 1;
                     let r = 255, g = 255, b = 255;
-                    
-                    if (phase === 3 || phase === 4 || (phase >= 5 && this.isMiniSphere)) {
+
+                    if (phase === 3 || phase === 4) {
                         alpha *= Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
                         let depthFactor = (this.depthZ + 1) / 2;
                         r = Math.floor(100 + 155 * depthFactor);
@@ -975,15 +1026,15 @@
             let fontSize = Math.min(cw / 7, 180);
             tCtx.font = `900 ${fontSize}px Montserrat`;
             tCtx.fillStyle = 'white'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
-            
+
             const lineHeight = fontSize * 1.1;
             tCtx.fillText("MATERIA", cw / 2, ch / 2 - lineHeight / 2);
             tCtx.fillText("SOLUTIONS", cw / 2, ch / 2 + lineHeight / 2);
-            
+
             const imgData = tCtx.getImageData(0, 0, cw, ch).data;
             textTargetsHeavy = [];
             const step = Math.ceil(cw / 300);
-            
+
             for (let y = 0; y < ch; y += step) {
                 for (let x = 0; x < cw; x += step) {
                     if (imgData[(y * cw + x) * 4 + 3] > 128) textTargetsHeavy.push({ x, y });
@@ -991,64 +1042,22 @@
             }
         }
 
-        function extractLightTextTargets() {
-            const tCanvas = document.createElement('canvas');
-            tCanvas.width = cw; tCanvas.height = ch;
-            const tCtx = tCanvas.getContext('2d');
-            let fontSize = Math.min(cw / 8, 140);
-            tCtx.font = `200 ${fontSize}px Montserrat`;
-            tCtx.fillStyle = 'white'; tCtx.textBaseline = 'middle';
-            
-            const lineHeight = fontSize * 1.1;
-            const textY1 = ch / 2 - lineHeight / 2;
-            const textY2 = ch / 2 + lineHeight / 2;
-            
-            tCtx.textAlign = 'center';
-            tCtx.fillText("MATERIA", cw / 2, textY1);
-            
-            tCtx.textAlign = 'left';
-            const p1 = "S";
-            const p2 = "LUTIONS";
-            const gap = fontSize * 0.7; 
-            const totalW = tCtx.measureText(p1).width + gap + tCtx.measureText(p2).width;
-            let startX = cw / 2 - totalW / 2;
-            
-            tCtx.fillText(p1, startX, textY2);
-            
-            oCenterX = startX + tCtx.measureText(p1).width + gap / 2;
-            oCenterY = textY2;
-            oRadius = gap * 0.45;
-            
-            tCtx.fillText(p2, startX + tCtx.measureText(p1).width + gap, textY2);
-
-            const imgData = tCtx.getImageData(0, 0, cw, ch).data;
-            textTargetsLight = [];
-            const step = Math.ceil(cw / 300);
-            for (let y = 0; y < ch; y += step) {
-                for (let x = 0; x < cw; x += step) {
-                    if (imgData[(y * cw + x) * 4 + 3] > 128) textTargetsLight.push({ x, y });
-                }
-            }
-        }
-
         function assignRolesAndShapes() {
             const lats = 24;
             const lons = 48;
-            const miniSphereCount = Math.floor(PARTICLE_COUNT * 0.30); // 30% for the 'O' makes it dense
-            let lightIndex = 0;
 
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 if (textTargetsHeavy.length > 0) {
                     let targetIdx = Math.floor((i / PARTICLE_COUNT) * textTargetsHeavy.length);
                     let hTarget = textTargetsHeavy[targetIdx % textTargetsHeavy.length];
-                    particles[i].heavyX = hTarget.x + (Math.random()-0.5)*2;
-                    particles[i].heavyY = hTarget.y + (Math.random()-0.5)*2;
+                    particles[i].heavyX = hTarget.x + (Math.random() - 0.5) * 2;
+                    particles[i].heavyY = hTarget.y + (Math.random() - 0.5) * 2;
                 } else {
                     particles[i].heavyX = cw / 2; particles[i].heavyY = ch / 2;
                 }
 
                 let theta, phi;
-                const noise = (Math.random() - 0.5) * 0.05; 
+                const noise = (Math.random() - 0.5) * 0.05;
                 if (Math.random() > 0.5) {
                     theta = (Math.floor(Math.random() * lats) / lats) * Math.PI + noise;
                     phi = Math.random() * Math.PI * 2;
@@ -1057,63 +1066,30 @@
                     phi = (Math.floor(Math.random() * lons) / lons) * Math.PI * 2 + noise;
                 }
                 particles[i].sphere3D = { x: Math.sin(theta) * Math.cos(phi), y: Math.cos(theta), z: Math.sin(theta) * Math.sin(phi) };
-
-                if (i < miniSphereCount) {
-                    particles[i].isMiniSphere = true;
-                } else {
-                    particles[i].isMiniSphere = false;
-                    if (textTargetsLight.length > 0) {
-                        // Use a normalized index to ensure we sample the entire range of targets
-                        // even if we have fewer particles than targets.
-                        let totalLightParticles = PARTICLE_COUNT - miniSphereCount;
-                        let targetIdx = Math.floor((lightIndex / totalLightParticles) * textTargetsLight.length);
-                        let lTarget = textTargetsLight[targetIdx % textTargetsLight.length];
-                        
-                        particles[i].lightX = lTarget.x + (Math.random()-0.5)*1.5;
-                        particles[i].lightY = lTarget.y + (Math.random()-0.5)*1.5;
-                        lightIndex++;
-                    } else {
-                        particles[i].lightX = cw / 2; particles[i].lightY = ch / 2;
-                    }
-                }
             }
         }
 
-        function syncTextOverlaySize() {
-            const container = document.getElementById('final-text-container');
-            if (!container) return;
-            const fontSize = Math.min(cw / 8, 140);
-            container.style.fontSize = fontSize + 'px';
-            container.style.lineHeight = '1.1';
-            
-            const gap = container.querySelector('.final-gap');
-            if (gap) {
-                gap.style.width = (fontSize * 0.7) + 'px';
-                gap.style.height = (fontSize * 0.7) + 'px';
-            }
-        }
+
 
         function init() {
             const dpr = window.devicePixelRatio || 1;
             const logicalW = Math.max(window.innerWidth, 1);
             const logicalH = Math.max(window.innerHeight, 1);
-            
+
             canvas.width = logicalW * dpr;
             canvas.height = logicalH * dpr;
             ctx.scale(dpr, dpr);
-            
+
             cw = logicalW;
             ch = logicalH;
-            
-            giantSphereRadius = Math.min(cw, ch) * 0.40; 
-            
+
+            giantSphereRadius = Math.min(cw, ch) * 0.40;
+
             particles = [];
             for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-            
+
             extractHeavyTextTargets();
-            extractLightTextTargets();
             assignRolesAndShapes();
-            syncTextOverlaySize();
         }
 
         function triggerMorph() {
@@ -1136,12 +1112,12 @@
             let bassEnergy = 0;
             let trebleEnergy = 0;
             if (frequencyData) {
-                for(let i=0; i<8; i++) bassEnergy += frequencyData[i];
+                for (let i = 0; i < 8; i++) bassEnergy += frequencyData[i];
                 bassEnergy /= 8 * 255; // 0 to 1
-                for(let i=16; i<32; i++) trebleEnergy += frequencyData[i];
+                for (let i = 16; i < 32; i++) trebleEnergy += frequencyData[i];
                 trebleEnergy /= 16 * 255;
             }
-            
+
             let phaseProgress = 0;
             let newPhase = 0;
 
@@ -1164,7 +1140,7 @@
             // --- CINEMATIC DIRECTOR (Camera, Shakes, Flashes) ---
             if (newPhase !== currentPhase) {
                 triggerMorph();
-                
+
                 // Dynamic phase-based ambient background color shifts
                 const ambientBg = document.getElementById('ambient-bg');
                 if (ambientBg) {
@@ -1179,19 +1155,11 @@
                     }
                 }
 
-                // Gooey SDF filter trigger for letters
-                if (newPhase === 5 || newPhase === 6) {
-                    canvasContainer.classList.add('gooey-active');
-                } else {
-                    canvasContainer.classList.remove('gooey-active');
-                }
+                canvasContainer.classList.remove('gooey-active');
 
-
-                
                 if (newPhase === 2) {
                     shakeIntensity = 40; // Hard slam
                     flashOpacity = 0.4;
-                    // Chromatic Aberration hit
                     canvasContainer.style.filter = 'contrast(1.2) saturate(1.5)';
                 }
                 if (newPhase === 3) {
@@ -1204,8 +1172,14 @@
                     flashOpacity = 0.6;
                     vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%)";
                     canvasContainer.style.filter = 'none';
+
+                    // Fade in the static CSS text overlay
+                    const textContainer = document.getElementById('final-text-container');
+                    if (textContainer) {
+                        textContainer.classList.add('active');
+                    }
                 }
-                
+
                 currentPhase = newPhase;
             }
 
@@ -1273,14 +1247,14 @@
                 document.getElementById('tagline').style.opacity = 1;
                 playTTSVoice();
                 window.taglineShown = true;
-                
+
                 // Final cinematic hold before redirect
                 setTimeout(() => {
                     // Start fading out the entire cinematic for a smooth transition
                     canvasContainer.style.transition = 'opacity 3s ease, filter 3s ease';
                     canvasContainer.style.opacity = '0';
                     canvasContainer.style.filter = 'blur(20px)';
-                    
+
                     document.getElementById('tagline').style.transition = 'opacity 2s ease';
                     document.getElementById('tagline').style.opacity = '0';
 
@@ -1310,25 +1284,25 @@
             let trailOpacity = 0.15;
             if (currentPhase === 0) trailOpacity = 0.15;
             else if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0; // Hard clear on hold phases
-            else trailOpacity = 0.4; 
-            
+            else trailOpacity = 0.4;
+
             ctx.fillStyle = `rgba(0, 0, 0, ${trailOpacity})`;
             ctx.fillRect(0, 0, cw, ch);
 
             ctx.globalCompositeOperation = 'lighter';
-            
+
             // Update & Draw Shockwaves
             for (let i = window.shockwaves.length - 1; i >= 0; i--) {
                 const sw = window.shockwaves[i];
                 sw.update();
-                
+
                 // Draw dynamic expanding glowing cyan ring for visual punch
                 ctx.beginPath();
                 ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
                 ctx.strokeStyle = `rgba(0, 210, 255, ${sw.life * 0.18})`;
                 ctx.lineWidth = 3 * sw.life;
                 ctx.stroke();
-                
+
                 if (sw.life <= 0) window.shockwaves.splice(i, 1);
             }
 
@@ -1337,7 +1311,7 @@
                 particles[i].update(globalTime, currentPhase, phaseProgress);
                 particles[i].draw(currentPhase, phaseProgress);
             }
-            
+
             // Keep the animation loop running indefinitely for the final state
             requestAnimationFrame(animate);
         }
@@ -1368,12 +1342,12 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 masterGain = audioCtx.createBiquadFilter();
                 masterGain.gain.value = 0.6; // Master Volume
-                
+
                 // Add a soft compressor to prevent clipping when massive chords hit
                 const compressor = audioCtx.createDynamicsCompressor();
                 compressor.threshold.value = -10;
                 compressor.ratio.value = 4;
-                
+
                 // --- Audio Bridge for Intro Reactivity ---
                 const analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 256;
@@ -1387,10 +1361,10 @@
                 setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
 
                 init();
-                
+
                 // Schedule the audio score perfectly synced with the visual phases
                 scheduleCinematicScore(audioCtx.currentTime);
-                
+
                 // Start visual animation loop
                 requestAnimationFrame(animate);
             });
@@ -1402,9 +1376,7 @@
             ch = canvas.height = Math.max(window.innerHeight, 1);
             giantSphereRadius = Math.min(cw, ch) * 0.40;
             extractHeavyTextTargets();
-            extractLightTextTargets();
             assignRolesAndShapes();
-            syncTextOverlaySize();
             triggerMorph();
         });
     </script>
@@ -1427,7 +1399,7 @@
     <script src="cookie-window.js"></script>
     <script src="gridframe.js"></script>
     <script src="switcherswitcher.js"></script>
-    
+
     <!-- Ferris Wheel Menu (Lower Right) -->
     <div id="ferris-wheel-menu">
         <div class="ferris-hover-area">
@@ -1435,12 +1407,14 @@
             <div class="ferris-hub">✦</div>
 
             <!-- Satellite 1: DEV -->
-            <button id="ferris-item-dev" class="ferris-item" onclick="document.getElementById('materia-dev-launcher').click()" title="Developer Console">
+            <button id="ferris-item-dev" class="ferris-item"
+                onclick="document.getElementById('materia-dev-launcher').click()" title="Developer Console">
                 <span class="label" style="font-size: 8px;">DEV</span>
             </button>
 
             <!-- Satellite 2: COOKIES -->
-            <button id="ferris-item-cookies" class="ferris-item" onclick="showCookieWindow()" title="Data Consent / Cookies">
+            <button id="ferris-item-cookies" class="ferris-item" onclick="showCookieWindow()"
+                title="Data Consent / Cookies">
                 <span class="label" style="font-size: 7px; letter-spacing: 0;">DATA<br>INFO</span>
             </button>
 
@@ -1485,7 +1459,7 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 10;
         " onmouseover="this.style.background='rgba(180, 140, 255, 0.2)'; this.style.borderColor='rgba(180, 140, 255, 0.5)'; this.style.color='#fff'; this.style.transform='scale(1.1) rotate(90deg)'"
-          onmouseout="this.style.background='rgba(0,0,0,0.4)'; this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='rgba(255,255,255,0.8)'; this.style.transform='scale(1) rotate(0deg)'">
+            onmouseout="this.style.background='rgba(0,0,0,0.4)'; this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='rgba(255,255,255,0.8)'; this.style.transform='scale(1) rotate(0deg)'">
             ✕
         </button>
 
@@ -1530,8 +1504,9 @@
                 background: rgba(0,0,0,0.2);
                 transition: all 0.3s ease;
             " onmouseover="this.style.borderColor='rgba(180, 140, 255, 0.4)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.6), 0 0 50px rgba(180, 140, 255, 0.2)'"
-              onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(180, 140, 255, 0.1)'">
-                <img src="ASSETS/images/ordinary_technology_tentacle_orb…_202605180046.jpeg" alt="Orb Treat Recipe" style="
+                onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(180, 140, 255, 0.1)'">
+                <img src="ASSETS/images/ordinary_technology_tentacle_orb…_202605180046.jpeg" alt="Orb Treat Recipe"
+                    style="
                     display: block;
                     max-width: 100%;
                     max-height: 70vh;
@@ -1583,4 +1558,5 @@
         }
     </script>
 </body>
+
 </html>
