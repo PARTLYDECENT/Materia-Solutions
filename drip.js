@@ -111,6 +111,13 @@ class MateriaDrip {
                 return length(pa - ba*h) - r;
             }
 
+            // RAINBOW FLUID RENDERING
+            // Create a phasing rainbow color based on time and position
+            vec3 rainbow(float h) {
+                vec3 c = cos(6.28318 * (h + vec3(0.0, 0.33, 0.67))) * 0.5 + 0.5;
+                return c;
+            }
+
             void main() {
                 vec2 uv = gl_FragCoord.xy / u_resolution;
                 uv.y = 1.0 - uv.y; // y=0 is top
@@ -269,12 +276,6 @@ class MateriaDrip {
                 d = smin(d, uv.y - 0.01, 0.02);
 
                 // RAINBOW FLUID RENDERING
-                // Create a phasing rainbow color based on time and position
-                vec3 rainbow(float h) {
-                    vec3 c = cos(6.28318 * (h + vec3(0.0, 0.33, 0.67))) * 0.5 + 0.5;
-                    return c;
-                }
-
                 float hueShift = u_time * 0.2 + p.x * 0.1 + p.y * 0.05;
                 vec3 baseCol = rainbow(hueShift);
                 vec3 highlightCol = rainbow(hueShift + 0.1);

@@ -247,6 +247,10 @@
                     ${createAudioRow('Materia VIII', 'Glitch Hop fractal engine. Sweeping wavefolding bitcrusher shader.', 'MateriaMusic8')}
                     ${createAudioRow('Materia IX', 'Acoustic Singularity ambient engine. Bowed comb-resonator shader.', 'MateriaMusic9')}
                     ${createAudioRow('Materia X', 'Cybernetic Hivemind rave engine. Gritty ring-mod wavefolder shader.', 'MateriaMusic10')}
+                    ${createAudioRow('Materia XI — Solutus', '5-movement generative symphony. 14 voices, dual Markov, 4-op FM, Karplus-Strong strings.', 'MateriaMusic11')}
+                    ${createAudioRow('Materia XII — Xenomorph', 'Unhinged bio-mechanical engine. Chaotic FM feedback, physical modeled scrapes, formant morphing.', 'MateriaMusic12')}
+                    ${createAudioRow('Materia XIII — Europa', 'High-fidelity cinematic synthwave. Modulated chorus, 7th chords, sidechain compressor pumping.', 'MateriaMusic13')}
+                    ${createAudioRow('Materia XIV — Cryo', 'Cryogenic sub-aquatic ambient engine. Ice fracturing, sonar echoes, bubble sweep resonators.', 'MateriaMusic14')}
                 </div>
 
                 <div style="margin-top: 50px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 2px solid ${CONFIG.primaryColor}">
@@ -409,7 +413,7 @@
                 const engineName = btn.dataset.engine;
                 if (window[engineName] && window[engineName].start) {
                     // Try to stop others (though engines usually handle this internally, we want to be sure)
-                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6', 'MateriaMusic7', 'MateriaMusic8', 'MateriaMusic9', 'MateriaMusic10'].forEach(name => {
+                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6', 'MateriaMusic7', 'MateriaMusic8', 'MateriaMusic9', 'MateriaMusic10', 'MateriaMusic11'].forEach(name => {
                         if (name !== engineName && window[name] && window[name].stop) {
                             try { window[name].stop(); } catch(e) {}
                         }
