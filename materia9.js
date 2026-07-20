@@ -1,6 +1,6 @@
 // materia9.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Acoustic Singularity (Resonant Ambient)
+// MATERIA COOKIES — Acoustic Singularity (Resonant Ambient)
 // Generative audio engine running at 80 BPM. Powered by a custom
 // physical modeling waveguide Comb Resonator sound shader that
 // resonates dry inputs into massive bowed-string drone soundscapes.

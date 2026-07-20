@@ -1,6 +1,6 @@
 // materia4.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Cinematic Orchestral Engine
+// MATERIA COOKIES — Cinematic Orchestral Engine
 // "Echoes of the Abyss"
 // Grand orchestral generative soundtrack: towering brass,
 // sweeping string pads, thundering timpani, soaring melodic arcs,

@@ -1,6 +1,6 @@
 // materia7.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Nebula Solstice (Cinematic Synthwave)
+// MATERIA COOKIES — Nebula Solstice (Cinematic Synthwave)
 // A high-fidelity procedural synthwave engine using Web Audio API.
 // Features detuned LFO-swept pads, crystalline FM chimes, 
 // saturated analog sub-bass, gliding portamento lead, and a 

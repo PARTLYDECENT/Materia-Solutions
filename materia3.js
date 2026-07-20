@@ -1,6 +1,6 @@
 // materia3.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Luminous Ambient Engine
+// MATERIA COOKIES — Luminous Ambient Engine
 // Procedural ethereal soundtrack: Lydian/Ionian harmonic shifts,
 // crystalline FM synthesis, massive cathedral convolution reverb,
 // granular-like delays, and angelic sustained pads.

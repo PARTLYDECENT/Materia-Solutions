@@ -1,6 +1,6 @@
 // materia2.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Dark Industrial Generative Engine
+// MATERIA COOKIES — Dark Industrial Generative Engine
 // Next-generation procedural soundtrack: Markov harmonic chains,
 // FM synthesis, waveshaping distortion, convolution reverb,
 // stochastic drum sequencing, narrative tension curves,

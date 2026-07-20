@@ -1,6 +1,6 @@
 // materia-dsp.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Client-side DSP Audio Shader Framework
+// MATERIA COOKIES — Client-side DSP Audio Shader Framework
 // A highly optimized, sample-by-sample audio processing system
 // acting as fragment shaders for sound. Operates within inline
 // ScriptProcessorNodes to ensure bulletproof compatibility.

@@ -1,7 +1,7 @@
 /**
  * devconsole.js
  * ═══════════════════════════════════════════════════════════════
- * MATERIA SOLUTIONS — Developer & Explorer Console
+ * MATERIA COOKIES — Developer & Explorer Console
  * A premium, user-friendly interface to control the project's
  * generative systems and explore the hidden layers of Materia.
  * ═══════════════════════════════════════════════════════════════
@@ -98,7 +98,7 @@
         header.innerHTML = `
             <div>
                 <h1 style="margin:0; font-size: 1.2rem; font-weight: 900; letter-spacing: 4px; color: ${CONFIG.primaryColor}">DEVCONSOLE</h1>
-                <p style="margin:5px 0 0; font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px">Materia Solutions | v2.4.0</p>
+                <p style="margin:5px 0 0; font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px">Materia Cookies | v2.5.0</p>
             </div>
         `;
 
@@ -251,6 +251,7 @@
                     ${createAudioRow('Materia XII — Xenomorph', 'Unhinged bio-mechanical engine. Chaotic FM feedback, physical modeled scrapes, formant morphing.', 'MateriaMusic12')}
                     ${createAudioRow('Materia XIII — Europa', 'High-fidelity cinematic synthwave. Modulated chorus, 7th chords, sidechain compressor pumping.', 'MateriaMusic13')}
                     ${createAudioRow('Materia XIV — Cryo', 'Cryogenic sub-aquatic ambient engine. Ice fracturing, sonar echoes, bubble sweep resonators.', 'MateriaMusic14')}
+                    ${createAudioRow('Materia XV — Golden', 'Generative pastry pop engine. Warm chords, upbeat melodies, 100 BPM.', 'MateriaMusic15')}
                 </div>
 
                 <div style="margin-top: 50px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 2px solid ${CONFIG.primaryColor}">
@@ -340,7 +341,7 @@
         } else if (tabId === 'scenes') {
             view.innerHTML = `
                 <h2 style="margin-top:0; font-weight: 200; letter-spacing: 2px">SCENE NAVIGATOR</h2>
-                <p style="opacity: 0.6; font-size: 0.8rem; margin-bottom: 30px">Jump between the different architectural layers of Materia Solutions.</p>
+                <p style="opacity: 0.6; font-size: 0.8rem; margin-bottom: 30px">Jump between the different architectural layers of Materia Cookies.</p>
                 
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px">
                     <button class="scene-jump" onclick="window.location.href='index.html'">
@@ -375,7 +376,7 @@
             view.innerHTML = `
                 <h2 style="margin-top:0; font-weight: 200; letter-spacing: 2px">HELP & CONTROLS</h2>
                 <div style="font-size: 0.85rem; line-height: 1.8; opacity: 0.8">
-                    <p>Welcome to the Materia Solutions Development Console. This tool is designed to let you interact with the underlying procedural engines that power this experience.</p>
+                    <p>Welcome to the Materia Cookies Development Console. This tool is designed to let you interact with the underlying procedural engines that power this experience.</p>
                     
                     <h3 style="color: ${CONFIG.primaryColor}; margin-top: 30px">KEYBOARD SHORTCUTS</h3>
                     <ul style="list-style: none; padding: 0">
@@ -413,7 +414,7 @@
                 const engineName = btn.dataset.engine;
                 if (window[engineName] && window[engineName].start) {
                     // Try to stop others (though engines usually handle this internally, we want to be sure)
-                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6', 'MateriaMusic7', 'MateriaMusic8', 'MateriaMusic9', 'MateriaMusic10', 'MateriaMusic11'].forEach(name => {
+                    ['MateriaMusic', 'MateriaMusic2', 'MateriaMusic3', 'MateriaMusic4', 'MateriaMusic5', 'MateriaMusic6', 'MateriaMusic7', 'MateriaMusic8', 'MateriaMusic9', 'MateriaMusic10', 'MateriaMusic11', 'MateriaMusic12', 'MateriaMusic13', 'MateriaMusic14', 'MateriaMusic15'].forEach(name => {
                         if (name !== engineName && window[name] && window[name].stop) {
                             try { window[name].stop(); } catch(e) {}
                         }

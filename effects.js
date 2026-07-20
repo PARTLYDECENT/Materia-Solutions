@@ -1,7 +1,7 @@
 /**
  * effects.js
  * ═══════════════════════════════════════════════════════════════
- * MATERIA SOLUTIONS — Reality Modifiers & Visual Phenomena
+ * MATERIA COOKIES — Reality Modifiers & Visual Phenomena
  * A collection of high-fidelity interactive effects triggered by
  * a minimalist dot-button HUD. 
  * ═══════════════════════════════════════════════════════════════

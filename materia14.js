@@ -1,6 +1,6 @@
 // materia14.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Materia XIV (Cryogenic Depths)
+// MATERIA COOKIES — Materia XIV (Cryogenic Depths)
 // Generative audio engine representing the deep subsurface ocean
 // and freezing ice shell of the moon Europa.
 // ═══════════════════════════════════════════════════════════════

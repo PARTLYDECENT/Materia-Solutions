@@ -1,6 +1,6 @@
 // plugin1.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Xenomorph Bio-Synthesis DSP Plugin
+// MATERIA COOKIES — Xenomorph Bio-Synthesis DSP Plugin
 // Custom sound shader, physical models, and chaotic FM feedback
 // engines designed to synthesize terrifying, organic alien textures.
 // ═══════════════════════════════════════════════════════════════

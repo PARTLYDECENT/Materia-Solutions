@@ -2,7 +2,7 @@
 // Ethereal on-screen typing narrator with Web Audio API synth per character
 
 (function () {
-    const MESSAGE = "Welcome to Materia Solutions — the only place to find the sacred cookies and mini trucks you so desire. Enjoy, team.";
+    const MESSAGE = "Welcome to Materia Cookies — the next-generation food startup disrupting the confectionery market. This is going to be a pretty big thing. Enjoy, team.";
     const CHAR_DELAY = 55;       // ms between characters
     const START_DELAY = 1200;    // ms before narration begins
     const FADE_OUT_DELAY = 4000; // ms after typing finishes before fading away

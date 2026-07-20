@@ -1,6 +1,6 @@
 // plugin2.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Jovian Cryo-Synthesis & Sub-Aquatic DSP
+// MATERIA COOKIES — Jovian Cryo-Synthesis & Sub-Aquatic DSP
 // Custom physical modeling, fluid resonators, and sweeping LFOs
 // simulating the frozen surface and warm subsurface ocean of Europa.
 // ═══════════════════════════════════════════════════════════════

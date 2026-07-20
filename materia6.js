@@ -1,6 +1,6 @@
 // materia6.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Procedural Ambient Soundtrack Engine
+// MATERIA COOKIES — Procedural Ambient Soundtrack Engine
 // V2: WICKED SOUNDSCAPE EDITION (Phrygian / Industrial Ambient)
 // ═══════════════════════════════════════════════════════════════
 

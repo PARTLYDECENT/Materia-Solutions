@@ -1,7 +1,7 @@
 /**
  * komorebi.js
  * ═══════════════════════════════════════════════════════════════
- * MATERIA SOLUTIONS — Advanced Atmospheric Engine
+ * MATERIA COOKIES — Advanced Atmospheric Engine
  * "Sunlight filtering through leaves" (木漏れ日)
  * High-fidelity volumetric background simulation using GLSL.
  * ═══════════════════════════════════════════════════════════════

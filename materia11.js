@@ -1,6 +1,6 @@
 // materia11.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Materia Solutus (The Dissolution)
+// MATERIA COOKIES — Materia Solutus (The Dissolution)
 // ═══════════════════════════════════════════════════════════════
 // The most advanced procedural composition engine in the Materia
 // arsenal. A 5-movement generative symphony that evolves through

@@ -170,8 +170,8 @@ class CookieMatrixWindow {
         this.uiContainer.id = 'cookie-ui-container';
         this.uiContainer.innerHTML = `
             <div class="cookie-header">
-                <div class="cookie-title">DATASTREAM INTEGRATION</div>
-                <div class="cookie-desc">SYNCHRONIZE YOUR BIO-METRICS WITH THE MATERIA GRID.<br>CHOOSE YOUR CONNECTION PARADIGM.</div>
+                <div class="cookie-title">CONFECTIONERY INTEGRATION</div>
+                <div class="cookie-desc">SYNCHRONIZE YOUR TASTE PREFERENCES WITH THE COOKIE ENGINE.<br>CHOOSE YOUR TASTE PARADIGM.</div>
             </div>
             <div class="cookie-cards-grid">
                 <!-- Data indices match MatrixButton elements: 1=Cyber, 2=Void, 3=Aero -->

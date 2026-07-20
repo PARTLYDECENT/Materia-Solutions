@@ -1,6 +1,6 @@
 // animator.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Procedural Store Animator
+// MATERIA COOKIES — Procedural Store Animator
 // Periodically scrambles card names to cookies, shuffles their
 // positions with FLIP animations, mutates the hero banner,
 // and injects random micro-glitch distortions between cycles.

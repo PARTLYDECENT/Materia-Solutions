@@ -5,10 +5,10 @@
     <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Materia Solutions | Botanical Excellence</title>
+    <title>Materia Cookies | Confectionery Excellence</title>
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Materia Solutions | Botanical Excellence">
-    <meta name="twitter:description" content="Advanced Flora Division">
+    <meta name="twitter:title" content="Materia Cookies | Confectionery Excellence">
+    <meta name="twitter:description" content="Advanced Confectionery Division">
     <meta name="twitter:image"
         content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -575,7 +575,7 @@
                 </div>
                 <div>
                     MATERIA
-                    <span class="text-xs text-gray-400 font-light ml-2 uppercase tracking-widest hidden md:inline">SOLUTIONS</span>
+                    <span class="text-xs text-gray-400 font-light ml-2 uppercase tracking-widest hidden md:inline">COOKIES</span>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -584,7 +584,7 @@
                     <span class="recipe-btn-text">RECIPE</span>
                 </button>
                 <div class="text-xs tracking-widest text-gray-400 uppercase hidden md:block">
-                    Advanced Flora Division
+                    Advanced Confectionery Division
                 </div>
                 <button id="nav-toggle-btn" class="nav-toggle" onclick="toggleNav()" aria-label="Toggle Navigation">
                     <span></span>
@@ -602,7 +602,7 @@
                             <rect x="5" y="11" width="14" height="10" rx="2" />
                             <path d="M8 11V7a4 4 0 018 0v4" />
                         </svg>
-                        Specimens
+                        Flavors
                     </div>
 
                     <div class="nav-item locked" title="Access Restricted">
@@ -610,7 +610,7 @@
                             <rect x="5" y="11" width="14" height="10" rx="2" />
                             <path d="M8 11V7a4 4 0 018 0v4" />
                         </svg>
-                        Research
+                        Bake Tech
                     </div>
 
                     <a href="https://suno.com/song/69d8ce89-d0f6-4d3e-b5a7-1e76139ac9ac" target="_blank" rel="noopener noreferrer" class="nav-item active" style="text-decoration:none;">
@@ -832,7 +832,7 @@
 
             window.MateriaOverlay.show(
                 "BATCH INFORMATION",
-                `The <span style="color: ${accent}">${itemName}</span> cookies are currently being processed. <br><br>All Materia cookies are <b>baked on mass</b> and <b>vacuum sealed</b> to ensure peak freshness and structural integrity. <br><br>We are currently selling exclusively on this site. Please note that the store is not fully done yet, and more style options are coming soon.`,
+                `The <span style="color: ${accent}">${itemName}</span> cookies are currently being processed. <br><br>All Materia cookies are <b>computed to perfection</b>, <b>baked on mass</b>, and <b>vacuum sealed</b> in our automated confectionery reactors. <br><br>Materia Cookies is a venture-backed food-tech startup designed to disrupt the global confectionery market through generative flavor profiling. This is going to be a pretty big thing. Pre-orders are open now!`,
                 color,
                 type
             );
@@ -909,6 +909,7 @@
     <script src="materia13.js"></script>
     <script src="plugin2.js"></script>
     <script src="materia14.js"></script>
+    <script src="materia15.js"></script>
     <script src="overlay.js"></script>
     <script src="animator.js"></script>
     <script src="effects.js"></script>
@@ -920,6 +921,7 @@
         'use strict';
 
         const SONGS = [
+            { id: 'materia15', name: 'Materia XV — Golden',    desc: 'Warm Bouncy Pastry Beats',      icon: '🍪', api: 'MateriaMusic15', color: 'rgba(255, 185, 80, 0.9)' },
             { id: 'materia14', name: 'Materia XIV — Cryo',    desc: 'Unhinged Cryogenic Ambient',    icon: '🌠', api: 'MateriaMusic14', color: 'rgba(50, 220, 255, 0.9)' },
             { id: 'materia13', name: 'I Got Europa',          desc: 'High-Fidelity Synthwave',       icon: '❄️', api: 'MateriaMusic13', color: 'rgba(100, 200, 255, 0.9)' },
             { id: 'materia12', name: 'Xenomorph Prime',       desc: 'Unhinged Bio-Mechanical DSP',  icon: '👽', api: 'MateriaMusic12', color: 'rgba(0, 255, 100, 0.9)' },

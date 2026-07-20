@@ -1,6 +1,6 @@
 // materia12.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Xenomorph Prime (Unhinged Bio-Synthesis)
+// MATERIA COOKIES — Xenomorph Prime (Unhinged Bio-Synthesis)
 // ═══════════════════════════════════════════════════════════════
 
 (function () {

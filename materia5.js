@@ -1,6 +1,6 @@
 // materia5.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Hyper-Aggressive Industrial Engine (Wickeder Version)
+// MATERIA COOKIES — Hyper-Aggressive Industrial Engine (Wickeder Version)
 // Next-generation procedural soundtrack: Markov harmonic chains,
 // FM synthesis, waveshaping distortion, convolution reverb,
 // stochastic drum sequencing, narrative tension curves,

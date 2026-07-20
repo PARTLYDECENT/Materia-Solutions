@@ -6,10 +6,10 @@
     <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materia Solutions | Cinematic Intro</title>
+    <title>Materia Cookies | Cinematic Intro</title>
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Materia Solutions | Cinematic Intro">
-    <meta name="twitter:description" content="Welcome to the future.">
+    <meta name="twitter:title" content="Materia Cookies | Cinematic Intro">
+    <meta name="twitter:description" content="Welcome to the future of baking.">
     <meta name="twitter:image"
         content="https://raw.githubusercontent.com/PARTLYDECENT/Materia-Solutions/main/BANNER.jpg">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -492,7 +492,7 @@
 
     <div id="final-text-container">
         <span class="final-line final-line-1">MATERIA</span>
-        <span class="final-line final-line-2">SOLUTIONS</span>
+        <span class="final-line final-line-2">COOKIES</span>
     </div>
 
     <!-- SVG Gooey SDF Filter for fluid text transition -->
@@ -763,7 +763,7 @@
                 // Cancel any currently playing speech to ensure immediate playback
                 window.speechSynthesis.cancel();
 
-                const msg = new SpeechSynthesisUtterance("Welcome to the future.");
+                const msg = new SpeechSynthesisUtterance("Welcome to the future of baking. Materia Cookies.");
                 msg.rate = 0.85; // Slowed down for a dramatic, cinematic feel
                 msg.pitch = 0.2; // Deep pitch for a massive, robotic/AI tone
                 msg.volume = 1.0;
@@ -1029,7 +1029,7 @@
 
             const lineHeight = fontSize * 1.1;
             tCtx.fillText("MATERIA", cw / 2, ch / 2 - lineHeight / 2);
-            tCtx.fillText("SOLUTIONS", cw / 2, ch / 2 + lineHeight / 2);
+            tCtx.fillText("COOKIES", cw / 2, ch / 2 + lineHeight / 2);
 
             const imgData = tCtx.getImageData(0, 0, cw, ch).data;
             textTargetsHeavy = [];
@@ -1397,6 +1397,7 @@
     <script src="materia13.js"></script>
     <script src="plugin2.js"></script>
     <script src="materia14.js"></script>
+    <script src="materia15.js"></script>
     <script src="komorebi.js"></script>
     <script src="effects.js"></script>
     <script src="devconsole.js"></script>

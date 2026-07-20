@@ -1,6 +1,6 @@
 // entity.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — The Entity
+// MATERIA COOKIES — The Entity
 // A living black orb that inhabits the background, hides,
 // re-emerges, and rapidly evolves into different 3D nightmare
 // forms. Fully black. Fully alive. Fully unsettling.

@@ -1,6 +1,6 @@
 // materia8.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Supernova Fractal (Glitch Synthwave)
+// MATERIA COOKIES — Supernova Fractal (Glitch Synthwave)
 // Generative audio engine running at 138 BPM. Powered by a
 // dynamic sample-level Web Audio DSP Master Sound Shader
 // combining Buchla Wavefolding and Quantum Decimating (Bitcrush).

@@ -1,6 +1,6 @@
 // switcher.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Polarity Switcher
+// MATERIA COOKIES — Polarity Switcher
 // Randomly polarizes the Omen (white→black) and Entity
 // (black→white) by inverting their render layers. The light
 // komorebi background flips to a dark void and vice versa.

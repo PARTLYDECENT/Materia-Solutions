@@ -1,6 +1,6 @@
 // materia.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Procedural Ambient Soundtrack Engine
+// MATERIA COOKIES — Procedural Ambient Soundtrack Engine
 // A fully codified generative song using pure Web Audio API
 // No samples. No libraries. Just math, oscillators, and soul.
 // ═══════════════════════════════════════════════════════════════

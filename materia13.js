@@ -1,6 +1,6 @@
 // materia13.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — I Got Europa (High-Fidelity Synthwave)
+// MATERIA COOKIES — I Got Europa (High-Fidelity Synthwave)
 // ═══════════════════════════════════════════════════════════════
 
 (function () {

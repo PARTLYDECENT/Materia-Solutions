@@ -1,6 +1,6 @@
 // materia10.js
 // ═══════════════════════════════════════════════════════════════
-// MATERIA SOLUTIONS — Cybernetic Hivemind (Industrial Rave)
+// MATERIA COOKIES — Cybernetic Hivemind (Industrial Rave)
 // Generative audio engine running at 135 BPM. Powered by a combined
 // Master Wavefolder and Dynamic Ring Modulator sound shader,
 // shaping intense mechanical robot bass sweeps and heavy grit.
