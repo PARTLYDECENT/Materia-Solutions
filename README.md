@@ -18,7 +18,7 @@ A 3,000-particle CPU-projected 3D sequence that morphs through 7 timed phases.
 - **Dynamic Camera**: Zoom, pan, and screen-shake effects synchronized with audio impacts.
 
 ### 2. Confectionery Flavor Store (`STORE.HTML`)
-A premium glassmorphism storefront displaying six of our flagship computational cookie batches:
+A premium glassmorphism storefront displaying 16 flagship computational cookie specimens and an interactive R&D Coming Soon pipeline:
 - 🔥 **SCARLET SPICE** (Fire - Baked on Mass)
 - 💾 **CYBER MINT** (Cyber - Vacuum Sealed)
 - 🌑 **VOID COCOA** (Void - In Production)
@@ -27,6 +27,22 @@ A premium glassmorphism storefront displaying six of our flagship computational 
 - ❄️ **GHOST FROST** (Frost - Vacuum Sealed)
 - 🌀 **GRAVITY FUDGE** (Gravity - Vacuum Sealed)
 - 🧠 **NEURAL BERRY** (Neural - Fresh Batch)
+- ⚡ **PLASMA TOFFEE** (Plasma - Fusion Baked)
+- 🌌 **QUANTUM MATCHA** (Quantum - Spin Stabilized)
+- 🌋 **MAGMA CINNAMON** (Thermal - Core Heated)
+- 💎 **DIAMOND SHORTBREAD** (Crystalline - Lattice Form)
+- 🔮 **CHRONO VANILLA** (Temporal - Epoch Aged)
+- 🧬 **BIO HORIZON** (Organic Synth - Gene Profiled)
+- ☀️ **SOLAR MACADAMIA** (Stellar - 5000K Roasted)
+- 🪐 **DARK MATTER** (Abyssal - Event Horizon)
+
+#### 🧪 R&D Experimental Pipeline (Coming Soon 2026-2027):
+- 🛸 **ORB TREAT V2** (Ferro-magnetic cocoa matrix chocolate sphere)
+- 🤖 **DESKTOP REACTOR #09** (Compact 30-second home cookie synthesizer)
+- 💊 **MATERIA PILL-BAR** (2,000 kcal zero-crash compressed pastry core)
+- 🌊 **ZERO-G HOVER MACARON** (Acoustic levitation floating macaron)
+- ⚡ **NEURAL-LINK TASTE PACK** (Synaptic gustatory flavor trigger)
+- 🧊 **CRYO-STASIS ICE BISCUIT** (Absolute zero quantum flash-baked biscuit)
 
 ### 3. The Baking Entity AI (`entity.js`)
 An autonomous, raymarched SDF helper entity that inhabits the background and assists in flavor balancing.

@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+<title>KOMOREBIS KITCHEN — Tactile Procedural Cooking</title>
+<style>
+  :root {
+    --accent: #ff8a3d;
+    --accent2: #ffd23d;
+    --panel: rgba(18, 14, 12, 0.78);
+    --panel-border: rgba(255, 180, 120, 0.22);
+    --text: #f3e9df;
+    --text-dim: #c9b8ab;
+    --danger: #ff5f5f;
+    --good: #5ce67e;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+    background: #0d0907; color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent; user-select: none;
+  }
+  #glcanvas {
+    position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+    touch-action: none; cursor: grab;
+  }
+  #glcanvas.dragging-cam { cursor: grabbing; }
+  #glcanvas.hover-pick { cursor: pointer; }
+  #glcanvas.dragging-food { cursor: grabbing; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: 14px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  #hud {
+    position: fixed; inset: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
+    font-size: 14px; z-index: 10;
+  }
+  #hud .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; pointer-events: none; }
+  #hud .row > * { pointer-events: auto; }
+
+  #orderCard { padding: 12px 16px; min-width: 220px; max-width: 300px; }
+  #orderCard h3 { margin: 0 0 4px 0; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+  #orderName { font-size: 17px; font-weight: 800; margin: 2px 0 6px 0; color: #fff; }
+  #orderItems { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.6; }
+  #timerTrack { height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+  #timerBar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.1s linear; }
+
+  #scoreCard { padding: 10px 16px; text-align: right; }
+  #scoreCard .big { font-size: 24px; font-weight: 800; color: var(--accent2); font-variant-numeric: tabular-nums; }
+  #scoreCard .combo { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-weight: 600; }
+  
+  #topActionRow { display: flex; gap: 8px; align-items: center; margin-top: 8px; float: right; }
+  .iconBtn {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--panel-border);
+    background: var(--panel); color: var(--text); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .iconBtn:active { transform: scale(0.95); }
+
+  #hintTip {
+    position: absolute; top: calc(14px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+    padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--accent2); pointer-events: none;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8); background: rgba(20, 14, 10, 0.7); border-radius: 20px;
+    border: 1px solid var(--panel-border); letter-spacing: 0.02em;
+  }
+
+  #flash {
+    position: absolute; left: 50%; top: 22%; transform: translate(-50%, 0);
+    font-size: 24px; font-weight: 900; opacity: 0; text-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+    transition: opacity 0.2s ease, transform 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    pointer-events: none; text-align: center;
+  }
+  #flash.show { opacity: 1; transform: translate(-50%, -15px); }
+
+  #bottom { display: flex; flex-direction: column; gap: 8px; align-items: stretch; pointer-events: none; }
+  #bottom > * { pointer-events: auto; }
+  
+  #stationsRow {
+    display: flex; gap: 8px; overflow-x: auto; padding: 2px;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  #stationsRow::-webkit-scrollbar { display: none; }
+  .slotCard {
+    padding: 8px 12px; min-width: 124px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+  }
+  .slotCard .slotHead { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 700; }
+  .slotCard .slotIcon { font-size: 20px; margin-right: 4px; }
+  .ring {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(var(--accent) calc(var(--p, 0) * 360deg), rgba(255, 255, 255, 0.12) 0deg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring::after { content: ''; width: 24px; height: 24px; border-radius: 50%; background: #1a1310; }
+  .slotBtns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .miniBtn {
+    font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.08); color: var(--text); cursor: pointer; font-weight: 700;
+  }
+  .miniBtn:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.96); }
+  .miniBtn.primary { background: linear-gradient(135deg, var(--accent), #ff6b3d); color: #fff; border-color: transparent; }
+  .miniBtn:disabled { opacity: 0.35; pointer-events: none; }
+
+  #plateStrip { display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+  #plateStrip .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 800; }
+  #plateItems { display: flex; gap: 6px; font-size: 20px; min-height: 26px; align-items: center; }
+  #serveBtn {
+    margin-left: auto; padding: 10px 22px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #1a0f05;
+    font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 14px rgba(255, 138, 61, 0.35);
+  }
+  #serveBtn:active { transform: scale(0.96); }
+  #serveBtn:disabled { opacity: 0.3; pointer-events: none; box-shadow: none; }
+
+  #trayRow { display: flex; gap: 8px; padding: 8px 12px; align-items: center; overflow-x: auto; }
+  .trayBtn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 8px 12px; border-radius: 12px; border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.06); color: var(--text); cursor: grab; min-width: 62px;
+  }
+  .trayBtn:active { background: rgba(255, 255, 255, 0.18); }
+  .trayBtn .ic { font-size: 24px; }
+  .trayBtn .lb { font-size: 10px; color: var(--text-dim); font-weight: 700; text-transform: uppercase; }
+  .trayBtn:disabled { opacity: 0.3; pointer-events: none; }
+
+  #heatWrap { display: flex; align-items: center; gap: 10px; padding: 8px 14px; margin-left: auto; }
+  #heatWrap label { font-size: 13px; font-weight: 800; white-space: nowrap; }
+  #heatSlider { width: 110px; accent-color: var(--accent); cursor: pointer; }
+
+  #controlsRow2 { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+
+  #instructions {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 0, 0, 0.65); z-index: 30; padding: 20px;
+  }
+  #instructions .box { max-width: 460px; padding: 26px 28px; text-align: left; }
+  #instructions h2 { margin: 0 0 8px 0; font-size: 22px; color: var(--accent2); }
+  #instructions p { font-size: 14px; line-height: 1.6; color: var(--text-dim); margin: 8px 0; }
+  #instructions .featureList { margin: 10px 0; padding-left: 20px; font-size: 13.5px; color: var(--text); }
+  #instructions .featureList li { margin-bottom: 6px; }
+  #instructions button {
+    margin-top: 16px; width: 100%; padding: 14px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #1a0f05;
+    font-weight: 800; font-size: 15px; cursor: pointer;
+  }
+
+  /* Floating drag follower */
+  #dragGhost {
+    position: fixed; pointer-events: none; z-index: 50; display: none;
+    font-size: 38px; transform: translate(-50%, -50%);
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+  }
+
+  #seasoningBtn {
+    padding: 8px 12px; border-radius: 10px; border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.08); color: var(--accent2); font-weight: 800;
+    font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+  }
+  #seasoningBtn:active { transform: scale(0.95); }
+
+  @media (max-width: 600px) {
+    #hud { font-size: 12px; padding: 8px; }
+    #orderCard { max-width: 190px; padding: 8px 10px; }
+    #orderName { font-size: 14px; }
+    .slotCard { min-width: 105px; padding: 6px 8px; }
+    #heatWrap { padding: 6px 10px; }
+    #heatSlider { width: 75px; }
+    .trayBtn { padding: 6px 8px; min-width: 52px; }
+    .trayBtn .ic { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="glcanvas"></canvas>
+<div id="dragGhost">🥚</div>
+
+<div id="hintTip">✋ Click &amp; drag 3D ingredients or tap pan/board items!</div>
+
+<div id="instructions">
+  <div class="box panel">
+    <h2>🍳 SDF KITCHEN 3D</h2>
+    <p>A full procedural raymarched culinary simulator — fully generated with signed distance equations and dynamic physical interactions.</p>
+    <ul class="featureList">
+      <li><b>Grab &amp; Drag in 3D:</b> Click &amp; drag ingredients (Eggs, Patties, Shrimp, Onions, Cheese, Buns) straight from the counter into the Pan or Cutting Board.</li>
+      <li><b>Direct 3D Action:</b> Click the knife to slice onions, tap sizzling pan items to flip them in mid-air, and drag cooked food directly onto the serving plate!</li>
+      <li><b>Seasoning &amp; Heat:</b> Shake salt 🧂 on cooking food for bonus flavor points and adjust the stove heat.</li>
+      <li><b>Free Camera:</b> Drag anywhere on empty counter/space with right click or left click to orbit the camera; scroll/pinch to zoom.</li>
+    </ul>
+    <button id="startBtn">Start Cooking Now →</button>
+  </div>
+</div>
+
+<div id="hud">
+  <div class="row">
+    <div id="orderCard" class="panel">
+      <h3>Customer Order</h3>
+      <div id="orderName">—</div>
+      <div id="orderItems"></div>
+      <div id="timerTrack"><div id="timerBar"></div></div>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+      <div id="scoreCard" class="panel">
+        <div class="big" id="scoreVal">0</div>
+        <div class="combo" id="comboVal">combo ×0</div>
+      </div>
+      <div id="topActionRow">
+        <button id="seasonBtn" class="panel iconBtn" title="Season Food (Salt)">🧂</button>
+        <button id="resetCamBtn" class="panel iconBtn" title="Reset Camera View">⟲</button>
+        <button id="muteBtn" class="panel iconBtn" title="Mute Audio">🔊</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="flash"></div>
+
+  <div id="bottom">
+    <div id="stationsRow"></div>
+    <div id="controlsRow2">
+      <div id="plateStrip" class="panel" style="flex: 1;">
+        <span class="label">Plate</span>
+        <div id="plateItems"></div>
+        <button id="serveBtn">Serve Order ✓</button>
+      </div>
+      <div id="heatWrap" class="panel">
+        <label>🔥 Burner</label>
+        <input id="heatSlider" type="range" min="0" max="100" value="60"/>
+      </div>
+    </div>
+    <div id="trayRow" class="panel"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const TYPE = { NONE: 0, EGG: 1, PATTY: 2, ONION: 3, SHRIMP: 4, CHEESE: 5, BUN: 6 };
+const TYPE_NAME = { 1: 'Egg', 2: 'Patty', 3: 'Onion', 4: 'Shrimp', 5: 'Cheese', 6: 'Bun' };
+const TYPE_ICON = { 1: '🥚', 2: '🥩', 3: '🧅', 4: '🍤', 5: '🧀', 6: '🍞' };
+const TYPE_STATION = { 1: 'pan', 2: 'pan', 3: 'board', 4: 'pan', 5: 'pan', 6: 'pan' };
+const COOK_RATE = { 1: 0.12, 2: 0.08, 4: 0.10, 5: 0.18, 6: 0.09 };
+
+const RECIPES = [
+  { name: "Sunny-Side Egg", items: [{ type: TYPE.EGG, doneMin: 0.35, doneMax: 0.65 }], time: 32, reward: 90 },
+  { name: "Chopped Onion Sauté", items: [{ type: TYPE.ONION, chopped: true }], time: 26, reward: 80 },
+  { name: "Seared Patty", items: [{ type: TYPE.PATTY, doneMin: 0.5, doneMax: 0.8 }], time: 38, reward: 120 },
+  { name: "Grilled Butter Shrimp", items: [{ type: TYPE.SHRIMP, doneMin: 0.45, doneMax: 0.82 }], time: 34, reward: 130 },
+  { name: "Cheeseburger Deluxe", items: [{ type: TYPE.BUN, doneMin: 0.25, doneMax: 0.7 }, { type: TYPE.PATTY, doneMin: 0.5, doneMax: 0.8 }, { type: TYPE.CHEESE, doneMin: 0.3, doneMax: 0.85 }, { type: TYPE.ONION, chopped: true }], time: 65, reward: 310 },
+  { name: "Surf & Turf Supreme", items: [{ type: TYPE.PATTY, doneMin: 0.5, doneMax: 0.8 }, { type: TYPE.SHRIMP, doneMin: 0.45, doneMax: 0.82 }, { type: TYPE.ONION, chopped: true }], time: 60, reward: 280 },
+  { name: "Breakfast Stack", items: [{ type: TYPE.BUN, doneMin: 0.25, doneMax: 0.7 }, { type: TYPE.EGG, doneMin: 0.35, doneMax: 0.65 }, { type: TYPE.CHEESE, doneMin: 0.3, doneMax: 0.85 }], time: 48, reward: 220 }
+];
+
+const WORLD_LAYOUT = {
+  counterPos: [0.0, -1.05, 0.0],
+  boardPos: [-2.3, -0.87, 0.0],
+  boardFoodPos: [-2.35, -0.66, 0.0],
+  panPos: [0.6, -0.83, 0.0],
+  panFoodPositions: [
+    [0.6 + Math.cos(0.4) * 0.26, -0.695, Math.sin(0.4) * 0.26],
+    [0.6 + Math.cos(2.494395) * 0.26, -0.695, Math.sin(2.494395) * 0.26],
+    [0.6 + Math.cos(4.58879) * 0.26, -0.695, Math.sin(4.58879) * 0.26]
+  ],
+  platePos: [2.5, -0.85, 0.0],
+  trayPicks: [
+    { type: TYPE.EGG, pos: [-3.0, -0.78, -1.65], radius: 0.42 },
+    { type: TYPE.PATTY, pos: [-1.8, -0.78, -1.65], radius: 0.42 },
+    { type: TYPE.ONION, pos: [-0.6, -0.78, -1.65], radius: 0.42 },
+    { type: TYPE.SHRIMP, pos: [0.6, -0.78, -1.65], radius: 0.42 },
+    { type: TYPE.CHEESE, pos: [1.8, -0.78, -1.65], radius: 0.42 },
+    { type: TYPE.BUN, pos: [3.0, -0.78, -1.65], radius: 0.42 }
+  ]
+};
+
+// Game State
+let heat = 60;
+let panSlots = [null, null, null];
+let boardSlot = null;
+let plateSlots = [null, null, null, null];
+let currentOrder = null, orderTimeLeft = 0, orderRampCount = 0;
+let score = 0, combo = 0;
+let chopTime = -10, lastSeasonTime = -10;
+let clockTime = 0, started = false;
+let flipAnimations = [0, 0, 0];
+
+// Drag & Drop State
+let dragInfo = null;
+let hovered3D = null;
+
+function heatNorm() { return heat / 100; }
+
+function flashMessage(msg, color) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.style.color = color || '#fff';
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(flashMessage._t);
+  flashMessage._t = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+function spawnOrder() {
+  let r = RECIPES[Math.floor(Math.random() * RECIPES.length)];
+  if (currentOrder && r.name === currentOrder.name && RECIPES.length > 1) {
+    r = RECIPES[(RECIPES.indexOf(r) + 1) % RECIPES.length];
+  }
+  const ramp = Math.max(0.6, 1 - orderRampCount * 0.02);
+  currentOrder = r;
+  orderTimeLeft = r.time * ramp;
+  currentOrder._fullTime = orderTimeLeft;
+}
+
+function addIngredientToStation(type) {
+  const st = TYPE_STATION[type];
+  if (st === 'board') {
+    if (boardSlot) {
+      flashMessage('Cutting board is occupied!', '#ff9b6a');
+      return false;
+    }
+    boardSlot = { type, progress: 0, seasoned: false };
+    playDrop();
+    return true;
+  } else {
+    const idx = panSlots.findIndex(s => s === null);
+    if (idx === -1) {
+      flashMessage('Pan is full!', '#ff9b6a');
+      return false;
+    }
+    panSlots[idx] = { type, doneness: 0, flippedOnce: false, lastFlipTime: -10, seasoned: false };
+    playDrop();
+    return true;
+  }
+}
+
+function chopBoard() {
+  if (!boardSlot) return;
+  boardSlot.progress = Math.min(1, boardSlot.progress + 0.25);
+  chopTime = clockTime;
+  playChop();
+  if (boardSlot.progress >= 0.999) {
+    flashMessage('Onion chopped! Drag to plate.', '#ffd23d');
+  }
+}
+
+function flipPan(i) {
+  const s = panSlots[i]; if (!s) return;
+  s.flippedOnce = true;
+  s.lastFlipTime = clockTime;
+  flipAnimations[i] = clockTime;
+  playFlip();
+}
+
+function plateBoard() {
+  if (!boardSlot || boardSlot.progress < 0.999) return;
+  const freeIdx = plateSlots.findIndex(s => s === null);
+  if (freeIdx === -1) { flashMessage('Plate is full!', '#ff5f5f'); return; }
+  plateSlots[freeIdx] = { type: boardSlot.type, doneness: 1, chopped: true, seasoned: boardSlot.seasoned };
+  boardSlot = null;
+  playPlate();
+}
+
+function platePan(i) {
+  const s = panSlots[i]; if (!s) return;
+  const freeIdx = plateSlots.findIndex(x => x === null);
+  if (freeIdx === -1) { flashMessage('Plate is full!', '#ff5f5f'); return; }
+  plateSlots[freeIdx] = { type: s.type, doneness: s.doneness, chopped: false, seasoned: s.seasoned };
+  panSlots[i] = null;
+  playPlate();
+}
+
+function seasonAll() {
+  lastSeasonTime = clockTime;
+  playSeason();
+  let count = 0;
+  for (const s of panSlots) {
+    if (s && !s.seasoned) { s.seasoned = true; count++; }
+  }
+  if (boardSlot && !boardSlot.seasoned) { boardSlot.seasoned = true; count++; }
+  flashMessage(count > 0 ? '✨ Seasoned perfectly!' : '🧂 Salt sprinkled!', '#ffd23d');
+}
+
+function discardBoard() { boardSlot = null; playDiscard(); }
+function discardPan(i) { panSlots[i] = null; playDiscard(); }
+function discardPlate(i) { plateSlots[i] = null; playDiscard(); }
+
+function serve() {
+  if (!currentOrder) return;
+  if (plateSlots.every(s => s === null)) return;
+  const required = currentOrder.items;
+  const used = new Array(plateSlots.length).fill(false);
+  let totalAcc = 0, matched = 0, seasonedBonus = 0;
+
+  for (const req of required) {
+    let bestIdx = -1, bestScore = -1;
+    for (let i = 0; i < plateSlots.length; i++) {
+      const s = plateSlots[i];
+      if (!s || used[i] || s.type !== req.type) continue;
+      let sc;
+      if (req.chopped !== undefined) {
+        sc = s.chopped ? 1 : 0;
+      } else {
+        const mid = (req.doneMin + req.doneMax) / 2;
+        const half = (req.doneMax - req.doneMin) / 2;
+        if (s.doneness >= 1.1) sc = -1;
+        else {
+          const distn = Math.abs(s.doneness - mid) / Math.max(half, 0.001);
+          sc = Math.max(0, 1 - distn * 0.6);
+        }
+      }
+      if (sc > bestScore) { bestScore = sc; bestIdx = i; }
+    }
+    if (bestIdx >= 0 && bestScore > 0) {
+      used[bestIdx] = true;
+      matched++;
+      totalAcc += bestScore;
+      if (plateSlots[bestIdx].seasoned) seasonedBonus += 25;
+    }
+  }
+
+  const success = matched === required.length;
+  if (success) {
+    const acc = totalAcc / required.length;
+    combo++;
+    const pts = Math.round((currentOrder.reward * (0.6 + 0.4 * acc) + seasonedBonus) * (1 + combo * 0.1));
+    score += pts;
+    playSuccess();
+    flashMessage(`+${pts} Chef Masterpiece! 🌟`, '#5ce67e');
+  } else {
+    combo = 0;
+    score = Math.max(0, score - 20);
+    playFail();
+    flashMessage('Order Mismatch! Check ingredients.', '#ff5f5f');
+  }
+  plateSlots = [null, null, null, null];
+  orderRampCount++;
+  spawnOrder();
+}
+
+function updateGame(dt) {
+  if (!started) return;
+  for (let i = 0; i < 3; i++) {
+    const s = panSlots[i];
+    if (!s) continue;
+    const rate = COOK_RATE[s.type] || 0.1;
+    s.doneness += heatNorm() * rate * dt;
+    if (s.doneness >= 1.15) {
+      panSlots[i] = null;
+      combo = 0;
+      score = Math.max(0, score - 15);
+      flashMessage(`Burnt the ${TYPE_NAME[s.type]}! 🔥`, '#ff5f5f');
+      playFail();
+    }
+  }
+  if (currentOrder) {
+    orderTimeLeft -= dt;
+    if (orderTimeLeft <= 0) {
+      combo = 0;
+      flashMessage('Order Expired! ⏰', '#ff5f5f');
+      playFail();
+      orderRampCount++;
+      spawnOrder();
+    }
+  }
+  updateSizzle(sizzleActivity());
+}
+
+function sizzleActivity() {
+  let a = 0;
+  for (const s of panSlots) if (s) a += Math.max(0, 1 - Math.abs(s.doneness - 0.45) * 1.3);
+  return Math.min(1, a) * heatNorm();
+}
+
+let actx = null, masterGain = null, sizzleGain = null, sizzleFilter = null, muted = false;
+function initAudio() {
+  if (actx) return;
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = actx.createGain(); masterGain.gain.value = 0.75; masterGain.connect(actx.destination);
+
+    const bufLen = actx.sampleRate * 2;
+    const buf = actx.createBuffer(1, bufLen, actx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d[i] = Math.random() * 2 - 1;
+    const noise = actx.createBufferSource(); noise.buffer = buf; noise.loop = true;
+    sizzleFilter = actx.createBiquadFilter(); sizzleFilter.type = 'bandpass'; sizzleFilter.frequency.value = 3200; sizzleFilter.Q.value = 0.7;
+    sizzleGain = actx.createGain(); sizzleGain.gain.value = 0.0;
+    noise.connect(sizzleFilter); sizzleFilter.connect(sizzleGain); sizzleGain.connect(masterGain);
+    noise.start();
+
+    const hum = actx.createOscillator(); hum.type = 'sine'; hum.frequency.value = 55;
+    const humGain = actx.createGain(); humGain.gain.value = 0.015;
+    hum.connect(humGain); humGain.connect(masterGain); hum.start();
+  } catch(e) {}
+}
+
+function updateSizzle(activity) {
+  if (!actx || !sizzleGain) return;
+  const target = Math.max(0, Math.min(1, activity)) * 0.16;
+  sizzleGain.gain.setTargetAtTime(target, actx.currentTime, 0.2);
+  sizzleFilter.frequency.setTargetAtTime(2600 + activity * 2200, actx.currentTime, 0.25);
+}
+
+function playChop() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const bufLen = Math.floor(actx.sampleRate * 0.04);
+  const buf = actx.createBuffer(1, bufLen, actx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / bufLen);
+  const src = actx.createBufferSource(); src.buffer = buf;
+  const hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
+  const g = actx.createGain(); g.gain.setValueAtTime(0.6, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+  src.connect(hp); hp.connect(g); g.connect(masterGain); src.start(t);
+  
+  const osc = actx.createOscillator(); osc.type = 'triangle';
+  osc.frequency.setValueAtTime(200, t); osc.frequency.exponentialRampToValueAtTime(45, t + 0.07);
+  const og = actx.createGain(); og.gain.setValueAtTime(0.35, t); og.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  osc.connect(og); og.connect(masterGain); osc.start(t); osc.stop(t + 0.1);
+}
+
+function playFlip() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const bufLen = Math.floor(actx.sampleRate * 0.2);
+  const buf = actx.createBuffer(1, bufLen, actx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) d[i] = (Math.random() * 2 - 1);
+  const src = actx.createBufferSource(); src.buffer = buf;
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;
+  bp.frequency.setValueAtTime(1900, t); bp.frequency.exponentialRampToValueAtTime(320, t + 0.2);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.28, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  src.connect(bp); bp.connect(g); g.connect(masterGain); src.start(t); src.stop(t + 0.22);
+}
+
+function playDrop() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const osc = actx.createOscillator(); osc.type = 'sine';
+  osc.frequency.setValueAtTime(240, t); osc.frequency.exponentialRampToValueAtTime(90, t + 0.12);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+  osc.connect(g); g.connect(masterGain); osc.start(t); osc.stop(t + 0.15);
+}
+
+function playPlate() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const osc = actx.createOscillator(); osc.type = 'triangle';
+  osc.frequency.setValueAtTime(650, t); osc.frequency.exponentialRampToValueAtTime(400, t + 0.14);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  osc.connect(g); g.connect(masterGain); osc.start(t); osc.stop(t + 0.18);
+}
+
+function playDiscard() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const osc = actx.createOscillator(); osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(160, t); osc.frequency.exponentialRampToValueAtTime(60, t + 0.18);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.19);
+  osc.connect(g); g.connect(masterGain); osc.start(t); osc.stop(t + 0.22);
+}
+
+function playSeason() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  for (let i = 0; i < 3; i++) {
+    const st = t + i * 0.06;
+    const bufLen = Math.floor(actx.sampleRate * 0.03);
+    const buf = actx.createBuffer(1, bufLen, actx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let j = 0; j < bufLen; j++) d[j] = Math.random() * 2 - 1;
+    const src = actx.createBufferSource(); src.buffer = buf;
+    const hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 4500;
+    const g = actx.createGain(); g.gain.setValueAtTime(0.18, st); g.gain.exponentialRampToValueAtTime(0.001, st + 0.04);
+    src.connect(hp); hp.connect(g); g.connect(masterGain); src.start(st);
+  }
+}
+
+function playSuccess() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+    const osc = actx.createOscillator(); osc.type = 'sine'; osc.frequency.value = f;
+    const g = actx.createGain(); const st = t + i * 0.08;
+    g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(0.25, st + 0.02); g.gain.exponentialRampToValueAtTime(0.001, st + 0.4);
+    osc.connect(g); g.connect(masterGain); osc.start(st); osc.stop(st + 0.45);
+  });
+}
+
+function playFail() {
+  if (!actx) return;
+  const t = actx.currentTime;
+  const osc = actx.createOscillator(); osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(140, t); osc.frequency.exponentialRampToValueAtTime(55, t + 0.4);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+  osc.connect(g); g.connect(masterGain); osc.start(t); osc.stop(t + 0.45);
+}
+
+const $ = id => document.getElementById(id);
+
+function renderUI() {
+  if (currentOrder) {
+    $('orderName').textContent = currentOrder.name;
+    $('orderItems').innerHTML = currentOrder.items.map(it => {
+      const label = it.chopped ? 'chopped' : 'cooked';
+      return `${TYPE_ICON[it.type]} ${TYPE_NAME[it.type]} <span style="opacity:.7">(${label})</span>`;
+    }).join('<br/>');
+    const pct = Math.max(0, Math.min(1, orderTimeLeft / currentOrder._fullTime));
+    $('timerBar').style.width = (pct * 100) + '%';
+    $('timerBar').style.background = pct < 0.25 ? 'linear-gradient(90deg,#ff5f5f,#ff8a3d)' : 'linear-gradient(90deg,#ff8a3d,#ffd23d)';
+  } else {
+    $('orderName').textContent = '—';
+    $('orderItems').innerHTML = '';
+    $('timerBar').style.width = '0%';
+  }
+  $('scoreVal').textContent = score;
+  $('comboVal').textContent = 'combo ×' + combo;
+
+  const trayHtml = [1, 2, 3, 4, 5, 6].map(t => {
+    const st = TYPE_STATION[t];
+    let disabled = false;
+    if (st === 'board') disabled = !!boardSlot;
+    else disabled = panSlots.every(s => s !== null);
+    return `<button class="trayBtn" ${disabled ? 'disabled' : ''} onpointerdown="onTrayPointerDown(event, ${t})">
+      <span class="ic">${TYPE_ICON[t]}</span><span class="lb">${TYPE_NAME[t]}</span>
+    </button>`;
+  }).join('');
+  $('trayRow').innerHTML = trayHtml;
+
+  let stHtml = '';
+  if (boardSlot) {
+    const ready = boardSlot.progress >= 0.999;
+    stHtml += `<div class="slotCard panel">
+      <div class="slotHead"><span><span class="slotIcon">${TYPE_ICON[boardSlot.type]}</span> Board</span> ${boardSlot.seasoned ? '🧂' : ''}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="ring" style="--p:${boardSlot.progress}"></div>
+        <span style="font-size:11px;color:var(--text-dim);">${ready ? 'chopped!' : 'chopping…'}</span>
+      </div>
+      <div class="slotBtns">
+        <button class="miniBtn" onclick="chopBoard()" ${ready ? 'disabled' : ''}>Chop 🔪</button>
+        <button class="miniBtn primary" onclick="plateBoard()" ${ready ? '' : 'disabled'}>Plate</button>
+        <button class="miniBtn" onclick="discardBoard()">✕</button>
+      </div>
+    </div>`;
+  }
+  for (let i = 0; i < 3; i++) {
+    const s = panSlots[i];
+    if (!s) continue;
+    const burning = s.doneness > 0.9;
+    stHtml += `<div class="slotCard panel">
+      <div class="slotHead"><span><span class="slotIcon">${TYPE_ICON[s.type]}</span> Pan #${i+1}</span> ${s.seasoned ? '🧂' : ''}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="ring" style="--p:${Math.min(1, s.doneness)}"></div>
+        <span style="font-size:11px;color:${burning ? '#ff8a6a' : 'var(--text-dim)'};">${burning ? 'burning!' : 'cooking…'}</span>
+      </div>
+      <div class="slotBtns">
+        <button class="miniBtn" onclick="flipPan(${i})">Flip ⤴</button>
+        <button class="miniBtn primary" onclick="platePan(${i})">Plate</button>
+        <button class="miniBtn" onclick="discardPan(${i})">✕</button>
+      </div>
+    </div>`;
+  }
+  $('stationsRow').innerHTML = stHtml || `<div class="slotCard panel" style="align-items:center;justify-content:center;color:var(--text-dim);font-size:12px;">✋ Drag food onto pan/board or pick below</div>`;
+
+  $('plateItems').innerHTML = plateSlots.map((s, i) => s ? `<span title="click to remove" onclick="discardPlate(${i})" style="cursor:pointer; display:inline-flex; align-items:center;">${TYPE_ICON[s.type]}${s.seasoned ? '<small style="font-size:11px;">🧂</small>' : ''}</span>` : '').join(' ');
+  $('serveBtn').disabled = plateSlots.every(s => s === null);
+}
+
+$('heatSlider').addEventListener('input', e => { heat = parseFloat(e.target.value); });
+$('serveBtn').addEventListener('click', serve);
+$('seasonBtn').addEventListener('click', seasonAll);
+$('startBtn').addEventListener('click', () => {
+  started = true;
+  $('instructions').style.display = 'none';
+  initAudio();
+  spawnOrder();
+});
+$('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  $('muteBtn').textContent = muted ? '🔇' : '🔊';
+  if (masterGain) masterGain.gain.value = muted ? 0 : 0.75;
+});
+$('resetCamBtn').addEventListener('click', () => {
+  camYawTarget = 0.55; camPitchTarget = 0.55; camDistTarget = 4.3;
+});
+
+const canvas = $('glcanvas');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+if (!gl) {
+  document.body.innerHTML = '<div style="padding:40px;color:#fff;">WebGL2 is required.</div>';
+  throw new Error('WebGL2 unavailable');
+}
+const HDR = !!gl.getExtension('EXT_color_buffer_float');
+gl.getExtension('OES_texture_float_linear');
+
+function compileShader(src, type) {
+  const sh = gl.createShader(type);
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    console.error('Shader compile error:', gl.getShaderInfoLog(sh));
+    throw new Error(gl.getShaderInfoLog(sh));
+  }
+  return sh;
+}
+function createProgram(vsSrc, fsSrc) {
+  const vs = compileShader(vsSrc, gl.VERTEX_SHADER);
+  const fs = compileShader(fsSrc, gl.FRAGMENT_SHADER);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.error('Program link error:', gl.getProgramInfoLog(prog));
+    throw new Error(gl.getProgramInfoLog(prog));
+  }
+  return prog;
+}
+function uniformCache(prog) {
+  const cache = {};
+  return name => {
+    if (!(name in cache)) cache[name] = gl.getUniformLocation(prog, name);
+    return cache[name];
+  };
+}
+
+const VERT_SRC = `#version 300 es
+void main(){
+  vec2 pos = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+  gl_Position = vec4(pos * 2.0 - 1.0, 0.0, 1.0);
+}`;
+
+const SCENE_FRAG = `#version 300 es
+precision highp float;
+
+uniform vec2 uResolution;
+uniform float uTime;
+uniform vec3 uCamPos;
+uniform vec3 uCamTarget;
+uniform vec4 uPanItems[3];   // x=type y=doneness z=lastFlipTime w=active
+uniform vec4 uBoardItem;     // x=type y=progress z=active w=unused
+uniform vec4 uPlateItems[4]; // x=type y=doneness z=chopped w=active
+uniform float uHeat;
+uniform float uChopTime;
+uniform float uSeasonTime;
+uniform vec4 uHoverHighlight; // xyz = position, w = radius or 0 if none
+uniform vec4 uDraggedItem;   // xyz = pos, w = type (if active)
+
+out vec4 fragColor;
+
+// ---------- noise & hashing ----------
+float hash11(float p){ p=fract(p*0.1031); p*=p+33.33; p*=p+p; return fract(p); }
+float hash21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*0.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+vec3 hash31(float p){ vec3 p3=fract(vec3(p)*vec3(0.1031,0.1030,0.0973)); p3+=dot(p3,p3.yzx+33.33); return fract((p3.xxy+p3.yzz)*p3.zyx); }
+float noise3(vec3 x){
+  vec3 i=floor(x); vec3 f=fract(x);
+  f=f*f*(3.0-2.0*f);
+  float n=i.x+i.y*57.0+i.z*113.0;
+  float a=hash11(n), b=hash11(n+1.0), c=hash11(n+57.0), d=hash11(n+58.0);
+  float e=hash11(n+113.0), g=hash11(n+114.0), h=hash11(n+170.0), k=hash11(n+171.0);
+  return mix(mix(mix(a,b,f.x),mix(c,d,f.x),f.y), mix(mix(e,g,f.x),mix(h,k,f.x),f.y), f.z);
+}
+float fbm(vec3 p){
+  float f=0.0, a=0.5;
+  for(int i=0;i<4;i++){ f+=a*noise3(p); p*=2.02; a*=0.5; }
+  return f;
+}
+
+// ---------- sdf primitives ----------
+float sdRoundBox(vec3 p, vec3 b, float r){
+  vec3 q = abs(p)-b+r;
+  return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0)-r;
+}
+float sdSphere(vec3 p,float r){ return length(p)-r; }
+float sdEllipsoid(vec3 p, vec3 r){
+  float k0=length(p/r);
+  float k1=length(p/(r*r));
+  return k0*(k0-1.0)/max(k1,0.0001);
+}
+float sdCappedCylinder(vec3 p, float h, float r){
+  vec2 d = abs(vec2(length(p.xz), p.y)) - vec2(r, h);
+  return min(max(d.x, d.y), 0.0) + length(max(d, 0.0));
+}
+float sdCapsule(vec3 p, vec3 a, vec3 b, float r){
+  vec3 pa=p-a, ba=b-a;
+  float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);
+  return length(pa-ba*h)-r;
+}
+float sdTorus(vec3 p, vec2 t){
+  vec2 q = vec2(length(p.xz)-t.x, p.y);
+  return length(q)-t.y;
+}
+vec2 opU(vec2 a, vec2 b){ return a.x<b.x?a:b; }
+float opSmoothUnion(float a,float b,float k){
+  float h = clamp(0.5+0.5*(b-a)/k,0.0,1.0);
+  return mix(b,a,h)-k*h*(1.0-h);
+}
+
+// ---------- world layout ----------
+const vec3 counterPos  = vec3(0.0,-1.05,0.0);
+const vec3 counterSize = vec3(4.5,0.15,2.2);
+const vec3 boardPos    = vec3(-2.3,-0.87,0.0);
+const vec3 boardSize   = vec3(1.0,0.05,0.75);
+const vec3 stovePos    = vec3(0.6,-0.95,0.0);
+const vec3 stoveSize   = vec3(1.15,0.10,1.0);
+const vec3 panPos      = vec3(0.6,-0.83,0.0);
+const float panHalfH   = 0.045;
+const float panR       = 0.56;
+const vec3 platePos    = vec3(2.5,-0.85,0.0);
+const float plateHalfH = 0.04;
+const float plateR     = 0.58;
+const vec3 boardFoodPos = boardPos + vec3(-0.05, 0.05+0.16, 0.0);
+
+vec3 panFoodPos(int i){
+  float ang = float(i)*2.094395 + 0.4;
+  return panPos + vec3(cos(ang)*0.26, panHalfH+0.09, sin(ang)*0.26);
+}
+vec3 plateFoodPos(int i){
+  vec3 off = vec3(-0.20,0.06,-0.18);
+  if(i==1) off = vec3(0.20,0.06,-0.18);
+  else if(i==2) off = vec3(-0.16,0.06,0.18);
+  else if(i==3) off = vec3(0.16,0.06,0.18);
+  return platePos + off;
+}
+
+// ---------- tools: knife & salt shaker ----------
+float chopPhase(){
+  float dt = uTime - uChopTime;
+  return clamp(dt/0.32, 0.0, 1.0);
+}
+float sdKnife(vec3 p){
+  float ph = chopPhase();
+  float yPos = mix(0.03, 0.55, ph);
+  float rotZ = mix(-0.25, 0.0, ph);
+  vec3 kp = p - (boardFoodPos + vec3(0.14, yPos, 0.0));
+  float c = cos(rotZ), s = sin(rotZ);
+  kp.xy = mat2(c,-s,s,c)*kp.xy;
+  float blade = sdRoundBox(kp - vec3(0.0,0.11,0.0), vec3(0.16,0.11,0.015), 0.01);
+  float handle = sdCapsule(kp, vec3(0.0,0.22,0.0), vec3(0.0,0.46,0.0), 0.032);
+  return min(blade,handle);
+}
+
+float sdShaker(vec3 p){
+  float dt = uTime - uSeasonTime;
+  float ph = clamp(dt/0.8, 0.0, 1.0);
+  vec3 shPos = mix(panPos + vec3(0.0, 0.8, 0.0), vec3(-1.0, -0.65, -1.5), ph);
+  vec3 sp = p - shPos;
+  if(ph < 0.99){
+    float tilt = sin(uTime*25.0)*0.3 - 0.7;
+    float c = cos(tilt), s = sin(tilt);
+    sp.yz = mat2(c,-s,s,c)*sp.yz;
+  }
+  float body = sdCappedCylinder(sp, 0.12, 0.065);
+  float cap = sdCappedCylinder(sp - vec3(0.0, 0.13, 0.0), 0.025, 0.055);
+  return min(body, cap);
+}
+
+// ---------- food sdf definitions ----------
+float sdEggShape(vec3 p, float doneness){
+  float d = clamp(doneness,0.0,1.3);
+  float spread = mix(0.13,0.20,smoothstep(0.0,0.35,d));
+  float heightW = mix(0.045,0.028,min(d,1.0));
+  float dWhite = sdEllipsoid(p, vec3(spread, heightW, spread*0.92));
+  float yolkR = mix(0.065,0.05,min(d,1.0));
+  vec3 yp = p - vec3(0.01,heightW*0.7,0.0);
+  float dYolk = sdSphere(yp, yolkR);
+  return opSmoothUnion(dWhite,dYolk,0.025);
+}
+float sdPattyShape(vec3 p, float doneness){
+  float d = clamp(doneness,0.0,1.3);
+  float h = mix(0.075,0.055,min(d,1.0));
+  float r = mix(0.175,0.155,min(d,1.0));
+  return sdCappedCylinder(p, h, r);
+}
+float sdShrimpShape(vec3 p, float doneness){
+  float d = clamp(doneness,0.0,1.3);
+  float k = mix(0.9, 3.2, min(d,1.0));
+  float c = cos(k*p.x), s = sin(k*p.x);
+  mat2 m = mat2(c,-s,s,c);
+  vec2 q = m*p.xy;
+  vec3 pp = vec3(q, p.z);
+  return sdCapsule(pp, vec3(-0.10,0.0,0.0), vec3(0.10,0.0,0.0), 0.042);
+}
+float sdOnionShape(vec3 p, float progress){
+  float t = clamp(progress,0.0,1.0);
+  float whole = mix(0.16,0.0,smoothstep(0.0,1.0,t));
+  float dWhole = whole>0.001 ? sdSphere(p, whole) : 1000.0;
+  float grow = smoothstep(0.0,1.0,t);
+  float dPieces = 1000.0;
+  if(grow>0.001){
+    for(int i=0;i<6;i++){
+      vec3 hs = hash31(float(i)*17.13)-0.5;
+      vec3 dir = normalize(hs+0.0015);
+      vec3 off = dir * mix(0.02,0.20,grow);
+      vec3 q = p - off;
+      float piece = sdRoundBox(q, vec3(0.042,0.032,0.042), 0.008);
+      dPieces = min(dPieces, piece);
+    }
+  }
+  return min(dWhole,dPieces);
+}
+float sdCheeseShape(vec3 p, float doneness){
+  float d = clamp(doneness, 0.0, 1.2);
+  float melt = smoothstep(0.3, 0.9, d);
+  vec3 b = mix(vec3(0.15, 0.015, 0.15), vec3(0.17, 0.008, 0.17), melt);
+  return sdRoundBox(p, b, 0.015);
+}
+float sdBunShape(vec3 p, float doneness){
+  float top = sdEllipsoid(p - vec3(0.0, 0.04, 0.0), vec3(0.17, 0.08, 0.17));
+  float btm = sdCappedCylinder(p + vec3(0.0, 0.03, 0.0), 0.035, 0.165);
+  return min(top, btm);
+}
+
+// Helper to evaluate food type SDF
+float evaluateFoodSDF(float type, vec3 p, float doneness, float progress){
+  if(type < 1.5) return sdEggShape(p, doneness);
+  if(type < 2.5) return sdPattyShape(p, doneness);
+  if(type < 3.5) return sdOnionShape(p, progress);
+  if(type < 4.5) return sdShrimpShape(p, doneness);
+  if(type < 5.5) return sdCheeseShape(p, doneness);
+  return sdBunShape(p, doneness);
+}
+
+// ---------- scene map ----------
+vec2 map(vec3 p){
+  vec2 res = vec2(1000.0, 0.0);
+  res = opU(res, vec2(sdRoundBox(p-counterPos, counterSize, 0.06), 1.0));
+  res = opU(res, vec2(sdRoundBox(p-boardPos, boardSize, 0.03), 2.0));
+  res = opU(res, vec2(sdRoundBox(p-stovePos, stoveSize, 0.05), 3.0));
+  res = opU(res, vec2(sdCappedCylinder(p-platePos, plateHalfH, plateR), 5.0));
+
+  float panDisc = sdCappedCylinder(p-panPos, panHalfH, panR);
+  float panRim  = sdTorus(p-panPos-vec3(0.0,panHalfH,0.0), vec2(panR,0.032));
+  float panHandle = sdCapsule(p-panPos, vec3(panR-0.05,0.0,0.0), vec3(panR+0.55,0.03,0.0), 0.05);
+  float panAll = min(min(panDisc,panRim),panHandle);
+  res = opU(res, vec2(panAll,4.0));
+
+  res = opU(res, vec2(sdKnife(p), 6.0));
+  res = opU(res, vec2(sdShaker(p), 7.0));
+
+  // Board Food
+  if(uBoardItem.z > 0.5){
+    vec3 bp = p - boardFoodPos;
+    res = opU(res, vec2(sdOnionShape(bp, uBoardItem.y), 20.0));
+  }
+
+  // Pan Food Items with Flip animation
+  for(int i=0; i<3; i++){
+    vec4 slot = i==0?uPanItems[0]:(i==1?uPanItems[1]:uPanItems[2]);
+    if(slot.w > 0.5){
+      vec3 fp = p - panFoodPos(i);
+      float dtFlip = uTime - slot.z;
+      if(dtFlip >= 0.0 && dtFlip < 0.45){
+        float flipProg = dtFlip / 0.45;
+        float flipHeight = sin(flipProg * 3.14159) * 0.35;
+        fp.y -= flipHeight;
+        float flipRot = flipProg * 3.14159 * 2.0;
+        float c = cos(flipRot), s = sin(flipRot);
+        fp.xy = mat2(c,-s,s,c)*fp.xy;
+      } else {
+        fp.y -= sin(uTime*6.0+float(i)*2.1)*0.004;
+      }
+      float dfood = evaluateFoodSDF(slot.x, fp, slot.y, 0.0);
+      res = opU(res, vec2(dfood, 10.0+float(i)));
+    }
+  }
+
+  // Plate Food Items
+  for(int i=0; i<4; i++){
+    vec4 slot = i==0?uPlateItems[0]:(i==1?uPlateItems[1]:(i==2?uPlateItems[2]:uPlateItems[3]));
+    if(slot.w > 0.5){
+      vec3 fp = p - plateFoodPos(i);
+      float dfood = evaluateFoodSDF(slot.x, fp, slot.y, 1.0);
+      res = opU(res, vec2(dfood, 30.0+float(i)));
+    }
+  }
+
+  // Dragged Food hovering in 3D
+  if(uDraggedItem.w > 0.5){
+    vec3 dp = p - uDraggedItem.xyz;
+    float ddrag = evaluateFoodSDF(uDraggedItem.w, dp, 0.0, 0.0);
+    res = opU(res, vec2(ddrag, 50.0));
+  }
+
+  // Static Pantry Counter Items (Ready to Pick)
+  res = opU(res, vec2(sdEggShape(p-vec3(-3.0,-0.78,-1.65), 0.0), 40.0));
+  res = opU(res, vec2(sdPattyShape(p-vec3(-1.8,-0.78,-1.65), 0.0), 41.0));
+  res = opU(res, vec2(sdOnionShape(p-vec3(-0.6,-0.78,-1.65), 0.0), 42.0));
+  res = opU(res, vec2(sdShrimpShape(p-vec3(0.6,-0.78,-1.65), 0.0), 43.0));
+  res = opU(res, vec2(sdCheeseShape(p-vec3(1.8,-0.78,-1.65), 0.0), 44.0));
+  res = opU(res, vec2(sdBunShape(p-vec3(3.0,-0.78,-1.65), 0.0), 45.0));
+
+  return res;
+}
+
+vec3 calcNormal(vec3 p){
+  vec2 e = vec2(0.0015,0.0);
+  return normalize(vec3(
+    map(p+e.xyy).x-map(p-e.xyy).x,
+    map(p+e.yxy).x-map(p-e.yxy).x,
+    map(p+e.yyx).x-map(p-e.yyx).x
+  ));
+}
+float softShadow(vec3 ro, vec3 rd, float mint, float maxt, float k){
+  float res=1.0; float t=mint;
+  for(int i=0;i<35;i++){
+    if(t>=maxt) break;
+    float h = map(ro+rd*t).x;
+    if(h<0.001) return 0.0;
+    res = min(res, k*h/t);
+    t += clamp(h,0.015,0.25);
+  }
+  return clamp(res,0.0,1.0);
+}
+float calcAO(vec3 p, vec3 n){
+  float occ=0.0; float sca=1.0;
+  for(int i=0;i<5;i++){
+    float h = 0.01+0.12*float(i)/4.0;
+    float d = map(p+n*h).x;
+    occ += (h-d)*sca;
+    sca *= 0.7;
+  }
+  return clamp(1.0-1.5*occ,0.0,1.0);
+}
+
+// ---------- material colors ----------
+vec3 foodColor(float type, float doneness, bool chopped, vec3 localP){
+  if(type<1.5){ // EGG
+    vec3 whiteRaw = vec3(0.90,0.90,0.85);
+    vec3 whiteCooked = vec3(0.97,0.96,0.90);
+    vec3 whiteBrown = vec3(0.5,0.32,0.14);
+    vec3 yolkRaw = vec3(1.0,0.72,0.14);
+    vec3 yolkCooked = vec3(0.93,0.62,0.10);
+    bool isYolk = length(localP.xz)<0.075 && localP.y> -0.005;
+    if(isYolk) return mix(yolkRaw, yolkCooked, smoothstep(0.0,0.5,doneness));
+    vec3 c = mix(whiteRaw, whiteCooked, smoothstep(0.0,0.3,doneness));
+    float browning = smoothstep(0.65,1.0,doneness);
+    c = mix(c, whiteBrown, browning*0.6);
+    if(doneness>1.0) c = mix(c, vec3(0.05), smoothstep(1.0,1.15,doneness));
+    return c;
+  } else if(type<2.5){ // PATTY
+    vec3 raw = vec3(0.55,0.14,0.11);
+    vec3 cooked = vec3(0.38,0.22,0.12);
+    vec3 charred = vec3(0.08,0.045,0.035);
+    vec3 c = mix(raw, cooked, smoothstep(0.1,0.75,doneness));
+    vec2 gp = localP.xz;
+    float grill = sin((gp.x+gp.y)*26.0);
+    float mark = smoothstep(0.75,0.95,grill) * smoothstep(0.35,0.7,doneness);
+    c = mix(c, charred, mark*0.7);
+    float burnt = smoothstep(0.9,1.15,doneness);
+    c = mix(c, charred, burnt);
+    return c;
+  } else if(type<3.5){ // ONION
+    vec3 raw = vec3(0.85,0.82,0.88);
+    vec3 ring = vec3(0.64,0.50,0.68);
+    float layers = sin(length(localP)*60.0)*0.5+0.5;
+    return mix(raw, ring, layers*0.35);
+  } else if(type<4.5){ // SHRIMP
+    vec3 raw = vec3(0.55,0.58,0.62);
+    vec3 cooked = vec3(0.95,0.44,0.34);
+    return mix(raw, cooked, smoothstep(0.0,0.8,doneness));
+  } else if(type<5.5){ // CHEESE
+    vec3 cold = vec3(1.0, 0.76, 0.18);
+    vec3 melted = vec3(1.0, 0.62, 0.08);
+    return mix(cold, melted, smoothstep(0.1, 0.8, doneness));
+  } else { // BUN
+    vec3 golden = vec3(0.78, 0.52, 0.26);
+    vec3 toasted = vec3(0.48, 0.28, 0.12);
+    return mix(golden, toasted, smoothstep(0.3, 0.9, doneness));
+  }
+}
+
+vec3 shade(vec3 p, vec3 n, float id, vec3 rd, vec3 ro){
+  vec3 albedo = vec3(0.6);
+  vec3 emissive = vec3(0.0);
+  float spec = 0.25; float shin = 16.0;
+
+  if(id < 1.5){ // Counter
+    float g = fbm(p*3.0);
+    albedo = mix(vec3(0.08,0.09,0.11), vec3(0.18,0.19,0.22), g);
+    float sparkle = step(0.988, hash21(floor(p.xz*90.0)));
+    albedo += vec3(sparkle*0.35);
+    spec=0.5; shin=40.0;
+  } else if(id < 2.5){ // Cutting board
+    float grain = fbm(vec3(p.x*2.0, p.z*18.0, 0.0));
+    albedo = mix(vec3(0.44,0.28,0.15), vec3(0.60,0.42,0.24), grain);
+    spec=0.15; shin=8.0;
+  } else if(id < 3.5){ // Stove
+    albedo = vec3(0.10,0.10,0.11);
+    spec=0.6; shin=50.0;
+    vec3 lp = p-stovePos;
+    float rDist = length(lp.xz);
+    float ring = smoothstep(0.42,0.38,rDist)*smoothstep(0.28,0.34,rDist);
+    emissive += vec3(1.0,0.35,0.08)*uHeat*ring*2.2;
+    albedo = mix(albedo, vec3(0.5,0.1,0.02), ring*uHeat*0.6);
+  } else if(id < 4.5){ // Pan
+    albedo = vec3(0.05,0.05,0.055);
+    spec=0.75; shin=70.0;
+    float rim = smoothstep(0.02,0.0, abs(length((p-panPos).xz)-panR));
+    emissive += vec3(1.0,0.5,0.2)*uHeat*0.15*rim;
+  } else if(id < 5.5){ // Plate
+    albedo = vec3(0.92,0.90,0.86);
+    spec=0.5; shin=30.0;
+    float rim = smoothstep(0.52,0.55, length((p-platePos).xz));
+    albedo = mix(albedo, vec3(0.72,0.53,0.24), rim*0.5);
+  } else if(id < 6.5){ // Knife
+    vec3 lp = p - boardFoodPos;
+    albedo = lp.y > 0.20 ? vec3(0.65,0.63,0.61) : vec3(0.15,0.12,0.10);
+    spec=0.85; shin=80.0;
+  } else if(id < 7.5){ // Salt Shaker
+    albedo = vec3(0.85, 0.88, 0.92);
+    spec=0.9; shin=90.0;
+  } else if(id>=10.0 && id<13.0){ // Pan Items
+    int i = int(id-10.0+0.5);
+    vec4 slot = i==0?uPanItems[0]:(i==1?uPanItems[1]:uPanItems[2]);
+    albedo = foodColor(slot.x, slot.y, false, p-panFoodPos(i));
+    if(slot.y>0.85) emissive += vec3(1.0,0.3,0.05)*smoothstep(0.85,1.15,slot.y)*0.24;
+    spec=0.3; shin=12.0;
+  } else if(id>=20.0 && id<21.0){ // Board Food
+    albedo = foodColor(3.0, uBoardItem.y, uBoardItem.y>=0.999, p-boardFoodPos);
+    spec=0.2; shin=10.0;
+  } else if(id>=30.0 && id<34.0){ // Plate Items
+    int i = int(id-30.0+0.5);
+    vec4 slot = i==0?uPlateItems[0]:(i==1?uPlateItems[1]:(i==2?uPlateItems[2]:uPlateItems[3]));
+    albedo = foodColor(slot.x, slot.y, slot.z>0.5, p-plateFoodPos(i));
+    spec=0.3; shin=12.0;
+  } else if(id>=40.0 && id<46.0){ // Pantry Tray Items
+    float t = id-40.0;
+    float typ = t<0.5?1.0: (t<1.5?2.0: (t<2.5?3.0: (t<3.5?4.0: (t<4.5?5.0:6.0))));
+    albedo = foodColor(typ, 0.0, false, vec3(0.0,0.1,0.0));
+    spec=0.25; shin=10.0;
+  } else if(id>=50.0 && id<51.0){ // Dragged Food
+    albedo = foodColor(uDraggedItem.w, 0.0, false, vec3(0.0,0.1,0.0));
+    spec=0.3; shin=14.0;
+    emissive += vec3(0.3, 0.2, 0.05);
+  }
+
+  // Hover target visual indicator
+  if(uHoverHighlight.w > 0.0){
+    float dHover = length(p - uHoverHighlight.xyz);
+    float glow = smoothstep(uHoverHighlight.w, uHoverHighlight.w*0.7, dHover);
+    emissive += vec3(0.2, 0.8, 1.0) * glow * 0.4;
+  }
+
+  vec3 keyDir = normalize(vec3(0.5,0.9,0.35));
+  vec3 fillDir= normalize(vec3(-0.45,0.35,-0.55));
+  float ao = calcAO(p,n);
+  float sh = softShadow(p+n*0.02, keyDir, 0.02, 6.0, 16.0);
+  float diff = max(dot(n,keyDir),0.0)*sh;
+  float diffFill = max(dot(n,fillDir),0.0)*0.5;
+  vec3 viewDir = normalize(ro-p);
+  vec3 halfV = normalize(keyDir+viewDir);
+  float specTerm = pow(max(dot(n,halfV),0.0), shin)*spec*sh;
+
+  vec3 lit = albedo*(diff*vec3(1.0,0.95,0.85) + diffFill*vec3(0.35,0.4,0.5) + 0.12*ao)
+             + specTerm*vec3(1.0,0.93,0.85);
+  lit *= ao;
+  lit += emissive;
+  return lit;
+}
+
+// ---------- steam & sizzle volumetrics ----------
+float steamDensity(vec3 p, float t){
+  vec3 q = p*2.2 + vec3(0.0, -t*0.7, 0.0);
+  float n = fbm(q);
+  return clamp(n-0.34,0.0,1.0);
+}
+vec3 applySteam(vec3 ro, vec3 rd, float hitT, vec3 col){
+  float activity = 0.0;
+  for(int i=0;i<3;i++){
+    vec4 slot = i==0?uPanItems[0]:(i==1?uPanItems[1]:uPanItems[2]);
+    if(slot.w>0.5) activity += clamp(1.0 - abs(slot.y-0.4)*1.3, 0.0, 1.0);
+  }
+  activity = clamp(activity,0.0,1.0)*uHeat;
+  if(activity<0.02) return col;
+
+  vec3 boxMin = panPos + vec3(-0.55,0.02,-0.55);
+  vec3 boxMax = panPos + vec3(0.55,1.2,0.55);
+  vec3 invD = 1.0/rd;
+  vec3 t0 = (boxMin-ro)*invD;
+  vec3 t1 = (boxMax-ro)*invD;
+  vec3 tmn = min(t0,t1), tmx = max(t0,t1);
+  float tEnter = max(max(tmn.x,tmn.y),tmn.z);
+  float tExit  = min(min(tmx.x,tmx.y),tmx.z);
+  tEnter = max(tEnter,0.0);
+  tExit = min(tExit, hitT);
+  if(tEnter>=tExit) return col;
+
+  const int STEPS=14;
+  float dt = (tExit-tEnter)/float(STEPS);
+  float t = tEnter + dt*hash21(gl_FragCoord.xy);
+  float acc = 0.0;
+  for(int i=0;i<STEPS;i++){
+    vec3 p = ro+rd*t;
+    acc += steamDensity(p, uTime)*activity*dt*1.5;
+    t += dt;
+  }
+  acc = clamp(acc,0.0,0.85);
+  return mix(col, vec3(0.88,0.88,0.92), acc);
+}
+
+void main(){
+  vec2 uv = (gl_FragCoord.xy - 0.5*uResolution)/uResolution.y;
+  vec3 ro = uCamPos;
+  vec3 fwd = normalize(uCamTarget-uCamPos);
+  vec3 right = normalize(cross(fwd, vec3(0.0,1.0,0.0)));
+  vec3 up = cross(right,fwd);
+  float fov = 1.35;
+  vec3 rd = normalize(fwd*fov + uv.x*right + uv.y*up);
+
+  float t=0.0; float id=-1.0;
+  for(int i=0;i<110;i++){
+    vec3 p = ro+rd*t;
+    vec2 h = map(p);
+    if(h.x<0.0012){ id=h.y; break; }
+    t += h.x*0.85;
+    if(t>40.0) break;
+  }
+
+  vec3 col;
+  if(id>=0.0){
+    vec3 p = ro+rd*t;
+    vec3 n = calcNormal(p);
+    col = shade(p,n,id,rd,ro);
+  } else {
+    col = mix(vec3(0.045,0.045,0.06), vec3(0.12,0.10,0.09), 0.5+0.5*rd.y);
+    t = 40.0;
+  }
+  col = applySteam(ro,rd,t,col);
+  fragColor = vec4(col,1.0);
+}
+`;
+
+const BLUR_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uTex;
+uniform vec2 uResolution;
+uniform vec2 uTexel;
+uniform vec2 uBlurDir;
+uniform float uThreshold;
+out vec4 fragColor;
+void main(){
+  vec2 uv = gl_FragCoord.xy/uResolution;
+  vec2 off1 = uTexel*uBlurDir;
+  float w0=0.227027, w1=0.1945946, w2=0.1216216, w3=0.054054, w4=0.016216;
+  vec3 base = texture(uTex,uv).rgb;
+  if(uThreshold>0.5) base = max(base-1.0,0.0);
+  vec3 sum = base*w0;
+  for(int i=1;i<5;i++){
+    float fi = float(i);
+    float wgt = i==1?w1:(i==2?w2:(i==3?w3:w4));
+    vec2 off = off1*fi;
+    vec3 a = texture(uTex, uv+off).rgb;
+    vec3 b = texture(uTex, uv-off).rgb;
+    if(uThreshold>0.5){ a=max(a-1.0,0.0); b=max(b-1.0,0.0); }
+    sum += (a+b)*wgt;
+  }
+  fragColor = vec4(sum,1.0);
+}
+`;
+
+const COMPOSITE_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uScene;
+uniform sampler2D uBloom;
+uniform vec2 uResolution;
+uniform float uTime;
+out vec4 fragColor;
+float hash21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*0.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+vec3 acesFilm(vec3 x){
+  float a=2.51, b=0.03, c=2.43, d=0.59, e=0.14;
+  return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.0,1.0);
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy/uResolution;
+  vec2 cuv = uv-0.5;
+  float dist = length(cuv);
+  float caAmt = dist*0.005;
+  vec2 dir = cuv/max(dist,1e-5);
+  float r = texture(uScene, uv - dir*caAmt).r;
+  float g = texture(uScene, uv).g;
+  float b = texture(uScene, uv + dir*caAmt).b;
+  vec3 scene = vec3(r,g,b);
+  vec3 bloom = texture(uBloom, uv).rgb;
+  vec3 col = scene + bloom*0.85;
+  col = acesFilm(col);
+  float vig = smoothstep(0.9,0.25,dist);
+  col *= mix(0.55,1.0,vig);
+  float grain = (hash21(uv*uResolution + fract(uTime)*97.13)-0.5)*0.03;
+  col += grain;
+  col = pow(max(col,0.0), vec3(0.4545));
+  fragColor = vec4(col,1.0);
+}
+`;
+
+const sceneProg = createProgram(VERT_SRC, SCENE_FRAG);
+const blurProg = createProgram(VERT_SRC, BLUR_FRAG);
+const compProg = createProgram(VERT_SRC, COMPOSITE_FRAG);
+const sceneU = uniformCache(sceneProg);
+const blurU = uniformCache(blurProg);
+const compU = uniformCache(compProg);
+
+function createFBO(w,h,hdr){
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  const internalFormat = hdr ? gl.RGBA16F : gl.RGBA8;
+  const type = hdr ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE;
+  gl.texImage2D(gl.TEXTURE_2D,0,internalFormat,w,h,0,gl.RGBA,type,null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  return {fbo,tex,w,h};
+}
+function deleteFBO(f){ if(!f) return; gl.deleteTexture(f.tex); gl.deleteFramebuffer(f.fbo); }
+
+let sceneFBO=null, bloomA=null, bloomB=null;
+let lastW=0, lastH=0;
+
+function resize(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const w = Math.max(1, Math.floor(window.innerWidth*dpr));
+  const h = Math.max(1, Math.floor(window.innerHeight*dpr));
+  if(w===lastW && h===lastH) return;
+  lastW=w; lastH=h;
+  canvas.width=w; canvas.height=h;
+  canvas.style.width = window.innerWidth+'px';
+  canvas.style.height = window.innerHeight+'px';
+  deleteFBO(sceneFBO); deleteFBO(bloomA); deleteFBO(bloomB);
+  sceneFBO = createFBO(w,h,HDR);
+  const hw = Math.max(1,w>>1), hh = Math.max(1,h>>1);
+  bloomA = createFBO(hw,hh,HDR);
+  bloomB = createFBO(hw,hh,HDR);
+}
+window.addEventListener('resize', resize);
+resize();
+
+let camYaw = 0.55, camPitch = 0.55, camDist = 4.3;
+let camYawTarget = camYaw, camPitchTarget = camPitch, camDistTarget = camDist;
+const camTarget = [0.0, -0.62, 0.0];
+let draggingCam = false, lastPointerX = 0, lastPointerY = 0, lastInteract = 0;
+let drag3DWorldPos = [0, 0, 0];
+
+// Ray unproject math with exact shader alignment
+function getRayFromScreen(screenX, screenY) {
+  const rect = canvas.getBoundingClientRect();
+  const ndcX = ((screenX - rect.left) / rect.width) * 2.0 - 1.0;
+  const ndcY = -(((screenY - rect.top) / rect.height) * 2.0 - 1.0);
+  const aspect = rect.width / rect.height;
+  const uvX = ndcX * 0.5 * aspect;
+  const uvY = ndcY * 0.5;
+
+  const cx = camTarget[0] + camDist * Math.cos(camPitch) * Math.sin(camYaw);
+  const cy = camTarget[1] + camDist * Math.sin(camPitch);
+  const cz = camTarget[2] + camDist * Math.cos(camPitch) * Math.cos(camYaw);
+  const ro = [cx, cy, cz];
+
+  const fwd = [camTarget[0] - cx, camTarget[1] - cy, camTarget[2] - cz];
+  const fwdLen = Math.hypot(fwd[0], fwd[1], fwd[2]);
+  fwd[0] /= fwdLen; fwd[1] /= fwdLen; fwd[2] /= fwdLen;
+
+  // Exact shader cross product: cross(fwd, vec3(0, 1, 0)) = [-fwd.z, 0, fwd.x]
+  const right = [-fwd[2], 0, fwd[0]];
+  const rightLen = Math.hypot(right[0], right[2]);
+  right[0] /= rightLen; right[2] /= rightLen;
+
+  // Exact shader cross product: cross(right, fwd)
+  const up = [
+    right[1] * fwd[2] - right[2] * fwd[1],
+    right[2] * fwd[0] - right[0] * fwd[2],
+    right[0] * fwd[1] - right[1] * fwd[0]
+  ];
+
+  const fov = 1.35;
+  const rd = [
+    fwd[0] * fov + uvX * right[0] + uvY * up[0],
+    fwd[1] * fov + uvX * right[1] + uvY * up[1],
+    fwd[2] * fov + uvX * right[2] + uvY * up[2]
+  ];
+  const rdLen = Math.hypot(rd[0], rd[1], rd[2]);
+  rd[0] /= rdLen; rd[1] /= rdLen; rd[2] /= rdLen;
+
+  return { ro, rd };
+}
+
+function rayPointDistance(ro, rd, p) {
+  const vx = p[0] - ro[0], vy = p[1] - ro[1], vz = p[2] - ro[2];
+  const t = vx * rd[0] + vy * rd[1] + vz * rd[2];
+  if (t < 0.1) return { dist: Infinity, t: 0 };
+  const cx = ro[0] + rd[0] * t, cy = ro[1] + rd[1] * t, cz = ro[2] + rd[2] * t;
+  const d = Math.hypot(p[0] - cx, p[1] - cy, p[2] - cz);
+  return { dist: d, t: t };
+}
+
+function rayIntersectPlaneY(ro, rd, yPlane) {
+  if (Math.abs(rd[1]) < 0.0001) return null;
+  const t = (yPlane - ro[1]) / rd[1];
+  if (t < 0) return null;
+  return [ro[0] + rd[0] * t, yPlane, ro[2] + rd[2] * t];
+}
+
+function test3DIntersections(screenX, screenY) {
+  const { ro, rd } = getRayFromScreen(screenX, screenY);
+  let best = null, minScore = Infinity;
+
+  function check(type, id, pos, radius) {
+    const res = rayPointDistance(ro, rd, pos);
+    if (res.dist <= radius) {
+      const score = res.t + res.dist * 3.0;
+      if (score < minScore) {
+        minScore = score;
+        best = { type, id, pos, radius };
+      }
+    }
+  }
+
+  // 1. Check pantry items
+  for (let i = 0; i < WORLD_LAYOUT.trayPicks.length; i++) {
+    const p = WORLD_LAYOUT.trayPicks[i];
+    check('tray', p.type, p.pos, p.radius);
+  }
+
+  // 2. Check Cutting Board Food or Knife
+  if (boardSlot) {
+    check('board_food', boardSlot.type, WORLD_LAYOUT.boardFoodPos, 0.45);
+  } else {
+    check('board_empty', null, WORLD_LAYOUT.boardPos, 0.65);
+  }
+
+  // 3. Check Pan and Pan items
+  for (let i = 0; i < 3; i++) {
+    if (panSlots[i]) {
+      check('pan_item', i, WORLD_LAYOUT.panFoodPositions[i], 0.38);
+    }
+  }
+  check('pan_zone', null, WORLD_LAYOUT.panPos, 0.72);
+
+  // 4. Check Plate
+  check('plate_zone', null, WORLD_LAYOUT.platePos, 0.75);
+
+  return best;
+}
+
+canvas.addEventListener('pointerdown', e => {
+  if (!started) return;
+  lastInteract = clockTime;
+  lastPointerX = e.clientX;
+  lastPointerY = e.clientY;
+
+  const hit = test3DIntersections(e.clientX, e.clientY);
+  if (hit) {
+    if (hit.type === 'tray') {
+      dragInfo = { type: hit.id, from: 'tray' };
+      showDragGhost(TYPE_ICON[hit.id], e.clientX, e.clientY);
+      const { ro, rd } = getRayFromScreen(e.clientX, e.clientY);
+      const planePos = rayIntersectPlaneY(ro, rd, -0.6);
+      if (planePos) drag3DWorldPos = planePos;
+      canvas.classList.add('dragging-food');
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    } else if (hit.type === 'pan_item') {
+      const slotIdx = hit.id;
+      flipPan(slotIdx);
+      dragInfo = { type: panSlots[slotIdx].type, from: 'pan', slotIndex: slotIdx };
+      showDragGhost(TYPE_ICON[dragInfo.type], e.clientX, e.clientY);
+      const { ro, rd } = getRayFromScreen(e.clientX, e.clientY);
+      const planePos = rayIntersectPlaneY(ro, rd, -0.6);
+      if (planePos) drag3DWorldPos = planePos;
+      canvas.classList.add('dragging-food');
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    } else if (hit.type === 'board_food') {
+      if (boardSlot.progress < 0.999) {
+        chopBoard();
+      } else {
+        dragInfo = { type: boardSlot.type, from: 'board' };
+        showDragGhost(TYPE_ICON[boardSlot.type], e.clientX, e.clientY);
+        const { ro, rd } = getRayFromScreen(e.clientX, e.clientY);
+        const planePos = rayIntersectPlaneY(ro, rd, -0.6);
+        if (planePos) drag3DWorldPos = planePos;
+        canvas.classList.add('dragging-food');
+        canvas.setPointerCapture(e.pointerId);
+      }
+      return;
+    }
+  }
+
+  // Camera orbit mode
+  draggingCam = true;
+  canvas.classList.add('dragging-cam');
+  canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener('pointermove', e => {
+  lastInteract = clockTime;
+  if (dragInfo) {
+    updateDragGhost(e.clientX, e.clientY);
+    const { ro, rd } = getRayFromScreen(e.clientX, e.clientY);
+    const planePos = rayIntersectPlaneY(ro, rd, -0.6);
+    if (planePos) drag3DWorldPos = planePos;
+    return;
+  }
+
+  if (draggingCam) {
+    const dx = e.clientX - lastPointerX;
+    const dy = e.clientY - lastPointerY;
+    lastPointerX = e.clientX;
+    lastPointerY = e.clientY;
+    camYawTarget += dx * 0.006;
+    camPitchTarget = Math.max(0.15, Math.min(1.35, camPitchTarget - dy * 0.006));
+    return;
+  }
+
+  // Hover detection
+  const hit = test3DIntersections(e.clientX, e.clientY);
+  hovered3D = hit;
+  if (hit && (hit.type === 'tray' || hit.type === 'pan_item' || hit.type === 'board_food')) {
+    canvas.classList.add('hover-pick');
+  } else {
+    canvas.classList.remove('hover-pick');
+  }
+});
+
+function handleDragEnd(e) {
+  if (dragInfo) {
+    const hit = test3DIntersections(e.clientX, e.clientY);
+    if (hit) {
+      if (hit.type === 'pan_zone' || hit.type === 'pan_item') {
+        if (dragInfo.from === 'tray') {
+          addIngredientToStation(dragInfo.type);
+        }
+      } else if (hit.type === 'board_empty' || hit.type === 'board_food') {
+        if (dragInfo.from === 'tray') {
+          addIngredientToStation(dragInfo.type);
+        }
+      } else if (hit.type === 'plate_zone') {
+        if (dragInfo.from === 'pan') {
+          platePan(dragInfo.slotIndex);
+        } else if (dragInfo.from === 'board') {
+          plateBoard();
+        }
+      }
+    }
+    dragInfo = null;
+    hideDragGhost();
+    canvas.classList.remove('dragging-food');
+  }
+  draggingCam = false;
+  canvas.classList.remove('dragging-cam');
+}
+
+canvas.addEventListener('pointerup', handleDragEnd);
+canvas.addEventListener('pointercancel', handleDragEnd);
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDistTarget = Math.max(2.2, Math.min(7.5, camDistTarget + e.deltaY * 0.0025));
+  lastInteract = clockTime;
+}, { passive: false });
+
+function showDragGhost(emoji, x, y) {
+  const g = $('dragGhost');
+  g.textContent = emoji;
+  g.style.left = x + 'px';
+  g.style.top = y + 'px';
+  g.style.display = 'block';
+}
+function updateDragGhost(x, y) {
+  const g = $('dragGhost');
+  g.style.left = x + 'px';
+  g.style.top = y + 'px';
+}
+function hideDragGhost() {
+  $('dragGhost').style.display = 'none';
+}
+
+function onTrayPointerDown(e, type) {
+  if (!started) return;
+  dragInfo = { type, from: 'tray' };
+  showDragGhost(TYPE_ICON[type], e.clientX, e.clientY);
+  addIngredientToStation(type);
+}
+
+function renderGL(t) {
+  resize();
+  const w = canvas.width, h = canvas.height;
+
+  if (!draggingCam && !dragInfo && clockTime - lastInteract > 4.5) {
+    camYawTarget += 0.04 * (1 / 60);
+  }
+  camYaw += (camYawTarget - camYaw) * 0.12;
+  camPitch += (camPitchTarget - camPitch) * 0.12;
+  camDist += (camDistTarget - camDist) * 0.12;
+
+  const cx = camTarget[0] + camDist * Math.cos(camPitch) * Math.sin(camYaw);
+  const cy = camTarget[1] + camDist * Math.sin(camPitch);
+  const cz = camTarget[2] + camDist * Math.cos(camPitch) * Math.cos(camYaw);
+
+  const panArr = packPanItems();
+  const boardArr = boardUniform();
+  const plateArr = packPlateItems();
+
+  // Pass 1: Scene Raymarch
+  gl.bindFramebuffer(gl.FRAMEBUFFER, sceneFBO.fbo);
+  gl.viewport(0, 0, sceneFBO.w, sceneFBO.h);
+  gl.useProgram(sceneProg);
+  gl.uniform2f(sceneU('uResolution'), sceneFBO.w, sceneFBO.h);
+  gl.uniform1f(sceneU('uTime'), t);
+  gl.uniform3f(sceneU('uCamPos'), cx, cy, cz);
+  gl.uniform3f(sceneU('uCamTarget'), camTarget[0], camTarget[1], camTarget[2]);
+  gl.uniform4fv(sceneU('uPanItems[0]'), panArr);
+  gl.uniform4f(sceneU('uBoardItem'), boardArr[0], boardArr[1], boardArr[2], boardArr[3]);
+  gl.uniform4fv(sceneU('uPlateItems[0]'), plateArr);
+  gl.uniform1f(sceneU('uHeat'), heatNorm());
+  gl.uniform1f(sceneU('uChopTime'), chopTime);
+  gl.uniform1f(sceneU('uSeasonTime'), lastSeasonTime);
+
+  if (hovered3D && hovered3D.pos) {
+    gl.uniform4f(sceneU('uHoverHighlight'), hovered3D.pos[0], hovered3D.pos[1], hovered3D.pos[2], hovered3D.radius || 0.4);
+  } else {
+    gl.uniform4f(sceneU('uHoverHighlight'), 0, 0, 0, 0);
+  }
+
+  if (dragInfo) {
+    gl.uniform4f(sceneU('uDraggedItem'), drag3DWorldPos[0], drag3DWorldPos[1] + 0.15, drag3DWorldPos[2], dragInfo.type);
+  } else {
+    gl.uniform4f(sceneU('uDraggedItem'), 0, 0, 0, 0);
+  }
+
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // Pass 2: Bloom Horizontal
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomA.fbo);
+  gl.viewport(0, 0, bloomA.w, bloomA.h);
+  gl.useProgram(blurProg);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, sceneFBO.tex);
+  gl.uniform1i(blurU('uTex'), 0);
+  gl.uniform2f(blurU('uResolution'), bloomA.w, bloomA.h);
+  gl.uniform2f(blurU('uTexel'), 1 / sceneFBO.w, 1 / sceneFBO.h);
+  gl.uniform2f(blurU('uBlurDir'), 1.0, 0.0);
+  gl.uniform1f(blurU('uThreshold'), 1.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // Pass 3: Bloom Vertical
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomB.fbo);
+  gl.viewport(0, 0, bloomB.w, bloomB.h);
+  gl.bindTexture(gl.TEXTURE_2D, bloomA.tex);
+  gl.uniform2f(blurU('uResolution'), bloomB.w, bloomB.h);
+  gl.uniform2f(blurU('uTexel'), 1 / bloomA.w, 1 / bloomA.h);
+  gl.uniform2f(blurU('uBlurDir'), 0.0, 1.0);
+  gl.uniform1f(blurU('uThreshold'), 0.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // Pass 4: Extra Spread
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomA.fbo);
+  gl.viewport(0, 0, bloomA.w, bloomA.h);
+  gl.bindTexture(gl.TEXTURE_2D, bloomB.tex);
+  gl.uniform2f(blurU('uResolution'), bloomA.w, bloomA.h);
+  gl.uniform2f(blurU('uTexel'), 1 / bloomB.w, 1 / bloomB.h);
+  gl.uniform2f(blurU('uBlurDir'), 1.0, 0.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomB.fbo);
+  gl.viewport(0, 0, bloomB.w, bloomB.h);
+  gl.bindTexture(gl.TEXTURE_2D, bloomA.tex);
+  gl.uniform2f(blurU('uResolution'), bloomB.w, bloomB.h);
+  gl.uniform2f(blurU('uTexel'), 1 / bloomA.w, 1 / bloomA.h);
+  gl.uniform2f(blurU('uBlurDir'), 0.0, 1.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // Final Composite
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, w, h);
+  gl.useProgram(compProg);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, sceneFBO.tex);
+  gl.uniform1i(compU('uScene'), 0);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, bloomB.tex);
+  gl.uniform1i(compU('uBloom'), 1);
+  gl.uniform2f(compU('uResolution'), w, h);
+  gl.uniform1f(compU('uTime'), t);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+function packPanItems() {
+  const arr = new Float32Array(12);
+  for (let i = 0; i < 3; i++) {
+    const s = panSlots[i];
+    if (s) {
+      arr[i * 4] = s.type;
+      arr[i * 4 + 1] = s.doneness;
+      arr[i * 4 + 2] = flipAnimations[i];
+      arr[i * 4 + 3] = 1.0;
+    } else {
+      arr[i * 4 + 3] = 0.0;
+    }
+  }
+  return arr;
+}
+function packPlateItems() {
+  const arr = new Float32Array(16);
+  for (let i = 0; i < 4; i++) {
+    const s = plateSlots[i];
+    if (s) {
+      arr[i * 4] = s.type;
+      arr[i * 4 + 1] = s.doneness;
+      arr[i * 4 + 2] = s.chopped ? 1 : 0;
+      arr[i * 4 + 3] = 1.0;
+    } else {
+      arr[i * 4 + 3] = 0.0;
+    }
+  }
+  return arr;
+}
+function boardUniform() {
+  if (boardSlot) return [boardSlot.type, boardSlot.progress, 1.0, 0.0];
+  return [0, 0, 0, 0];
+}
+
+let lastT = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  let dt = (now - lastT) / 1000;
+  lastT = now;
+  dt = Math.min(dt, 0.05);
+  clockTime += dt;
+  updateGame(dt);
+  renderGL(clockTime);
+  renderUI();
+}
+requestAnimationFrame(frame);
+
+// Global bindings for inline handlers
+window.onTrayPointerDown = onTrayPointerDown;
+window.chopBoard = chopBoard;
+window.flipPan = flipPan;
+window.plateBoard = plateBoard;
+window.platePan = platePan;
+window.discardBoard = discardBoard;
+window.discardPan = discardPan;
+window.discardPlate = discardPlate;
+window.serve = serve;
+</script>
+</body>
+</html>

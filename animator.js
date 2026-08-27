@@ -25,14 +25,22 @@
 
     // ─── ALTERNATE NAME SETS ───
     const COOKIE_SET = [
-        { main: 'SNICKER',  sub: 'DOODLE',  badge: 'FRESH',  color: {r: 0.9, g: 0.7, b: 0.3}, blobType: 1 }, // Rounded Box (Cookie shape)
-        { main: 'CHOCO',    sub: 'CHIP',     badge: 'HOT',    color: {r: 0.4, g: 0.2, b: 0.1}, blobType: 3 }, // Noisy (Chunky chips)
-        { main: 'RED',      sub: 'VELVET',   badge: 'WARM',   color: {r: 0.8, g: 0.1, b: 0.2}, blobType: 0 }, // Circle (Smooth)
-        { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY', color: {r: 0.8, g: 0.4, b: 0.9}, blobType: 4 }, // Ring (Fancy)
-        { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY',  color: {r: 0.9, g: 0.9, b: 0.7}, blobType: 2 }, // Star (Sugar shape)
-        { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED', color: {r: 0.3, g: 0.1, b: 0.0}, blobType: 1 }, // Box
-        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT',   color: {r: 0.6, g: 0.4, b: 0.2}, blobType: 3 }, // Noisy
-        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY',  color: {r: 1.0, g: 0.5, b: 0.0}, blobType: 2 }, // Star
+        { main: 'SNICKER',  sub: 'DOODLE',  badge: 'FRESH',        color: {r: 0.9, g: 0.7, b: 0.3}, blobType: 1 }, // Rounded Box (Cookie shape)
+        { main: 'CHOCO',    sub: 'CHIP',     badge: 'HOT',          color: {r: 0.4, g: 0.2, b: 0.1}, blobType: 3 }, // Noisy (Chunky chips)
+        { main: 'RED',      sub: 'VELVET',   badge: 'WARM',         color: {r: 0.8, g: 0.1, b: 0.2}, blobType: 0 }, // Circle (Smooth)
+        { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY',       color: {r: 0.8, g: 0.4, b: 0.9}, blobType: 4 }, // Ring (Fancy)
+        { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY',        color: {r: 0.9, g: 0.9, b: 0.7}, blobType: 2 }, // Star (Sugar shape)
+        { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED',       color: {r: 0.3, g: 0.1, b: 0.0}, blobType: 1 }, // Box
+        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT',         color: {r: 0.6, g: 0.4, b: 0.2}, blobType: 3 }, // Noisy
+        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY',        color: {r: 1.0, g: 0.5, b: 0.0}, blobType: 2 }, // Star
+        { main: 'TOFFEE',   sub: 'CRUNCH',   badge: 'PLASMA BAKED', color: {r: 1.0, g: 0.7, b: 0.0}, blobType: 1 },
+        { main: 'MATCHA',   sub: 'WAFER',    badge: 'SPIN-LATTICE', color: {r: 0.2, g: 0.9, b: 0.4}, blobType: 2 },
+        { main: 'CINNAMON', sub: 'SWIRL',    badge: 'MOLTEN CORE',  color: {r: 1.0, g: 0.1, b: 0.0}, blobType: 0 },
+        { main: 'SHORTBREAD',sub: 'DIAMOND', badge: 'CRYSTALLINE',  color: {r: 0.8, g: 0.95, b: 1.0},blobType: 2 },
+        { main: 'VANILLA',  sub: 'BEAN',     badge: 'EPOCH AGED',   color: {r: 1.0, g: 0.8, b: 0.2}, blobType: 4 },
+        { main: 'BIO BREAD',sub: 'PULSE',    badge: 'GENE PROFILED',color: {r: 0.0, g: 0.95, b: 0.9},blobType: 3 },
+        { main: 'MACADAMIA',sub: 'SOLAR',    badge: '5000K ROAST',  color: {r: 1.0, g: 0.4, b: 0.0}, blobType: 0 },
+        { main: 'TRUFFLE',  sub: 'ABYSSAL',  badge: 'SINGULARITY',  color: {r: 0.4, g: 0.1, b: 0.7}, blobType: 4 },
     ];
 
     const HERO_ALT = {
