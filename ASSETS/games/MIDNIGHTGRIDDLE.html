@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0e10">
 <title>MIDNIGHT GRIDDLE — SDF Short-Order</title>
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Special+Elite&display=swap" rel="stylesheet">
@@ -889,6 +890,7 @@ function base64ToArrayBuffer(base64){
 async function fetchGeminiTTS(text){
  if(ttsCache.has(text))return ttsCache.get(text);
  const apiKey="";
+ if(!apiKey)return null;
  const apiUrl=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
  
  // Clean text prompt without nested quotes to enforce 100% single-speaker output
