@@ -945,6 +945,81 @@ async function fetchGeminiTTS(text){
  return null;
 }
 
+// Pre-warm browser voices for Web Speech API
+if ('speechSynthesis' in window) {
+ window.speechSynthesis.getVoices();
+ if (window.speechSynthesis.onvoiceschanged !== undefined) {
+  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+ }
+}
+
+function speakWebSpeechTTS(text, category) {
+ return new Promise(resolve => {
+  if (!('speechSynthesis' in window)) {
+   resolve(false);
+   return;
+  }
+
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+
+  const cleanText = text.replace(/[\u1F600-\u1F64F\u1F300-\u1F5FF\u1F680-\u1F6FF\u1F700-\u1F77F\u1F800-\u1F8FF\u1F900-\u1F9FF\u1FA00-\u1FA6F\u1FA70-\u1FAFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
+
+  if (!cleanText) {
+   resolve(false);
+   return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.rate = 1.05;
+  utterance.pitch = 0.8;
+  utterance.volume = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  const preferred = enVoices.find(v => 
+   /male|david|daniel|alex|george|google uk english male/i.test(v.name)
+  ) || enVoices[0] || voices[0];
+
+  if (preferred) utterance.voice = preferred;
+
+  let animIv = null;
+  const wave = $('#voiceWave');
+  let hasEnded = false;
+
+  const cleanup = () => {
+   if (hasEnded) return;
+   hasEnded = true;
+   if (animIv) clearInterval(animIv);
+   if (wave) wave.style.display = 'none';
+   S.chickenTalk = 0;
+   resolve(true);
+  };
+
+  utterance.onstart = () => {
+   if (wave) wave.style.display = 'inline-flex';
+   S.chickenTalk = 1.0;
+   roosterSquawk(category === 'warn' || category === 'charred' ? 1.4 : 0.8);
+   animIv = setInterval(() => {
+    S.chickenTalk = 0.85 + Math.sin(Date.now() * 0.02) * 0.15;
+   }, 50);
+  };
+
+  utterance.onend = cleanup;
+  utterance.onerror = () => cleanup();
+
+  const estDuration = Math.max(1500, cleanText.length * 75);
+  setTimeout(() => {
+   if (!hasEnded) cleanup();
+  }, estDuration + 1500);
+
+  try {
+   window.speechSynthesis.speak(utterance);
+  } catch (err) {
+   resolve(false);
+  }
+ });
+}
+
 const speechQueue=[];
 let isSpeaking=false;
 
@@ -958,8 +1033,11 @@ async function processSpeechQueue(){
  if(t)t.textContent=`"${text}"`;
  if(b)b.classList.add('show');
 
+ let spoken = false;
+
  const audioBuf=await fetchGeminiTTS(text);
  if(audioBuf&&AU.ctx&&AU.on){
+  spoken = true;
   await new Promise(resolve=>{
    const src=AU.ctx.createBufferSource();
    src.buffer=audioBuf;
@@ -992,8 +1070,13 @@ async function processSpeechQueue(){
     resolve();
    };
   });
- }else{
-  // Fallback visual speaking duration if offline
+ }
+
+ if (!spoken) {
+  spoken = await speakWebSpeechTTS(text, category);
+ }
+
+ if (!spoken) {
   roosterSquawk(category==='warn'||category==='charred'?1.4:0.8);
   S.chickenTalk=1.0;
   const holdTime=Math.max(1800,text.length*55);
