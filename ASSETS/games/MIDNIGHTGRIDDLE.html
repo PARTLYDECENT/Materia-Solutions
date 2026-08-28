@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0e10">
+<title>MIDNIGHT GRIDDLE — SDF Short-Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#efe6d0; --paper2:#e4d8bc; --ink:#241d15; --ink2:#4a3f30;
+  --ember:#ff6b1a; --bad:#b3402e; --ok:#3f6b4c; --night:#0b0e10;
+  --gold:#e8ab35;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--night)}
+body{font-family:'Special Elite',monospace;color:var(--paper);-webkit-user-select:none;user-select:none}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+#hud .live{pointer-events:auto}
+
+/* ---------- order rail ---------- */
+#rail{position:absolute;top:14px;left:16px;width:216px}
+#rail .railTag{
+  display:inline-block;background:#20242a;color:var(--paper2);border:1px solid #3a4149;
+  padding:3px 10px;font-size:11px;letter-spacing:.22em;border-radius:2px;margin-bottom:8px;
+  box-shadow:2px 2px 0 rgba(0,0,0,.5)}
+#tickets{display:flex;flex-direction:column;gap:9px}
+.ticket{
+  position:relative;background:var(--paper);color:var(--ink);padding:9px 11px 12px;
+  border-radius:2px;box-shadow:3px 4px 0 rgba(0,0,0,.55);
+  clip-path:polygon(0 0,100% 0,100% 92%,96% 100%,88% 94%,77% 100%,63% 95%,50% 100%,36% 95%,22% 100%,10% 94%,0 100%);
+  animation:tin .38s cubic-bezier(.2,1.4,.4,1)}
+.ticket:nth-child(odd){transform:rotate(-1.1deg)}
+.ticket:nth-child(even){transform:rotate(.9deg)}
+@keyframes tin{from{opacity:0;transform:translateY(-26px) rotate(3deg)}to{opacity:1}}
+.ticket.gone{animation:tout .7s ease-in forwards}
+@keyframes tout{30%{transform:translateY(6px) rotate(-6deg)}100%{opacity:0;transform:translate(70px,-90px) rotate(-38deg)}}
+.tk-head{display:flex;align-items:center;gap:7px;font-weight:bold;font-size:14px;letter-spacing:.06em}
+.tk-head svg{width:17px;height:17px;flex:none}
+.tk-no{margin-left:auto;font-size:11px;color:var(--ink2)}
+.tk-line{font-size:11px;color:var(--ink2);margin-top:1px}
+.tk-target{font-size:13px;margin:3px 0 6px;letter-spacing:.03em}
+.tk-target b{background:var(--ink);color:var(--paper);padding:0 5px;border-radius:1px}
+.tk-bar{height:4px;background:rgba(36,29,21,.16);border-radius:2px;overflow:hidden}
+.tk-bar i{display:block;height:100%;background:var(--bad);transform-origin:left;transition:transform .2s linear}
+.stamp{
+  position:absolute;top:32%;left:50%;transform:translate(-50%,-50%) rotate(-11deg) scale(0);
+  border:3px double currentColor;padding:2px 9px;font-size:16px;letter-spacing:.14em;
+  color:var(--ok);background:rgba(239,230,208,.85);white-space:nowrap;
+  animation:stampin .28s cubic-bezier(.3,1.6,.5,1) forwards}
+.stamp.fail{color:var(--bad)}
+@keyframes stampin{to{transform:translate(-50%,-50%) rotate(-11deg) scale(1)}}
+
+/* ---------- stats & HUD elements ---------- */
+#stats{position:absolute;top:14px;right:18px;text-align:right}
+#statScore{font-family:'Alfa Slab One';font-size:44px;line-height:1;color:var(--paper);text-shadow:3px 3px 0 rgba(0,0,0,.6)}
+.statRow{font-size:12px;color:#b7ab93;margin-top:4px;letter-spacing:.08em}
+.statRow b{color:var(--paper2)}
+#statScore.pop{animation:spop .3s}@keyframes spop{40%{transform:scale(1.13)}}
+.iconBtn{width:34px;height:34px;border-radius:50%;border:1px solid #4a4f57;background:rgba(12,14,16,.7);
+  color:#cfc4aa;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:8px}
+.iconBtn:hover{border-color:var(--paper2);color:var(--paper)}
+.iconBtn svg{width:17px;height:17px}
+
+/* ---------- talking chicken speech balloon ---------- */
+#roosterBox{
+  position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;pointer-events:none;
+  transition:transform .25s ease;
+}
+#roosterBubble{
+  position:relative;background:var(--paper);color:var(--ink);
+  padding:8px 16px;border-radius:4px;border:2px solid var(--ink);
+  box-shadow:4px 5px 0 rgba(0,0,0,.6);max-width:340px;text-align:center;
+  font-size:13px;line-height:1.35;opacity:0;transform:scale(0.85) translateY(6px);
+  transition:all .22s cubic-bezier(.2,1.4,.4,1);pointer-events:auto;cursor:pointer;
+}
+#roosterBubble.show{
+  opacity:1;transform:scale(1) translateY(0);
+}
+#roosterBubble::after{
+  content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  border-width:9px 7px 0;border-style:solid;border-color:var(--ink) transparent transparent;
+}
+#roosterBubble::before{
+  content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  border-width:7px 5px 0;border-style:solid;border-color:var(--paper) transparent transparent;
+  z-index:2;
+}
+#roosterName{
+  font-family:'Alfa Slab One';font-size:10px;letter-spacing:.18em;
+  color:var(--bad);text-transform:uppercase;margin-bottom:2px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.voiceWave{
+  display:inline-flex;align-items:center;gap:2px;height:10px;
+}
+.voiceWave span{
+  display:block;width:2px;height:100%;background:var(--bad);border-radius:1px;
+  animation:wavePulse .4s ease-in-out infinite alternate;
+}
+.voiceWave span:nth-child(2){animation-delay:.12s;height:70%}
+.voiceWave span:nth-child(3){animation-delay:.24s;height:100%}
+@keyframes wavePulse{0%{transform:scaleY(0.3)}100%{transform:scaleY(1.2)}}
+#roosterText{
+  font-size:12.5px;color:var(--ink);font-weight:600;
+}
+
+/* ---------- docks ---------- */
+.dock{position:absolute;bottom:18px;display:flex;align-items:flex-end;gap:10px}
+#dockL{left:18px}
+#dockR{right:18px}
+.tagBtn{
+  position:relative;background:var(--paper);color:var(--ink);border:2px solid var(--ink);
+  border-radius:3px;padding:8px 10px 7px;cursor:pointer;text-align:left;width:96px;
+  box-shadow:3px 3px 0 rgba(0,0,0,.55);transition:transform .08s, box-shadow .08s;font-family:inherit}
+.tagBtn:hover:not(:disabled){transform:translate(-1px,-2px);box-shadow:5px 5px 0 rgba(0,0,0,.55)}
+.tagBtn:active:not(:disabled){transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.55)}
+.tagBtn:disabled{opacity:.38;cursor:not-allowed}
+.tagBtn .nm{font-size:12px;letter-spacing:.1em;display:block}
+.tagBtn .ky{position:absolute;top:-9px;right:-7px;background:var(--ink);color:var(--paper);
+  font-size:10px;padding:1px 5px;border-radius:2px}
+.tagBtn .bdg{position:absolute;bottom:-8px;left:-7px;background:var(--ember);color:#180800;
+  font-family:'Alfa Slab One';font-size:11px;min-width:18px;height:18px;line-height:17px;
+  text-align:center;border-radius:50%;display:none}
+.bdg.on{display:block}
+.tagBtn svg{width:20px;height:20px;display:block;margin-bottom:2px}
+
+/* knob */
+#knobBox{text-align:center;position:relative;width:118px}
+#heatPct{font-family:'Alfa Slab One';font-size:15px;color:var(--paper2);margin-top:2px}
+#knobHint{font-size:9px;color:#8b8371;letter-spacing:.12em}
+#knobSvg{touch-action:none;cursor:grab;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.5))}
+#knobSvg:active{cursor:grabbing}
+
+/* flip / serve */
+#btnFlip{
+  width:92px;height:92px;border-radius:50%;border:3px solid var(--ember);cursor:pointer;
+  background:rgba(12,9,6,.62);color:var(--ember);font-family:'Alfa Slab One';font-size:19px;
+  letter-spacing:.08em;box-shadow:0 5px 0 rgba(0,0,0,.55), inset 0 0 0 4px rgba(255,107,26,.14);
+  transition:transform .08s}
+#btnFlip:hover:not(:disabled){transform:translateY(-2px)}
+#btnFlip:active:not(:disabled){transform:translateY(2px)}
+#btnFlip:disabled{opacity:.32;border-color:#5c554a;color:#8b8371;cursor:not-allowed}
+.colBtns{display:flex;flex-direction:column;gap:9px}
+.actBtn{background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:3px;
+  padding:7px 12px;cursor:pointer;font-family:'Alfa Slab One';font-size:13px;letter-spacing:.08em;
+  box-shadow:3px 3px 0 rgba(0,0,0,.55);display:flex;align-items:center;gap:7px}
+.actBtn svg{width:16px;height:16px}
+.actBtn:disabled{opacity:.35;cursor:not-allowed}
+.actBtn.danger{background:var(--paper);color:var(--bad)}
+
+/* ---------- gauge & cards ---------- */
+#gaugeBox{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);text-align:center}
+#gaugeSvg{opacity:.28;transition:opacity .3s}
+#gaugeSvg.on{opacity:1}
+#gaugeLbl{font-size:10px;letter-spacing:.3em;color:#b7ab93;margin-top:-6px}
+
+#warn{position:absolute;left:50%;bottom:212px;transform:translateX(-50%);
+  background:var(--bad);color:var(--paper);padding:5px 16px;font-size:13px;letter-spacing:.18em;
+  border-radius:2px;box-shadow:3px 3px 0 rgba(0,0,0,.5);display:none;animation:blink .5s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+#toasts{position:absolute;top:100px;left:50%;transform:translateX(-50%);display:flex;
+  flex-direction:column;align-items:center;gap:6px}
+.toast{background:var(--paper);color:var(--ink);padding:5px 14px;font-size:12px;border-radius:2px;
+  box-shadow:3px 3px 0 rgba(0,0,0,.5);animation:tin .3s;transition:opacity .4s, transform .4s}
+.toast.out{opacity:0;transform:translateY(-10px)}
+
+#result{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);opacity:0;
+  background:var(--paper);color:var(--ink);padding:18px 30px 16px;border-radius:3px;
+  box-shadow:6px 7px 0 rgba(0,0,0,.55);text-align:center;pointer-events:none;
+  transition:all .22s cubic-bezier(.2,1.5,.4,1)}
+#result.show{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-1.5deg)}
+#rcQual{font-size:12px;letter-spacing:.34em;color:var(--ink2)}
+#rcPts{font-family:'Alfa Slab One';font-size:52px;line-height:1.1;color:var(--ember);
+  text-shadow:2px 2px 0 var(--ink)}
+#rcName{font-size:14px;letter-spacing:.1em}
+#rcSub{font-size:11px;color:var(--ink2);margin-top:5px}
+
+.veil{position:absolute;inset:0;background:rgba(6,7,9,.72);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;z-index:20;pointer-events:auto}
+.paperCard{background:var(--paper);color:var(--ink);width:min(480px,92vw);padding:26px 30px 24px;
+  border-radius:3px;box-shadow:8px 10px 0 rgba(0,0,0,.6);transform:rotate(-.6deg)}
+.gameTitle{font-family:'Alfa Slab One';font-size:44px;line-height:.98;letter-spacing:.01em}
+.gameTitle em{font-style:normal;color:var(--ember);-webkit-text-stroke:1.5px var(--ink)}
+.sub{font-size:12px;color:var(--ink2);letter-spacing:.14em;margin:6px 0 16px}
+.brief{border-top:2px dashed rgba(36,29,21,.35);border-bottom:2px dashed rgba(36,29,21,.35);
+  padding:12px 2px;font-size:12.5px;line-height:1.75}
+.brief b{background:var(--ink);color:var(--paper);padding:0 4px}
+.keysRow{font-size:11px;color:var(--ink2);margin-top:10px;letter-spacing:.05em}
+.bigBtn{display:block;width:100%;margin-top:16px;background:var(--ink);color:var(--paper);
+  border:none;padding:13px;font-family:'Alfa Slab One';font-size:19px;letter-spacing:.14em;
+  cursor:pointer;border-radius:2px;box-shadow:4px 4px 0 rgba(0,0,0,.4)}
+.bigBtn:hover{background:#000;transform:translateY(-1px)}
+.bestLine{font-size:12px;text-align:center;color:var(--ink2);margin-top:10px}
+.credit{position:absolute;bottom:10px;right:14px;font-size:10px;color:#6f6a5c;letter-spacing:.1em;z-index:6}
+@media (max-width:860px){
+  #dockL{flex-direction:row;flex-wrap:wrap;width:210px}
+  #statScore{font-size:30px}
+  #gaugeBox{bottom:auto;top:120px;left:auto;right:14px;transform:none}
+  #roosterBox{top:60px}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="ic-egg" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="13.5" rx="6.2" ry="7.6"/><circle cx="12" cy="12.2" r="2.7" fill="currentColor" stroke="none"/></g>
+    <g id="ic-cake" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><ellipse cx="12" cy="8.2" rx="7" ry="2.7"/><path d="M5 8.2v6c0 1.6 3.1 2.9 7 2.9s7-1.3 7-2.9v-6"/><rect x="10.4" y="4.6" width="3.2" height="2.8"/></g>
+    <g id="ic-steak" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.5 13.2c0-4 3.3-6.7 7.5-6.7s7.5 2.6 7.5 6.2c0 3.4-3.2 5.8-7.5 5.8s-7.5-2-7.5-5.3z"/><path d="M7.5 12.4c1.6 1.2 3.2 1.3 4.8.4M9.5 9.6c1.2.8 2.4.9 3.6.3"/></g>
+    <g id="ic-butter" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 4.5 19 8.2v7.3l-7 3.7-7-3.7V8.2z"/><path d="M12 11.9 19 8.2M12 11.9 5 8.2M12 11.9v7.3"/></g>
+    <g id="ic-flip" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="4.6"/><path d="M11.2 11.2 19 19M6 6.6l3.4 3.4M4.9 8.7l2.4 2.4"/></g>
+    <g id="ic-serve" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 17h16"/><path d="M5.5 17a6.5 6.5 0 0 1 13 0"/><circle cx="12" cy="8.4" r="1.2"/><path d="M9.5 19.6h5"/></g>
+    <g id="ic-trash" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5.5 7h13M9 7V5h6v2"/><path d="M7 7l.8 12h8.4L17 7M10.4 10.5v5.4M13.6 10.5v5.4"/></g>
+    <g id="ic-sound" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.5 9.5v5h3.4l4.6 3.8V5.7L7.9 9.5z"/><path d="M15.5 9a4.4 4.4 0 0 1 0 6M18 6.6a8 8 0 0 1 0 10.8"/></g>
+    <g id="ic-mute" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.5 9.5v5h3.4l4.6 3.8V5.7L7.9 9.5z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></g>
+    <g id="ic-pause" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5.5v13M15 5.5v13"/></g>
+  </defs>
+</svg>
+
+<canvas id="gl"></canvas>
+
+<div id="hud">
+  <!-- ticket rail -->
+  <div id="rail">
+    <div class="railTag">ORDERS · <span id="railCount">0/3</span></div>
+    <div id="tickets"></div>
+  </div>
+
+  <!-- talking chicken dialogue popup -->
+  <div id="roosterBox">
+    <div id="roosterBubble" class="live" title="Click Barnaby to hear more">
+      <div id="roosterName">
+        <span>BARNABY · LINE COOK</span>
+        <div class="voiceWave" id="voiceWave" style="display:none">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div id="roosterText">"Keep that skillet singing, rookie!"</div>
+    </div>
+  </div>
+
+  <!-- stats -->
+  <div id="stats">
+    <div id="statScore">0</div>
+    <div class="statRow">BEST <b id="statBest">0</b> · STREAK <b id="statStreak">—</b></div>
+    <div class="statRow">SERVED <b id="statServed">0</b> · <b id="statClock">11:52 PM</b></div>
+    <button class="iconBtn live" id="muteBtn" title="sound"><svg><use href="#ic-sound"/></svg></button>
+    <button class="iconBtn live" id="pauseBtn" title="pause"><svg><use href="#ic-pause"/></svg></button>
+  </div>
+
+  <!-- doneness gauge -->
+  <div id="gaugeBox">
+    <svg id="gaugeSvg" width="118" height="206" viewBox="0 0 120 210">
+      <defs>
+        <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#b3402e" stroke-width="1.4"/>
+        </pattern>
+      </defs>
+      <rect x="52" y="16" width="18" height="182" fill="rgba(10,9,7,.55)" stroke="#8b8371" stroke-width="1"/>
+      <rect x="52" y="16" width="18" height="34" fill="url(#hatch)" opacity=".8"/>
+      <rect id="gBand" x="49" y="150" width="24" height="20" fill="rgba(63,107,76,.55)" stroke="#6fa581" stroke-width="1" style="display:none"/>
+      <polygon id="gTUp" points="44,100 51,96 51,104" fill="none" stroke="#efe6d0" stroke-width="1.4" style="display:none"/>
+      <polygon id="gTDown" points="78,100 71,96 71,104" fill="#ff6b1a" stroke="#ff6b1a" style="display:none"/>
+      <text x="74" y="14" font-size="8.5" fill="#8b8371" font-family="Special Elite">BURNT</text>
+      <text x="76" y="207" font-size="8.5" fill="#8b8371" font-family="Special Elite">RAW</text>
+      <text id="gVal" x="41" y="112" font-size="13" fill="#efe6d0" text-anchor="end" font-family="Alfa Slab One">—</text>
+    </svg>
+    <div id="gaugeLbl">DONENESS</div>
+  </div>
+
+  <div id="warn">CATCHING — FLIP IT OR KILL THE FLAME</div>
+  <div id="toasts"></div>
+
+  <div id="result"><div id="rcQual">SPOT ON</div><div id="rcPts">+240</div><div id="rcName">EGGS · RUNNY</div><div id="rcSub"></div></div>
+
+  <!-- left dock -->
+  <div class="dock live" id="dockL">
+    <button class="tagBtn" id="btnButter"><span class="ky">B</span><svg><use href="#ic-butter"/></svg><span class="nm">BUTTER</span><span class="bdg" id="bdgButter"></span></button>
+    <button class="tagBtn" id="btnEgg"><span class="ky">E</span><svg><use href="#ic-egg"/></svg><span class="nm">EGGS</span><span class="bdg" id="bdgEgg"></span></button>
+    <button class="tagBtn" id="btnCake"><span class="ky">P</span><svg><use href="#ic-cake"/></svg><span class="nm">GRIDDLE CAKE</span><span class="bdg" id="bdgCake"></span></button>
+    <button class="tagBtn" id="btnSteak"><span class="ky">S</span><svg><use href="#ic-steak"/></svg><span class="nm">STEAK</span><span class="bdg" id="bdgSteak"></span></button>
+  </div>
+
+  <!-- right dock -->
+  <div class="dock live" id="dockR">
+    <div id="knobBox">
+      <svg id="knobSvg" width="106" height="106" viewBox="0 0 110 110">
+        <circle cx="55" cy="55" r="52" fill="rgba(12,10,8,.72)" stroke="#3a3f47" stroke-width="2"/>
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#33383f" stroke-width="7"
+                stroke-dasharray="198 264" transform="rotate(135 55 55)" stroke-linecap="butt"/>
+        <circle id="kArc" cx="55" cy="55" r="42" fill="none" stroke="#ff6b1a" stroke-width="7"
+                stroke-dasharray="0 264" transform="rotate(135 55 55)"/>
+        <g id="kTicks" stroke="#8b8371" stroke-width="1.4"></g>
+        <line id="kNeedle" x1="55" y1="55" x2="55" y2="20" stroke="#efe6d0" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="55" cy="55" r="7" fill="#efe6d0"/>
+      </svg>
+      <div id="heatPct">45%</div>
+      <div id="knobHint">DRAG · SCROLL · ARROWS</div>
+    </div>
+    <button id="btnFlip">FLIP</button>
+    <div class="colBtns">
+      <button class="actBtn" id="btnServe"><svg><use href="#ic-serve"/></svg>SERVE<span class="ky" style="margin-left:2px">↵</span></button>
+      <button class="actBtn danger" id="btnTrash"><svg><use href="#ic-trash"/></svg>TRASH<span class="ky" style="margin-left:2px">X</span></button>
+    </div>
+  </div>
+
+  <!-- menu overlay -->
+  <div class="veil" id="menu">
+    <div class="paperCard">
+      <div class="gameTitle">MIDNIGHT<br><em>GRIDDLE</em></div>
+      <div class="sub">REAL-TIME SDF SHORT-ORDER · WITH BARNABY THE SHORT-ORDER ROOSTER</div>
+      <div class="brief">
+        1 — Roll the <b>HEAT</b> dial. Cast iron forgives nothing.<br>
+        2 — <b>BUTTER</b> the pan first. Butter buys you seconds, and a tip.<br>
+        3 — Cook whatever a <b>TICKET</b> asks for. Watch the filled tick climb the gauge.<br>
+        4 — <b>FLIP</b> when the contact side is ahead of the band.<br>
+        5 — <b>SERVE</b> inside the green band. Listen to Barnaby in the back — he's seen thirty years on the night shift.
+      </div>
+      <div class="keysRow">KEYS&nbsp;&nbsp;B butter · E eggs · P cakes · S steak · SPACE flip / click pan · ENTER serve · X trash · ↑↓ heat · M mute · ESC pause</div>
+      <button class="bigBtn" id="btnStart">START THE NIGHT SHIFT</button>
+      <div class="bestLine" id="menuBest"></div>
+    </div>
+  </div>
+
+  <!-- pause overlay -->
+  <div class="veil" id="pause" style="display:none">
+    <div class="paperCard" style="text-align:center;width:min(340px,90vw)">
+      <div class="gameTitle" style="font-size:30px">SHIFT HOLDS</div>
+      <div class="sub">THE PAN KEEPS ITS HEAT · BARNABY IS SIPPING COFFEE</div>
+      <button class="bigBtn" id="btnResume">BACK TO WORK</button>
+      <button class="bigBtn" id="btnRestart" style="background:transparent;color:var(--ink);border:2px solid var(--ink);box-shadow:none;font-size:14px;padding:10px">RESTART NIGHT</button>
+    </div>
+  </div>
+
+  <div class="credit">SDF RAYMARCHER · PROCEDURAL AUDIO & SQUAWKS · NO ASSETS</div>
+</div>
+
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s);
+
+const VS=`attribute vec2 aP;void main(){gl_Position=vec4(aP,0.,1.);}`;
+
+const FS=`
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes;uniform float uTime;
+uniform vec3 uCam;
+uniform float uHeat,uFood,uSpread,uCookLo,uCookHi,uFlipAng,uHop,uFade,uButter,uFond,uSteam,uSmoke,uSeed,uFlash;
+uniform float uChickenTalk, uChickenMood;
+#define PI 3.14159265
+const float FY=0.46;
+
+float h21(vec2 p){p=fract(p*vec2(123.34,345.45));p+=dot(p,p+34.345);return fract(p.x*p.y);}
+float h31(vec3 p){p=fract(p*vec3(443.897,441.423,437.195));p+=dot(p,p.yzx+19.19);return fract((p.x+p.y)*p.z);}
+float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+ return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n2(p);p*=2.03;a*=.5;}return v;}
+float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+ float a=mix(mix(h31(i),h31(i+vec3(1,0,0)),f.x),mix(h31(i+vec3(0,1,0)),h31(i+vec3(1,1,0)),f.x),f.y);
+ float b=mix(mix(h31(i+vec3(0,0,1)),h31(i+vec3(1,0,1)),f.x),mix(h31(i+vec3(0,1,1)),h31(i+vec3(1,1,1)),f.x),f.y);
+ return mix(a,b,f.z);}
+float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+vec2 opU(vec2 a,vec2 b){return a.x<b.x?a:b;}
+float seg2(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h);}
+vec3 rX(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(p.x,c*p.y-s*p.z,s*p.y+c*p.z);}
+vec3 rY(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(c*p.x+s*p.z,p.y,-s*p.x+c*p.z);}
+
+/* --- neon OPEN sign --- */
+float frameR(vec2 p,vec2 b,float r){vec2 d=abs(p)-b+r;return length(max(d,0.))+min(max(d.x,d.y),0.)-r;}
+float letO(vec2 p){return abs(frameR(p,vec2(.105,.125),.05))-.032;}
+float letP(vec2 p){float d=seg2(p,vec2(-.10,-.13),vec2(-.10,.13));
+ float b=min(abs(length(p-vec2(.03,.052))-.078)-.031,seg2(p,vec2(-.10,.13),vec2(-.02,.13)));
+ return min(d,max(b,-(p.y+.02)));}
+float letE(vec2 p){float d=seg2(p,vec2(-.10,-.13),vec2(-.10,.13));
+ d=min(d,seg2(p,vec2(-.10,.13),vec2(.09,.13)));
+ d=min(d,seg2(p,vec2(-.10,0.),vec2(.06,0.)));
+ d=min(d,seg2(p,vec2(-.10,-.13),vec2(.09,-.13)));
+ return d-.031;}
+float letN(vec2 p){float d=min(seg2(p,vec2(-.09,-.13),vec2(-.09,.13)),seg2(p,vec2(.09,-.13),vec2(.09,.13)));
+ d=min(d,seg2(p,vec2(-.09,.13),vec2(.09,-.13)));return d-.031;}
+float wordOPEN(vec2 p){float d=letO(p-vec2(-.51,0.));
+ d=min(d,letP(p-vec2(-.17,0.)));d=min(d,letE(p-vec2(.17,0.)));d=min(d,letN(p-vec2(.54,0.)));return d;}
+
+/* ---------------- scene SDF ---------------- */
+vec2 map(vec3 p){
+  vec2 res=opU(vec2(p.y,1.),vec2(3.1+p.z,2.));             // counter + back wall
+  res=opU(res,vec2(4.3-abs(p.x),2.));                      // side walls
+  
+  // burner ring
+  vec2 bt=vec2(length(p.xz)-.82,p.y-.07);
+  res=opU(res,vec2(length(bt)-.062,3.));
+  // three grate spokes
+  float ds=1e5;
+  for(int i=0;i<3;i++){float a=float(i)*1.0472;vec2 dv=vec2(cos(a),sin(a));ds=min(ds,seg2(p.xz,-dv*.8,dv*.8));}
+  ds=length(vec2(ds,p.y-.075))-.026;
+  res=opU(res,vec2(ds,3.));
+  vec2 hc=vec2(length(p.xz)-.09,p.y-.05);
+  res=opU(res,vec2(min(max(hc.x,hc.y),0.)+length(max(hc,0.))-.015,3.));
+  
+  // ------- skillet -------
+  {
+    float r=length(p.xz);
+    vec2 pr=vec2(r-1.66,abs(p.y-.60)-.24);
+    float body=min(max(pr.x,pr.y),0.)+length(max(pr,0.))-.05;
+    float hole=max(1.53-r,0.46-p.y);
+    float pan=max(body,-hole);
+    vec2 rt=vec2(r-1.585,p.y-.85);
+    pan=smin(pan,length(rt)-.05,.05);
+    vec3 hp=p-vec3(2.46,.86,0.);
+    vec3 hd=abs(hp)-vec3(.90,.045,.11);
+    float hdl=length(max(hd,0.))+min(max(hd.x,max(hd.y,hd.z)),0.)-.035;
+    vec3 np=p-vec3(1.75,.80,0.);
+    vec3 nd=abs(np)-vec3(.34,.07,.10);
+    float nk=length(max(nd,0.))+min(max(nd.x,max(nd.y,nd.z)),0.)-.05;
+    hdl=smin(hdl,nk,.08);
+    res=opU(res,vec2(min(pan,hdl),4.));
+  }
+
+  // ------- BARNABY THE ROOSTER (Line Cook in background pass window) -------
+  {
+    // Rooster positioned in the background pass-through
+    float bob = sin(uTime*4.5)*0.02 + sin(uTime*8.0)*0.015*uChickenTalk;
+    float pecks = sin(uTime*1.8)*0.03;
+    vec3 chP = p - vec3(-0.05, 1.48 + bob, -2.55);
+    chP = rY(chP, 0.22 + sin(uTime*1.2)*0.08); // slight turn toward camera
+
+    // Body (White feathered body in diner chef coat)
+    vec3 bp = chP - vec3(0., -0.32, 0.);
+    float body = length(bp * vec3(1.0, 1.15, 1.05)) - 0.46;
+    body += (n3(bp * 6.0) - 0.5) * 0.02;
+
+    // Head
+    float headPitch = sin(uTime*5.0)*0.06*uChickenTalk + pecks;
+    vec3 hp = chP - vec3(0.04, 0.24, 0.05);
+    hp = rX(hp, headPitch);
+    float head = length(hp * vec3(1.1, 1.0, 1.05)) - 0.26;
+
+    // Comb (Red rooster crest on top)
+    vec3 cp = hp - vec3(0., 0.24, -0.04);
+    float comb1 = length(cp - vec3(0., 0.06, 0.06)) - 0.075;
+    float comb2 = length(cp - vec3(0., 0.09, -0.02)) - 0.085;
+    float comb3 = length(cp - vec3(0., 0.05, -0.09)) - 0.065;
+    float comb = min(min(comb1, comb2), comb3);
+    comb = max(comb, abs(cp.x) - 0.028);
+
+    // Beak (Upper and lower beak that moves when talking)
+    vec3 bkP = hp - vec3(0., -0.04, 0.23);
+    float talkGap = max(0.0, sin(uTime * 22.0) * 0.04 * uChickenTalk);
+    vec3 ubP = bkP; ubP.z -= ubP.y * 0.4;
+    float beakTop = max(dot(ubP, vec3(0.,0.6,0.8)), length(ubP.xy) - (0.24 - ubP.z)*0.35);
+    beakTop = max(beakTop, abs(ubP.z - 0.07) - 0.09);
+    
+    vec3 lbP = bkP - vec3(0., -0.04 - talkGap, 0.);
+    float beakBot = length(lbP * vec3(2.5, 3.5, 1.0) - vec3(0.,0.,0.04)) - 0.05;
+    float beak = min(beakTop, beakBot);
+
+    // Wattle (Red floppy teardrop under beak)
+    vec3 wp = hp - vec3(0., -0.16, 0.16);
+    float wattle = length(wp * vec3(1.8, 1.0, 1.4)) - 0.075;
+
+    // Eyes (Animated blinking & panic dilation)
+    float blink = smoothstep(0.94, 0.98, sin(uTime * 2.1 + sin(uTime * 4.3)));
+    if (uChickenMood > 0.5) blink = 0.0; // wide-eyed panic during smoke or char
+    float eyeSize = 0.046 + 0.012 * min(uChickenMood, 2.0);
+    vec3 ep = hp; ep.x = abs(ep.x) - 0.165; ep.y -= 0.06; ep.z -= 0.11;
+    vec3 epBlink = ep; epBlink.y /= mix(1.0, 0.12, blink);
+    float eyes = (length(epBlink) - eyeSize) * mix(1.0, 0.12, blink);
+
+    // Chef Hat (Tall pleated white toque on rooster head)
+    vec3 hatP = hp - vec3(0., 0.28, -0.03);
+    float hatBase = length(vec2(length(hatP.xz) - 0.14, hatP.y - 0.02)) - 0.03;
+    float hatTop = max(length(hatP.xz) - 0.20, abs(hatP.y - 0.18) - 0.14);
+    hatTop += sin(hatP.x * 35.0) * 0.012 + cos(hatP.z * 35.0) * 0.012;
+    float chefHat = min(hatBase, hatTop);
+
+    // Arms & Wings (Left wing resting on counter, Right wing wielding the Short-Order Sword)
+    float swordSway = sin(uTime * 3.2) * 0.08 + sin(uTime * 8.0) * 0.06 * uChickenTalk;
+    if (uChickenMood > 0.5) swordSway += sin(uTime * 24.0) * 0.15; // aggressive shaking during char/smoke
+
+    // Left arm / wing resting casually on the pass
+    vec3 laP = chP - vec3(-0.36, -0.26, 0.08);
+    laP = rY(laP, -0.35); laP = rX(laP, 0.25);
+    float leftArm = length(laP * vec3(1.2, 0.8, 1.8)) - 0.16;
+
+    // Right arm / wing holding up the sword
+    vec3 raP = chP - vec3(0.34, -0.20, 0.12);
+    raP = rY(raP, 0.45 + swordSway*0.5); raP = rX(raP, -0.55 + swordSway);
+    float rightArm = length(raP * vec3(1.1, 0.9, 1.6)) - 0.15;
+    float chickenArms = min(leftArm, rightArm);
+
+    // Barnaby's Kitchen Broadsword (Grip, Brass Crossguard, Pommel, Steel Blade)
+    vec3 swP = chP - vec3(0.38, -0.05 + swordSway*0.12, 0.32);
+    swP = rY(swP, 0.25 + swordSway*0.6);
+    swP = rX(swP, -0.42 + swordSway*0.8);
+    swP = rY(swP, sin(uTime * 1.5) * 0.05);
+
+    // Grip & Pommel
+    float swGrip = length(vec2(length(swP.xz), swP.y)) - 0.026;
+    swGrip = max(swGrip, abs(swP.y) - 0.12);
+    float swPommel = length(swP - vec3(0., -0.13, 0.)) - 0.042;
+    // Crossguard (Brass kitchen guard)
+    vec3 guardP = swP - vec3(0., 0.13, 0.);
+    vec3 guardBox = abs(guardP) - vec3(0.16, 0.022, 0.035);
+    float swGuard = length(max(guardBox, 0.)) + min(max(guardBox.x, max(guardBox.y, guardBox.z)), 0.) - 0.012;
+    float swHilt = min(min(swGrip, swPommel), swGuard);
+
+    // Gleaming Razor Blade
+    vec3 blP = swP - vec3(0., 0.52, 0.);
+    vec3 bladeBox = abs(blP) - vec3(0.042, 0.37, 0.008);
+    float blade = length(max(bladeBox, 0.)) + min(max(bladeBox.x, max(bladeBox.y, bladeBox.z)), 0.) - 0.004;
+    // Blade edge bevel and fuller groove
+    blade += abs(blP.x * blP.z) * 0.8;
+    // Pointy sword tip
+    blade = max(blade, (blP.y - 0.37) + abs(blP.x)*1.4);
+
+    // Combine chicken parts with material IDs
+    // ID 9 = Rooster Body/Head/Arms (Cream White), ID 10 = Comb/Wattle (Red), ID 11 = Beak (Gold), ID 12 = Chef Hat (Crisp White), ID 13 = Eyes
+    // ID 14 = Sword Steel (Metallic Razor Blade), ID 15 = Sword Hilt & Guard (Polished Brass & Dark Leather)
+    res = opU(res, vec2(smin(min(body, chickenArms), head, 0.06), 9.0));
+    res = opU(res, vec2(min(comb, wattle), 10.0));
+    res = opU(res, vec2(beak, 11.0));
+    res = opU(res, vec2(chefHat, 12.0));
+    res = opU(res, vec2(eyes, 13.0));
+    res = opU(res, vec2(blade, 14.0));
+    res = opU(res, vec2(swHilt, 15.0));
+  }
+
+  // ------- food (drawn in a rig that flips) -------
+  if(uFood>.5&&uFade>.003){
+    vec3 lq=rX(p-vec3(0.,FY+uHop,0.),-uFlipAng)/uFade;
+    float d;
+    if(uFood<1.5){                                       // EGG
+      float s=uSpread;
+      float rr=length(lq.xz),an=atan(lq.z,lq.x);
+      float wob=(n2(vec2(an*3.1,uSeed))-.5)*.26*s+(n2(vec2(an*7.7,uSeed+9.2))-.5)*.13*s;
+      float R=.30+.78*s+wob,th=.16-.08*s;
+      float slab=max(rr-R,abs(lq.y-th*.5)-th*.5);
+      float blob=length(lq*vec3(1.,1.35,1.))-.30;
+      d=mix(blob,slab,smoothstep(.02,.30,s));
+      d+=(n3(lq*4.5+vec3(uSeed))-.5)*.04*s;
+      float setK=clamp(uCookHi,0.,1.);
+      vec3 yq=lq+vec3(sin(uTime*6.3),sin(uTime*5.1),cos(uTime*4.7))*.009*(1.-smoothstep(.2,.55,setK));
+      yq.y*=1./(.66-.18*setK);
+      d=smin(d,length(yq)-(.215-.045*setK),.02);
+    }else if(uFood<2.5){                                 // GRIDDLE CAKE
+      float rise=uSpread,h=.10+.11*rise,R=.80+.14*rise;
+      vec2 bb=vec2(length(lq.xz)-R,abs(lq.y)-h*.5);
+      d=min(max(bb.x,bb.y),0.)+length(max(bb,0.))-.03;
+      d=max(d,-(length(lq-vec3(0.,-1.6*h,0.))-.62*h));   // warped underside
+      d=max(d,-(length(lq-vec3(0.,2.*h,0.))-(h+.02)));   // crowned top
+      float fu=smoothstep(-.02,.22,lq.y);
+      d-=smoothstep(.55,.9,n2(lq.xz*6.5+vec2(uSeed)))*.05*fu*smoothstep(.12,.5,uCookHi)*smoothstep(0.,.5,rise);
+      d+=(n3(lq*7.+vec3(uSeed))-.5)*.02;
+    }else{                                               // STEAK
+      float ck=clamp((uCookLo+uCookHi)*.5,0.,1.);
+      vec3 bq=lq;bq.y*=1.06;
+      vec3 dq=abs(bq)-vec3(.63,.15,.49)*(1.-.05*ck);
+      d=length(max(dq,0.))+min(max(dq.x,max(dq.y,dq.z)),0.)-.075;
+      d+=(n3(bq*3.6+vec3(uSeed))-.5)*.05;
+      d-=.03*exp(-dot(bq.xz,bq.xz)*2.2);
+    }
+    res=opU(res,vec2(d*uFade,4.+uFood));
+  }
+  // ------- butter -------
+  if(uButter>-.5){
+    float m=clamp(uButter,0.,1.);
+    vec3 bp=rX(p-vec3(.55-.28*m,FY-.012*m,-.42+.18*m),-.35);
+    float sp=1.-.75*m;
+    vec3 bpq=bp/sp;
+    vec3 pdq=abs(bpq)-vec3(.13,.055,.10);
+    float dp=(length(max(pdq,0.))+min(max(pdq.x,max(pdq.y,pdq.z)),0.)-.03)*sp;
+    dp+=smoothstep(.85,1.,m)*10.;
+    vec2 pu2=vec2(length(bp.xz)-(.15+.5*m),bp.y);
+    float pu=min(max(pu2.x,pu2.y),0.)+length(max(pu2,0.))-.008;
+    pu+=step(.98,m)*10.;
+    res=opU(res,vec2(min(dp,pu),8.));
+  }
+  return res;
+}
+vec3 nrm(vec3 p){vec2 e=vec2(.0014,-.0014);
+ return normalize(e.xyy*map(p+e.xyy).x+e.yyx*map(p+e.yyx).x+e.yxy*map(p+e.yxy).x+e.xxx*map(p+e.xxx).x);}
+float shado(vec3 ro,vec3 rd){float res=1.,t=.05;
+ for(int i=0;i<22;i++){float h=map(ro+rd*t).x;res=min(res,9.*h/t);t+=clamp(h,.02,.4);if(res<.02||t>8.)break;}
+ return clamp(res,0.,1.);}
+float occ(vec3 p,vec3 n){float o=0.,s=1.;
+ for(int i=1;i<=4;i++){float dd=.035*float(i);o+=(dd-map(p+n*dd).x)*s;s*=.72;}return clamp(1.-1.8*o,0.,1.);}
+
+void main(){
+  vec2 frag=gl_FragCoord.xy;
+  vec2 uv=(frag-.5*uRes)/uRes.y;
+  vec3 ro=uCam;
+  vec3 fw=normalize(vec3(.08,.50,0.)-ro);
+  vec3 rt=normalize(cross(fw,vec3(0.,1.,0.)));
+  vec3 up=cross(rt,fw);
+  vec3 rd=normalize(fw*1.15+rt*uv.x+up*uv.y);
+  float t=0.;vec2 hit=vec2(0.,-1.);
+  for(int i=0;i<96;i++){
+    hit=map(ro+rd*t);
+    if(hit.x<(0.0009+0.001*t)||t>40.)break;
+    t+=hit.x;
+  }
+  vec3 sky=vec3(.012,.016,.020)+vec3(.014,.008,.004)*fbm(uv*3.+vec2(0.,uTime*.02));
+  vec3 col=sky;
+  if(t<40.&&hit.x<(0.0035+0.003*t)){
+    vec3 P=ro+rd*t,N=nrm(P);
+    float mid=hit.y;
+    vec3 L=normalize(vec3(-.55,.85,-.38));
+    vec3 kc=vec3(1.05,.93,.80)*1.35;
+    float dif=max(dot(N,L),0.);
+    float sh=dif>.01?shado(P+N*.03,L):1.;
+    float gp=fract((P.x+P.y*1.35+P.z*.35)/.52);              // venetian slats
+    float slat=smoothstep(.06,.16,gp)*smoothstep(.94,.84,gp);
+    float keyI=dif*sh*mix(.22,1.,slat);
+    vec3 fill=vec3(.16,.23,.26)*max(dot(N,normalize(vec3(.6,.25,.6))),0.);
+    float flick=.75+.25*n2(vec2(uTime*9.,3.7));
+    vec3 fv=P-vec3(0.,.14,0.);
+    vec3 fcol=vec3(1.,.42,.10)*2.3*uHeat*flick/(1.+dot(fv,fv)*1.1);
+    float fr=max(dot(N,normalize(vec3(0.,.14,0.)-P)),0.);
+    float ao=occ(P,N);
+    vec3 alb=vec3(.5);float spec=.3,gla=24.;vec3 emis=vec3(0.);
+
+    if(mid<1.5){                                              // steel counter + range top
+      float rng=1.-smoothstep(1.12,1.28,max(abs(P.x),abs(P.z)));
+      alb=vec3(.34,.35,.36)*(.92+.16*sin(P.x*90.)*sin(P.z*70.));
+      alb=mix(alb,vec3(.055,.05,.048),rng);
+      float seam=smoothstep(.985,1.,abs(fract(P.x*.85)-.5)*2.);
+      alb*=1.-.12*seam;spec=.9;gla=60.;
+      float er=length(P.xz);
+      float bed=smoothstep(.78,.5,er)*(1.-smoothstep(.03,.06,P.y))*rng;
+      float emb=fbm(P.xz*7.+vec2(uTime*.4,0.));
+      emis+=vec3(1.,.30,.05)*(smoothstep(.45,.85,emb)*1.8+.1)*bed*uHeat*3.4;
+      float nearWall=clamp(P.z+3.05,0.,1.);
+      emis+=vec3(1.,.28,.14)*exp(-abs(P.x-.95)*2.2-nearWall*1.15)*.45;   // neon reflection smear
+    }else if(mid<2.5){                                       // tiled wall + window + neon
+      vec2 wt=vec2(P.x+P.z,P.y)*.5;
+      vec2 gf=abs(fract(wt)-.5);
+      float grout=smoothstep(.44,.5,max(gf.x,gf.y));
+      alb=mix(vec3(.085,.13,.13),vec3(.13,.22,.21),n2(wt*3.7))*(1.-grout*.55);
+      spec=.25;gla=30.;
+      vec2 wq=vec2(P.x+1.25,P.y-1.5);
+      if(abs(wq.x)<.78&&abs(wq.y)<.62){
+        float sl=pow(.5+.5*sin(wq.x*6.0),3.)*1.2;
+        float fr2=smoothstep(.78,.7,abs(wq.x))*smoothstep(.62,.54,abs(wq.y));
+        emis+=vec3(.78,.86,.95)*(.30+.60*sl)*fr2*(.75+.25*fbm(wq*3.+vec2(uTime*.03)));
+      }
+      vec2 nq=vec2(P.x-.95,P.y-1.55)/.85;
+      float nd=wordOPEN(nq);
+      float nfl=(.88+.12*n2(vec2(uTime*13.,7.7)))*mix(1.,.25,step(.965,h21(vec2(floor(uTime*6.),9.))));
+      emis+=vec3(1.,.30,.16)*(smoothstep(.035,.004,nd)*2.8+exp(-nd*9.)*.45)*nfl;
+    }else if(mid<3.5){                                       // grate iron
+      alb=vec3(.045,.042,.040);spec=1.;gla=90.;
+      emis+=vec3(1.,.25,.05)*smoothstep(.5,.15,length(P.xz))*uHeat*(.4+.6*n3(vec3(P.xz*6.,uTime*2.)));
+    }else if(mid<4.5){                                       // skillet
+      alb=vec3(.043,.040,.038)*(.85+.3*n2(P.xz*4.));
+      float ci=step(P.y,FY+.012)*(1.-smoothstep(1.35,1.5,length(P.xz)));
+      float fno=fbm(P.xz*6.+vec2(0.7));
+      alb=mix(alb,vec3(.030,.020,.014)*(.6+.8*fno),ci*clamp(uFond,0.,1.)*smoothstep(.3,.75,fno));
+      spec=1.;gla=mix(26.,80.,ci*.6);
+    }else if(mid<5.5){                                       // EGG
+      vec3 wl=rX(P-vec3(0.,FY+uHop,0.),-uFlipAng)/uFade;
+      vec3 ln=rX(N,-uFlipAng);
+      float setK=clamp(uCookHi,0.,1.);
+      vec3 yq=wl;yq.y*=1./(.66-.18*setK);
+      float ym=1.-smoothstep(0.,.03,length(yq)-(.215-.045*setK));
+      float sel=mix(uCookLo,uCookHi,smoothstep(-.35,.35,ln.y));
+      float wk=clamp(sel,0.,1.);
+      float br=smoothstep(.45,.95,wk)*smoothstep(.4,.85,n2(vec2(atan(wl.z,wl.x)*4.,wk*3.)));
+      vec3 wa=mix(vec3(.62,.66,.63),vec3(.88,.87,.82),smoothstep(.05,.6,wk));
+      wa=mix(wa,vec3(.55,.36,.18),br*.85);
+      vec3 yk=mix(vec3(1.,.62,.14),vec3(.92,.46,.10),setK);
+      yk=mix(yk,vec3(.45,.22,.05),smoothstep(.9,1.3,uCookHi));
+      alb=mix(wa,yk,ym);
+      spec=mix(.35,1.,ym);gla=mix(18.,120.,ym);
+    }else if(mid<6.5){                                       // PANCAKE
+      float dk=clamp((uCookLo+uCookHi)*.5,0.,1.);
+      float m1=n2(P.xz*9.+vec2(uSeed+3.3)),m2=n2(P.xz*23.+vec2(uSeed));
+      vec3 c=mix(vec3(.80,.66,.42),vec3(.62,.38,.14),smoothstep(.15,.65,dk));
+      c=mix(c,vec3(.34,.17,.05),smoothstep(.62,1.05,dk));
+      c*=.9+.2*m1;
+      c=mix(c,vec3(.20,.10,.03),smoothstep(.72,.95,m2)*dk*.7);
+      c=mix(c,vec3(.10,.07,.05),smoothstep(1.,1.25,max(uCookLo,uCookHi)));
+      alb=c;spec=.15;gla=12.;
+    }else if(mid<7.5){                                       // STEAK
+      vec3 ln=rX(N,-uFlipAng);
+      float su=clamp(mix(uCookLo,uCookHi,smoothstep(-.3,.4,ln.y)),0.,1.3);
+      float mr=n2(vec2(ln.x*14.+ln.y*8.,uSeed));
+      vec3 raw=mix(vec3(.60,.30,.25),vec3(.55,.16,.15),smoothstep(.2,.7,mr));
+      raw=mix(raw,vec3(.72,.62,.55),smoothstep(.78,.95,mr)*.7);
+      vec3 c=mix(raw,vec3(.22,.10,.05),smoothstep(.08,.85,su));
+      float spk=n2(P.xz*16.+vec2(uSeed*2.));
+      c=mix(c,vec3(.08,.05,.03),smoothstep(.6,.95,spk)*smoothstep(.45,1.,su));
+      c=mix(c,vec3(.06,.04,.03),smoothstep(1.,1.3,su));
+      alb=c;spec=.5+.4*su;gla=40.;
+    }else if(mid<8.5){                                       // BUTTER
+      alb=mix(vec3(.93,.76,.38),vec3(.74,.52,.18),clamp(uButter,0.,1.));
+      spec=1.;gla=70.;
+    }else if(mid<9.5){                                       // ROOSTER FEATHER BODY
+      alb=vec3(.90,.87,.82)*(0.92+0.12*n2(P.xy*14.0));
+      spec=.25;gla=18.;
+    }else if(mid<10.5){                                      // ROOSTER COMB & WATTLE (RED)
+      alb=vec3(.82,.14,.12)*(0.95+0.1*sin(P.y*40.0));
+      spec=.5;gla=35.;
+    }else if(mid<11.5){                                      // ROOSTER BEAK (GOLD)
+      alb=vec3(.94,.68,.18);
+      spec=.8;gla=65.;
+    }else if(mid<12.5){                                      // ROOSTER CHEF HAT
+      alb=vec3(.96,.96,.94);
+      spec=.2;gla=14.;
+    }else if(mid<13.5){                                      // ROOSTER EYES (AMBER IRIS + BLACK PUPIL + SPECULAR CATCHLIGHT)
+      float bob2 = sin(uTime*4.5)*0.02 + sin(uTime*8.0)*0.015*uChickenTalk;
+      float pecks2 = sin(uTime*1.8)*0.03;
+      vec3 chP2 = P - vec3(-0.05, 1.48 + bob2, -2.55);
+      chP2 = rY(chP2, 0.22 + sin(uTime*1.2)*0.08);
+      float headPitch2 = sin(uTime*5.0)*0.06*uChickenTalk + pecks2;
+      vec3 hp2 = chP2 - vec3(0.04, 0.24, 0.05);
+      hp2 = rX(hp2, headPitch2);
+      vec3 ep2 = hp2;
+      ep2.x = abs(ep2.x) - 0.165; ep2.y -= 0.06; ep2.z -= 0.11;
+      vec3 eyeDir = normalize(vec3(0.35, 0.05, 0.93));
+      float pupDot = dot(normalize(ep2), eyeDir);
+      float pupSize = mix(0.74, 0.58, clamp(uChickenMood * 0.4, 0.0, 0.5));
+      float pupil = smoothstep(pupSize, pupSize + 0.04, pupDot);
+      float iris = smoothstep(0.48, 0.54, pupDot);
+      vec3 scleraCol = vec3(0.96, 0.94, 0.88);
+      vec3 irisCol = vec3(0.96, 0.58, 0.12);
+      vec3 pupCol = vec3(0.02, 0.02, 0.02);
+      alb = mix(scleraCol, irisCol, iris);
+      alb = mix(alb, pupCol, pupil);
+      float blink2 = smoothstep(0.94, 0.98, sin(uTime * 2.1 + sin(uTime * 4.3)));
+      if (uChickenMood < 0.5 && blink2 > 0.5) alb = vec3(0.90, 0.87, 0.82);
+      spec = 1.0; gla = 140.;
+    }else if(mid<14.5){                                      // BARNABY'S SWORD BLADE (POLISHED STEEL WITH NEON HIGHLIGHTS)
+      alb=vec3(.82,.86,.90);
+      spec=2.4;gla=160.;
+      float edgeGlint = pow(max(dot(N, normalize(vec3(0.2, 0.9, 0.4))), 0.0), 12.0);
+      emis+=vec3(0.6, 0.8, 1.0) * edgeGlint * 0.85;
+      emis+=vec3(1.0, 0.3, 0.1) * max(0.0, sin(P.y*22.0 + uTime*3.0)) * uHeat * 0.4;
+    }else{                                                   // BARNABY'S SWORD HILT & GUARD (BRASS & BLACK LEATHER)
+      alb=vec3(.72,.52,.18)*(0.85+0.15*sin(P.y*60.0));
+      spec=.9;gla=50.;
+    }
+
+    vec3 hv=normalize(L-rd);
+    float sp=pow(max(dot(N,hv),0.),gla)*spec*sh;
+    vec3 lin=kc*keyI+fill+fcol*fr+vec3(.05,.06,.065)*ao+vec3(.025,.02,.016)*(.4+.6*N.y);
+    col=(alb*lin+kc*sp*.9+emis)*mix(1.,ao,.35);
+    col=mix(col,vec3(.015,.02,.022),smoothstep(8.,16.,t));
+
+    if(uSteam>.004||uSmoke>.004){
+      vec3 C0=vec3(0.,FY+uHop+.42,0.);
+      for(int k=0;k<4;k++){
+        float fk=float(k);
+        float ph=fract(uTime*.22+fk*.25);
+        vec3 Pk=C0+vec3(sin(uTime*.5+fk*2.1)*.05,.10+fk*.30+ph*.38,cos(uTime*.4+fk)*.05);
+        float tc=dot(Pk-ro,rd);
+        if(tc>0.&&tc<t-.05){
+          vec3 cl=ro+rd*tc;
+          float dd=length(cl-Pk);
+          float rad=.30+.15*fk+ph*.22;
+          float den=smoothstep(rad,rad*.2,dd)*smoothstep(.25,.75,fbm(vec2(cl.x*2.4,cl.y*1.6-uTime*.9)+vec2(fk*7.3)))*(1.-ph);
+          col=mix(col,vec3(.74,.78,.81),clamp(den*uSteam,0.,1.));
+          col=mix(col,vec3(.10,.09,.085),clamp(den*uSmoke,0.,1.));
+        }
+      }
+    }
+  }
+  col+=vec3(1.,.85,.6)*uFlash;
+  col*=1.12;
+  col=(col*(2.51*col+.03))/(col*(2.43*col+.59)+.14);         // ACES tonemap
+  col=pow(clamp(col,0.,1.),vec3(1./2.2));
+  vec2 vg=frag/uRes;
+  col*=mix(.58,1.,smoothstep(1.42,.42,length((vg-.5)*vec2(1.25,1.))));
+  col+=(h21(frag+vec2(fract(uTime)*61.7))-.5)*.028;
+  gl_FragColor=vec4(col,1.);
+}`;
+
+/* ---------------- GL boot ---------------- */
+const cv=$('#gl');
+const gl=cv.getContext('webgl',{antialias:false,alpha:false,powerPreference:'high-performance'});
+function shd(t,s){const h=gl.createShader(t);gl.shaderSource(h,s);gl.compileShader(h);
+ if(!gl.getShaderParameter(h,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(h));throw 0;}return h;}
+let prog,U;
+try{
+ prog=gl.createProgram();
+ gl.attachShader(prog,shd(gl.VERTEX_SHADER,VS));
+ gl.attachShader(prog,shd(gl.FRAGMENT_SHADER,FS));
+ gl.linkProgram(prog);
+ if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw gl.getProgramInfoLog(prog);
+}catch(e){console.error(e);document.body.insertAdjacentHTML('beforeend',
+ '<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#eee;z-index:99">This browser refused to compile the SDF kitchen. Try a desktop Chrome/Firefox/Safari.</div>');throw e;}
+gl.useProgram(prog);
+const buf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const aP=gl.getAttribLocation(prog,'aP');
+gl.enableVertexAttribArray(aP);
+gl.vertexAttribPointer(aP,2,gl.FLOAT,false,0,0);
+U={};['uRes','uTime','uCam','uHeat','uFood','uSpread','uCookLo','uCookHi','uFlipAng','uHop','uFade','uButter','uFond','uSteam','uSmoke','uSeed','uFlash','uChickenTalk','uChickenMood']
+ .forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+
+const AU={ctx:null,on:true};
+function auInit(){
+ if(AU.ctx)return;
+ const C=new (window.AudioContext||window.webkitAudioContext)();
+ AU.ctx=C;
+ AU.master=C.createGain();AU.master.gain.value=AU.on?.85:0;AU.master.connect(C.destination);
+ const len=2*C.sampleRate,nb=C.createBuffer(1,len,C.sampleRate),ch=nb.getChannelData(0);
+ for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;
+ AU.noise=nb;
+ const mk=(f,q)=>{const s=C.createBufferSource();s.buffer=nb;s.loop=true;
+  const fl=C.createBiquadFilter();fl.type='bandpass';fl.frequency.value=f;fl.Q.value=q;
+  const g=C.createGain();g.gain.value=0;s.connect(fl);fl.connect(g);g.connect(AU.master);s.start();return{g,fl};};
+ AU.hiss=mk(1500,.7);          // sizzle
+ AU.crisp=mk(4800,1.2);        // butter crackle edge
+ const rs=C.createBufferSource();rs.buffer=nb;rs.loop=true;
+ const rl=C.createBiquadFilter();rl.type='lowpass';rl.frequency.value=140;
+ AU.roarG=C.createGain();AU.roarG.gain.value=0;
+ rs.connect(rl);rl.connect(AU.roarG);AU.roarG.connect(AU.master);rs.start();
+ const hum=C.createOscillator();hum.type='triangle';hum.frequency.value=55;
+ const hg=C.createGain();hg.gain.value=.012;hum.connect(hg);hg.connect(AU.master);hum.start();
+ crackle();
+}
+function nz(dur,freq,vol,q,type){const C=AU.ctx;if(!C)return;
+ const s=C.createBufferSource();s.buffer=AU.noise;
+ const f=C.createBiquadFilter();f.type=type||'bandpass';f.frequency.value=freq;f.Q.value=q||1;
+ const g=C.createGain();g.gain.setValueAtTime(vol,C.currentTime);
+ g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+dur);
+ s.connect(f);f.connect(g);g.connect(AU.master);s.start();s.stop(C.currentTime+dur+.05);}
+function blip(f0,f1,dur,vol,type){const C=AU.ctx;if(!C)return;
+ const o=C.createOscillator();o.type=type||'triangle';
+ o.frequency.setValueAtTime(f0,C.currentTime);
+ o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),C.currentTime+dur);
+ const g=C.createGain();g.gain.setValueAtTime(vol,C.currentTime);
+ g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+dur);
+ o.connect(g);g.connect(AU.master);o.start();o.stop(C.currentTime+dur+.05);}
+function ding(step){const C=AU.ctx;if(!C)return;const base=1244*Math.pow(1.059,Math.min(step,10));
+ [[base,.4],[base*1.5,.25],[base*2.01,.16]].forEach(([f,v])=>{
+  const o=C.createOscillator();o.type='sine';o.frequency.value=f;
+  const g=C.createGain();g.gain.setValueAtTime(v,C.currentTime);
+  g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+.9);
+  o.connect(g);g.connect(AU.master);o.start();o.stop(C.currentTime+1);});}
+function alarm(){for(let i=0;i<3;i++)setTimeout(()=>blip(2793,2793,.09,.12,'square'),i*170);}
+function crackle(){if(!AU.ctx)return;
+ if(Math.random()<.7&&AU.on){nz(.03,2500+Math.random()*3000,.03+Math.random()*.05,6);}
+ setTimeout(crackle,260+Math.random()*900);}
+
+// Procedural Rooster Squawks & Clucks
+function roosterSquawk(intensity=1){
+ const C=AU.ctx;if(!C||!AU.on)return;
+ const t0=C.currentTime;
+ const count=Math.floor(1+Math.random()*3*intensity);
+ for(let i=0;i<count;i++){
+  const delay=i*0.09;
+  const o=C.createOscillator();
+  const g=C.createGain();
+  o.type=i===0?'sawtooth':'triangle';
+  const startF=680+Math.random()*260;
+  o.frequency.setValueAtTime(startF,t0+delay);
+  o.frequency.linearRampToValueAtTime(startF*1.6,t0+delay+0.04);
+  o.frequency.exponentialRampToValueAtTime(320,t0+delay+0.14);
+  g.gain.setValueAtTime(0.18*intensity,t0+delay);
+  g.gain.exponentialRampToValueAtTime(0.001,t0+delay+0.15);
+  o.connect(g);g.connect(AU.master);
+  o.start(t0+delay);o.stop(t0+delay+0.16);
+ }
+}
+
+/* ---------------- Gemini TTS Integration for Barnaby ---------------- */
+const ttsCache=new Map();
+let currentTTSNode=null;
+
+function base64ToArrayBuffer(base64){
+ const binaryString=window.atob(base64);
+ const len=binaryString.length;
+ const bytes=new Uint8Array(len);
+ for(let i=0;i<len;i++)bytes[i]=binaryString.charCodeAt(i);
+ return bytes.buffer;
+}
+
+async function fetchGeminiTTS(text){
+ if(ttsCache.has(text))return ttsCache.get(text);
+ const apiKey="";
+ const apiUrl=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+ 
+ // Clean text prompt without nested quotes to enforce 100% single-speaker output
+ const cleanText=text.replace(/["']/g,'');
+ const payload={
+  contents:[{parts:[{text:`Say in a gritty gravelly male cook voice: ${cleanText}`}]}],
+  generationConfig:{
+   responseModalities:["AUDIO"],
+   speechConfig:{
+    voiceConfig:{
+     prebuiltVoiceConfig:{voiceName:"Algenib"}
+    }
+   }
+  },
+  model:"gemini-2.5-flash-preview-tts"
+ };
+
+ try{
+  let delay=1000;
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    const res=await fetch(apiUrl,{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify(payload)
+    });
+    if(res.status===429||res.status>=500){
+     await new Promise(r=>setTimeout(r,delay));
+     delay*=2;continue;
+    }
+    const result=await res.json();
+    const part=result?.candidates?.[0]?.content?.parts?.[0];
+    const audioData=part?.inlineData?.data;
+    const mimeType=part?.inlineData?.mimeType||'audio/pcm;rate=24000';
+    if(audioData){
+     const sampleRate=parseInt(mimeType.match(/rate=(\d+)/)?.[1]||'24000',10);
+     const pcmBuffer=base64ToArrayBuffer(audioData);
+     const pcm16=new Int16Array(pcmBuffer);
+     if(AU.ctx){
+      const audioBuffer=AU.ctx.createBuffer(1,pcm16.length,sampleRate);
+      const chData=audioBuffer.getChannelData(0);
+      for(let i=0;i<pcm16.length;i++)chData[i]=pcm16[i]/32768.0;
+      ttsCache.set(text,audioBuffer);
+      return audioBuffer;
+     }
+    }
+    break;
+   }catch(err){
+    await new Promise(r=>setTimeout(r,delay));
+    delay*=2;
+   }
+  }
+ }catch(e){}
+ return null;
+}
+
+const speechQueue=[];
+let isSpeaking=false;
+
+async function processSpeechQueue(){
+ if(isSpeaking||speechQueue.length===0)return;
+ isSpeaking=true;
+ const {text, category}=speechQueue.shift();
+
+ const b=$('#roosterBubble'),t=$('#roosterText');
+ const wave=$('#voiceWave');
+ if(t)t.textContent=`"${text}"`;
+ if(b)b.classList.add('show');
+
+ const audioBuf=await fetchGeminiTTS(text);
+ if(audioBuf&&AU.ctx&&AU.on){
+  await new Promise(resolve=>{
+   const src=AU.ctx.createBufferSource();
+   src.buffer=audioBuf;
+   const g=AU.ctx.createGain();
+   g.gain.value=0.95;
+   src.connect(g);
+   g.connect(AU.master);
+   currentTTSNode=src;
+
+   if(wave)wave.style.display='inline-flex';
+   S.chickenTalk=1.0;
+
+   src.start();
+   const dur=audioBuf.duration;
+   const startT=Date.now();
+   const iv=setInterval(()=>{
+    const elapsed=(Date.now()-startT)/1000;
+    if(elapsed>=dur){
+     clearInterval(iv);
+    }else{
+     S.chickenTalk=0.85+Math.sin(elapsed*28.0)*0.15;
+    }
+   },50);
+
+   src.onended=()=>{
+    clearInterval(iv);
+    if(wave)wave.style.display='none';
+    S.chickenTalk=0;
+    currentTTSNode=null;
+    resolve();
+   };
+  });
+ }else{
+  // Fallback visual speaking duration if offline
+  roosterSquawk(category==='warn'||category==='charred'?1.4:0.8);
+  S.chickenTalk=1.0;
+  const holdTime=Math.max(1800,text.length*55);
+  await new Promise(resolve=>{
+   setTimeout(()=>{
+    S.chickenTalk=0;
+    if(wave)wave.style.display='none';
+    resolve();
+   },holdTime);
+  });
+ }
+
+ // Brief pause before hiding bubble and processing next message
+ await new Promise(r=>setTimeout(r,400));
+ if(speechQueue.length===0&&b){
+  b.classList.remove('show');
+ }
+ isSpeaking=false;
+ if(speechQueue.length>0){
+  processSpeechQueue();
+ }
+}
+
+const SFX={
+ egg(){nz(.05,3200,.3,2,'highpass');blip(220,90,.06,.25);},
+ cake(){nz(.5,700,.22,.8);blip(150,70,.12,.3);},
+ steak(){nz(.09,320,.5,1,'lowpass');blip(70,45,.14,.4,'sine');},
+ butter(){nz(.06,4200,.2,3,'highpass');blip(320,180,.05,.12);},
+ clank(){blip(520,480,.07,.14,'square');blip(780,700,.05,.1,'square');setTimeout(()=>blip(610,560,.06,.1,'square'),60);},
+ whoosh(){const C=AU.ctx;if(!C)return;const s=C.createBufferSource();s.buffer=AU.noise;
+  const f=C.createBiquadFilter();f.type='bandpass';f.Q.value=1.4;
+  f.frequency.setValueAtTime(380,C.currentTime);
+  f.frequency.exponentialRampToValueAtTime(1700,C.currentTime+.22);
+  f.frequency.exponentialRampToValueAtTime(500,C.currentTime+.5);
+  const g=C.createGain();g.gain.setValueAtTime(.0001,C.currentTime);
+  g.gain.exponentialRampToValueAtTime(.35,C.currentTime+.12);
+  g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+.55);
+  s.connect(f);f.connect(g);g.connect(AU.master);s.start();s.stop(C.currentTime+.6);},
+ splat(){nz(.14,600,.4,1,'lowpass');blip(120,60,.09,.3);},
+ thud(){blip(90,45,.16,.35,'sine');nz(.12,300,.3,1,'lowpass');},
+ ui(){blip(880,860,.04,.06,'square');},
+ bad(){blip(220,140,.3,.2,'sawtooth');}
+};
+
+/* ---------------- Chicken Dialogue Data & Logic ---------------- */
+const ROOSTER_LINES={
+ start:[
+  "Cock-a-doodle-DO YOUR JOB! Tickets are coming in hot!",
+  "Night shift begins! Cast iron preheated, feathers combed, blade sharpened!",
+  "Remember kid: I guard the pass with cold steel, you flip with hot iron!",
+  "Steel on my hip, grease on the apron. Let's make culinary history!",
+  "Tickets on the rail! Don't make me draw the Short-Order Katana!",
+  "Midnight rush is here! Keep your spatula swift and your heart steady!"
+ ],
+ egg:[
+  "BAWK! Careful with those! That might be my third cousin Earl!",
+  "Gentle with the yolk, rookie! Nobody likes an egg scramble catastrophe!",
+  "Eggs on the iron! Don't let 'em turn into rubber hockey pucks!",
+  "Look at that golden sphere. Treat it like royal jewels, rookie!",
+  "Keep the yolk intact or I'll slice an onion just to watch you cry!",
+  "Pure protein! Butter it well and watch the whites set like porcelain!",
+  "An egg cooked with honor is a masterwork of diner discipline!"
+ ],
+ pancake:[
+  "Griddle cakes! Wait for the bubble army before you flip!",
+  "Sweet batter hitting cast iron... finest smell in this entire midnight county.",
+  "Stack 'em high, gold and fluffy! Fluffiness is non-negotiable!",
+  "Watch the perimeter bubbles! That's the signal to strike!",
+  "If those cakes stick, I'm using the flat of my blade to scrape the iron!",
+  "Maple syrup destiny awaits! Get that golden pancake halo!"
+ ],
+ steak:[
+  "Ah, mammal! The heavy artillery. Lock that crust in like armor plating!",
+  "Listen to that sear roar! Don't crowd the skillet, let the beast breathe!",
+  "Medium-rare is a sacred code. Don't you dare dishonor this cut!",
+  "Get those grill marks crosshatched like fine swordplay!",
+  "High heat, quick sear, rested juices. That's how legends are served!",
+  "A steak cooked well done without orders is a culinary felony, kid!"
+ ],
+ butter:[
+  "Lube the pan! That's how we keep the grease gods smiling!",
+  "Butter melts, tips rise! Keep it shimmering like molten gold!",
+  "A good pat of salted butter forgives thirty kitchen sins!",
+  "Hear that sizzle hiss? That's the sound of five-star satisfaction!",
+  "Butter seals the iron pores! Slick as ice, hot as the sun!"
+ ],
+ flip:[
+  "Nice wrist action! Clean 180-degree rotation!",
+  "FLIP IT LIKE YOU MEAN IT! En garde, griddle cake!",
+  "Airborne perfection! Now catch it smooth like a samurai!",
+  "HA! Beautiful aerial arc! The booth regulars are weeping with joy!",
+  "Clean toss! Gravity is just a suggestion on the midnight shift!"
+ ],
+ warn:[
+  "BAWK! BAWK! KILL THE FLAME! SHE'S CATCHING DANGEROUS SMOKE!",
+  "FLIP IT OR WEAR IT! YOU'RE SCORCHING MY PRIDE AND THE SKILLET!",
+  "I SMELL SINGED PLUMAGE! PULL BACK ON THE HEAT DIAL NOW!",
+  "BAAAAWK! THE CRUST IS TURNING TO ASH! INTERVENE, ROOKIE!",
+  "ONE SECOND FROM CHARCOAL! FLIP THAT DISH OR FACE MY BLADE!"
+ ],
+ charred:[
+  "BWAAAK! CHARCOAL! You owe the dishwasher a written apology in triplicate!",
+  "That ain't supper, that's asphalt from Route 66! 86 that tragedy!",
+  "My great-aunt Henrietta lays harder eggs than that scorched brick!",
+  "I'm sharpening my sword just looking at that culinary abomination!",
+  "Straight into the bin! If health inspection saw that, we'd be executed!",
+  "You turned prime ingredients into pure volcanic cinder, rookie!"
+ ],
+ perfect:[
+  "SPOT ON! That's Michelin quality for a 2:00 AM roadside diner!",
+  "COCK-A-DOODLE-DANDY! Look at that flawless golden caramelization!",
+  "Table 3 is gonna tip fifty bucks and ask for your autograph!",
+  "Precision! Elegance! You swing that spatula like I swing this blade!",
+  "A masterwork of thermodynamic perfection! Take a bow, chef!"
+ ],
+ idle:[
+  "Thirty years behind this counter... and I still live for the clatter.",
+  "Watch that heat dial. The knob doesn't turn itself, rookie!",
+  "I forged this kitchen blade in the great grease fire of 1992.",
+  "Coffee's fresh in the percolator if you can spare six seconds.",
+  "Don't let the rail fill up! Three tickets is maximum capacity before mutiny!",
+  "A good line cook sleeps with one eye open and a spatula in hand.",
+  "Hear that rain outside? Nothing beats midnight neon and hot cast iron.",
+  "Click my beak if you need battle strategy, rookie!"
+ ],
+ click:[
+  "Bawk! Stop poking the head chef and watch your sizzle!",
+  "I'm a rooster of action and honor, kid! Flip that food!",
+  "My toque stays tall and my sword stays sharp! Back to the griddle!",
+  "You poking me or looking for knife-sharpening lessons?",
+  "Keep that streak alive and I'll promote you to Sous-Rooster by sunrise!",
+  "Every scratch on this blade tells a tale of a midnight breakfast rush!"
+ ]
+};
+
+function chickenSay(category,custom=null){
+ const pool=ROOSTER_LINES[category]||ROOSTER_LINES.idle;
+ const text=custom||pool[Math.floor(Math.random()*pool.length)];
+ 
+ // Limit backlog size so queues don't build up excessively during rapid actions
+ if(speechQueue.length>2){
+  speechQueue.pop();
+ }
+ speechQueue.push({text, category});
+ processSpeechQueue();
+}
+
+const WIN={
+ egg:[{n:'RUNNY',lo:.30,hi:.52,line:'yolks loose as gossip'},
+      {n:'JAMMY',lo:.62,hi:.82,line:'yolk like warm jam'},
+      {n:'SET FIRM',lo:.95,hi:1.15,line:'no wobble. none.'}],
+ pancake:[{n:'PALE GOLD',lo:.35,hi:.55,line:'barely kissed by the pan'},
+          {n:'GOLDEN',lo:.62,hi:.82,line:'classic diner gold'},
+          {n:'DEEP AMBER',lo:.95,hi:1.15,line:'dark, sticky edges'}],
+ steak:[{n:'RARE',lo:.30,hi:.50,line:'still mooing, politely'},
+        {n:'MEDIUM',lo:.58,hi:.78,line:'blushing at the centre'},
+        {n:'WELL DONE',lo:.92,hi:1.12,line:'ruin it, proudly'}]};
+const DISH={
+ egg:{label:'EGGS',contact:1.26,moist:1.0,icon:'#ic-egg',btn:'#btnEgg',bdg:'#bdgEgg'},
+ pancake:{label:'GRIDDLE CAKE',contact:1.02,moist:.85,icon:'#ic-cake',btn:'#btnCake',bdg:'#bdgCake'},
+ steak:{label:'STEAK',contact:.78,moist:.6,icon:'#ic-steak',btn:'#btnSteak',bdg:'#bdgSteak'}};
+const TYPES=['egg','pancake','steak'];
+
+let best=0;try{best=+localStorage.getItem('mg_best')||0;}catch(e){}
+const S={
+ running:false,paused:false,menu:true,time:0,last:0,
+ heat:.45,panTemp:.12,
+ food:null,foodFade:1,foodGone:true,
+ flip:{on:false,k:0},totalAng:0,
+ butter:{alive:false,melt:0,applied:false},
+ fond:.10,steam:0,smoke:0,dispSteam:0,dispSmoke:0,
+ flash:0,shake:0,
+ chickenTalk:0,chickenIdleTimer:6.0,
+ score:0,served:0,streak:0,orderNo:0,
+ orders:[],spawnIn:4.5,
+ mx:0,my:0,pmx:0,pmy:0
+};
+function mkFood(type){return{type,c:[0,0],down:0,charred:false,warned:false,
+ spread:0,t:0,seed:Math.random()*100,buttered:false};}
+function reset(){
+ Object.assign(S,{running:true,paused:false,time:0,heat:.45,panTemp:.12,
+  food:null,foodFade:1,foodGone:true,totalAng:0,fond:.10,steam:0,smoke:0,
+  dispSteam:0,dispSmoke:0,flash:0,shake:0,score:0,served:0,streak:0,orderNo:0,orders:[],spawnIn:5,
+  chickenTalk:0,chickenIdleTimer:5});
+ S.butter={alive:false,melt:0,applied:false};S.flip={on:false,k:0};
+ $('#tickets').innerHTML='';refreshStats();updBadges();
+ setTimeout(()=>chickenSay('start'),600);
+}
+
+/* ---------------- orders logic ---------------- */
+function spawnOrder(){
+ if(S.orders.length>=3)return;
+ let type=TYPES[Math.floor(Math.random()*3)],wi,tries=0;
+ do{wi=Math.floor(Math.random()*3);tries++;}while(tries<8&&S.orders.some(o=>o.type===type&&o.wi===wi));
+ S.orderNo++;
+ const el=document.createElement('div');el.className='ticket';
+ const W=WIN[type][wi];
+ el.innerHTML=`<div class="tk-head"><svg><use href="${DISH[type].icon}"/></svg>
+   <span>${DISH[type].label}</span><span class="tk-no">\u2116 ${String(S.orderNo).padStart(2,'0')}</span></div>
+  <div class="tk-target"><b>${W.n}</b> \u2014 ${W.line}</div>
+  <div class="tk-bar"><i></i></div>`;
+ $('#tickets').appendChild(el);
+ const patience=Math.max(46,76-S.time/15);
+ S.orders.push({type,wi,born:S.time,pat:patience,el,bar:el.querySelector('.tk-bar i'),done:false});
+ S.orders.sort((a,b)=>a.born-b.born);
+ refreshStats();updBadges();blip(660,660,.07,.08,'square');
+}
+function killOrder(o,msg,fail){
+ o.done=true;o.el.querySelector('.tk-bar').remove();
+ const st=document.createElement('span');st.className='stamp'+(fail?' fail':'');st.textContent=msg;
+ o.el.appendChild(st);
+ setTimeout(()=>{o.el.classList.add('gone');setTimeout(()=>o.el.remove(),750);},550);
+ S.orders=S.orders.filter(x=>x!==o);refreshStats();updBadges();
+}
+function tickOrders(dt){
+ S.spawnIn-=dt;
+ const interval=Math.max(6.5,13-S.time/50);
+ if(S.spawnIn<=0){if(S.orders.length<3)spawnOrder();S.spawnIn=interval;}
+ for(const o of [...S.orders]){
+  const age=S.time-o.born;
+  o.bar.style.transform='scaleX('+Math.max(0,1-age/o.pat)+')';
+  if(age>o.pat){
+   killOrder(o,"86'D",true);
+   S.streak=0;S.score=Math.max(0,S.score-20);
+   toast('A ticket went cold. The booth is empty.');
+   chickenSay('idle','BAWK! Table walked out! Keep your eyes on the tickets!');
+   SFX.bad();refreshStats();
+  }
+ }
+}
+
+function toast(msg){
+ const t=document.createElement('div');t.className='toast';t.textContent=msg;
+ $('#toasts').appendChild(t);
+ setTimeout(()=>t.classList.add('out'),2100);setTimeout(()=>t.remove(),2600);
+}
+let resTO=null;
+function showResult(head,qual,pts,sub){
+ $('#rcName').textContent=head;$('#rcQual').textContent=qual;
+ $('#rcPts').textContent=(pts>=0?'+':'')+pts.toLocaleString('en-US');
+ $('#rcSub').innerHTML=sub;
+ const r=$('#result');r.classList.add('show');
+ clearTimeout(resTO);resTO=setTimeout(()=>r.classList.remove('show'),1900);
+}
+function updBadges(){
+ for(const ty of TYPES){
+  const n=S.orders.filter(o=>o.type===ty).length;
+  const b=$(DISH[ty].bdg);b.textContent=n;b.classList.toggle('on',n>0);
+ }
+ $('#railCount').textContent=S.orders.length+'/3';
+}
+function addButter(){
+ if(S.butter.alive||!S.running||S.paused)return;
+ S.butter={alive:true,melt:0,applied:S.food?S.food.t<3:true};
+ if(S.food)S.food.buttered=true;
+ SFX.butter();toast('Butter in. The pan exhales.');
+ if(Math.random()<0.6)chickenSay('butter');
+}
+function addFood(type){
+ if(S.food||!S.foodGone||!S.running||S.paused)return;
+ S.food=mkFood(type);S.foodGone=false;S.foodFade=1;
+ S.flip.on=false;
+ SFX[type]();S.shake=Math.max(S.shake,.5);
+ chickenSay(type);
+ if(S.orders.some(o=>o.type===type))toast(DISH[type].label+' hit the iron. Cook to ticket.');
+ else toast('No ticket asked for '+DISH[type].label.toLowerCase()+'. Bold choice.');
+}
+function startFlip(){
+ if(!S.food||S.flip.on||!S.running||S.paused)return;
+ S.flip={on:true,k:0};SFX.clank();SFX.whoosh();
+ if(Math.random()<0.5)chickenSay('flip');
+}
+function finishFlip(){
+ const f=S.food;f.down^=1;
+ S.steam=Math.min(1,S.steam+.55);S.shake=.9;SFX.splat();
+}
+function serve(){
+ if(!S.food||S.foodGone||!S.running||S.paused)return;
+ const f=S.food;
+ const order=S.orders.find(o=>o.type===f.type);
+ if(!order){
+  S.streak=0;S.score=Math.max(0,S.score-30);
+  showResult(DISH[f.type].label,'NO TICKET',-30,'nothing on the rail wanted this \u2014 86\u2019d');
+  chickenSay('idle','Nobody ordered that! You feeding the alley cats?!');
+  SFX.bad();clearFood();refreshStats();return;
+ }
+ const avg=(f.c[0]+f.c[1])/2,W=WIN[f.type][order.wi];
+ const age=S.time-order.born,ratio=Math.max(0,1-age/order.pat);
+ let qual,pts,sub='';
+ const charred=f.charred;
+ if(charred){
+  pts=40;qual='CHARRED';S.streak=0;
+  sub='scraped onto the plate anyway. apology included.';
+  chickenSay('charred');
+ }else{
+  const ctr=(W.lo+W.hi)/2,half=(W.hi-W.lo)/2,err=Math.abs(avg-ctr)/half;
+  qual=err<=.25?'SPOT ON':err<=.7?'GOOD':'UNDER THE WIRE';
+  pts=90+Math.round(150*Math.pow(Math.max(0,1-err),1.5))+Math.round(70*ratio*ratio);
+  if(!f.buttered){pts-=18;sub='unbuttered, bare pan \u2014 \u221218';}
+  else sub='buttered \u00b7 off the pan with '+Math.round(ratio*100)+'% patience to spare';
+  S.streak++;
+  const mult=Math.min(4,1+S.streak*.25);
+  pts=Math.round(pts*mult);
+  if(err<=.25){
+   S.flash=.35;SFX.ding(S.streak);
+   chickenSay('perfect');
+  }else ding(0);
+ }
+ S.score+=pts;S.served++;
+ killOrder(order,charred?'SERVED\u00b7CHARRED':'SERVED',false);
+ showResult(DISH[f.type].label+' \u00b7 '+W.n,qual,pts,sub+(S.streak>1?' \u00b7 STREAK \u00d7'+S.streak:''));
+ clearFood();refreshStats();
+}
+function trash(){
+ if((!S.food||S.foodGone)&&!S.butter.alive)return;
+ if(S.food&&!S.foodGone){
+  S.score=Math.max(0,S.score-15);S.streak=0;S.fond=Math.max(.1,S.fond*.55);
+  showResult('IN THE BIN','SCRAPPED',-15,'the pan gets a wipe, you get a breath');
+  chickenSay('idle','Scrapped it! Better in the bin than on customer teeth.');
+  SFX.thud();clearFood();refreshStats();
+ }else if(S.butter.alive){S.butter.alive=false;SFX.thud();}
+}
+function clearFood(){S.foodGone=true;}
+
+/* ---------------- HUD & stats ---------------- */
+function refreshStats(){
+ $('#statScore').textContent=S.score.toLocaleString('en-US');
+ $('#statScore').classList.remove('pop');void $('#statScore').offsetWidth;$('#statScore').classList.add('pop');
+ $('#statBest').textContent=Math.max(best,S.score).toLocaleString('en-US');
+ $('#statStreak').textContent=S.streak>0?'\u00d7'+Math.min(4,1+S.streak*.25).toFixed(2):'\u2014';
+ $('#statServed').textContent=S.served;
+ if(S.score>best){best=S.score;try{localStorage.setItem('mg_best',best);}catch(e){}}
+}
+const GA_MAX=1.3,Y0=198,Y1=16,H=Y0-Y1;
+const vy=v=>Y0-Math.min(v,GA_MAX)/GA_MAX*H;
+
+(function(){const g=$('#kTicks');let s='';
+ for(let i=0;i<=10;i++){const a=(-135+i*27)*Math.PI/180;
+  const r1=i%5?46:43,r2=50;
+  s+=`<line x1="${55+r1*Math.sin(a)}" y1="${55-r1*Math.cos(a)}" x2="${55+r2*Math.sin(a)}" y2="${55-r2*Math.cos(a)}"/>`;}
+ g.innerHTML=s;})();
+function setHeat(h){
+ S.heat=Math.min(1,Math.max(0,h));
+ const deg=-135+S.heat*270;
+ $('#kNeedle').setAttribute('transform','rotate('+deg+' 55 55)');
+ const C=264;
+ $('#kArc').setAttribute('stroke-dasharray',(C*.75*S.heat)+' '+C);
+ $('#heatPct').textContent=Math.round(S.heat*100)+'%';
+}
+
+$('#btnStart').onclick=()=>{auInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();
+$('#menu').style.display='none';S.menu=false;reset();SFX.ui();};
+$('#btnResume').onclick=()=>{S.paused=false;$('#pause').style.display='none';SFX.ui();};
+$('#btnRestart').onclick=()=>{S.paused=false;$('#pause').style.display='none';reset();SFX.ui();};
+$('#btnRestart').classList.add('live');
+$('#pauseBtn').onclick=()=>{if(!S.menu){S.paused=true;$('#pause').style.display='flex';}};
+$('#muteBtn').onclick=()=>{AU.on=!AU.on;auInit();
+if(AU.master)AU.master.gain.value=AU.on?.85:0;
+$('#muteBtn').innerHTML='<svg><use href="#ic-'+(AU.on?'sound':'mute')+'"/></svg>';};
+$('#btnButter').onclick=addButter;
+$('#btnEgg').onclick=()=>addFood('egg');
+$('#btnCake').onclick=()=>addFood('pancake');
+$('#btnSteak').onclick=()=>addFood('steak');
+$('#btnFlip').onclick=startFlip;
+$('#btnServe').onclick=serve;
+$('#btnTrash').onclick=trash;
+$('#roosterBubble').onclick=()=>chickenSay('click');
+
+/* knob drag */
+let knobDrag=false;
+const kn=$('#knobSvg');
+function knobFromEvent(e){
+ const r=kn.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ let a=Math.atan2(e.clientX-cx,cy-e.clientY)*180/Math.PI;
+ a=Math.max(-135,Math.min(135,a));
+ setHeat((a+135)/270);
+}
+kn.addEventListener('pointerdown',e=>{knobDrag=true;kn.setPointerCapture(e.pointerId);knobFromEvent(e);});
+kn.addEventListener('pointermove',e=>{if(knobDrag)knobFromEvent(e);});
+kn.addEventListener('pointerup',()=>knobDrag=false);
+cv.addEventListener('wheel',e=>{e.preventDefault();setHeat(S.heat+(e.deltaY>0?-.05:.05));},{passive:false});
+
+document.addEventListener('keydown',e=>{
+ if(S.menu)return;
+ const k=e.key.toLowerCase();
+ if(k===' '){e.preventDefault();if(!e.repeat)startFlip();}
+ else if(k==='enter'){if(!e.repeat)serve();}
+ else if(k==='b')addButter();
+ else if(k==='e')addFood('egg');
+ else if(k==='p')addFood('pancake');
+ else if(k==='s')addFood('steak');
+ else if(k==='x'){if(!e.repeat)trash();}
+ else if(k==='arrowup'){e.preventDefault();setHeat(S.heat+.06);}
+ else if(k==='arrowdown'){e.preventDefault();setHeat(S.heat-.06);}
+ else if(k==='m')$('#muteBtn').click();
+ else if(k==='c')chickenSay('click');
+ else if(k==='escape'&&S.running){S.paused=!S.paused;$('#pause').style.display=S.paused?'flex':'none';}
+});
+document.addEventListener('pointermove',e=>{
+ S.mx=e.clientX/innerWidth*2-1;S.my=e.clientY/innerHeight*2-1;});
+cv.addEventListener('click',e=>{
+ if(!S.running||S.paused)return;
+ // If clicked in the top middle area where the chicken is, trigger conversation
+ if(e.clientY < window.innerHeight * 0.38 && Math.abs(e.clientX - window.innerWidth*0.5) < 140){
+  chickenSay('click');
+  return;
+ }
+ if(S.food&&!S.foodGone)startFlip();
+ else if(Math.random()<.3)toast('You slapped the empty air. The air appreciates it.');
+});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden&&S.running&&!S.menu){S.paused=true;$('#pause').style.display='flex';}});
+
+function simulate(dt){
+ S.time+=dt;
+ const tgt=.10+S.heat*.92;
+ S.panTemp+=(tgt-S.panTemp)*dt/4.8;
+ if(S.butter.alive){
+  S.butter.melt+=(.028+.075*S.panTemp)*dt;
+  if(S.butter.melt>=1){S.butter.alive=false;
+   if(!S.food)toast('The butter gave everything. You gave nothing.');}
+ }
+ const protect=S.butter.alive?(1-S.butter.melt*.5):0;
+ const charLim=1.25+protect*.18;
+ if(S.food&&!S.foodGone){
+  const f=S.food,D=DISH[f.type];
+  f.t+=dt;
+  if(!S.flip.on){
+   if(f.type!=='pancake')f.spread=Math.min(1,1-Math.exp(-f.t/2.6));
+   else f.spread=Math.min(1,f.spread+dt*.05*Math.max(.2,S.panTemp));
+   const cMod=D.contact*(1+S.fond*.05)*(S.butter.alive?1.06:1);
+   f.c[f.down]+=Math.max(0,S.panTemp-.22)*.118*cMod*dt;
+   f.c[1-f.down]+=Math.max(0,S.panTemp-.30)*.013*dt;
+   S.fond=Math.min(1,S.fond+Math.max(0,S.panTemp-.35)*.004*dt);
+  }
+  const mc=Math.max(f.c[0],f.c[1]);
+  if(mc>=charLim&&!f.charred){
+   f.charred=true;alarm();
+   chickenSay('charred');
+   toast('Charcoal, plated or not. Kill the flame.');SFX.bad();
+  }
+  if(mc>=1.0&&!f.warned){
+   f.warned=true;
+   chickenSay('warn');
+  }
+  const moist=D.moist*(1-clamp01((f.c[0]+f.c[1])*.35));
+  const drive=moist*(0.25+S.panTemp*.8);
+  S.steam=Math.max(drive,S.steam-dt*1.6);
+  S.smoke=Math.max(clamp01((S.panTemp-.86)*2.4)+(f.charred?.55:0),S.smoke-dt*1.2);
+ }
+ if(!S.food||S.foodGone){S.steam=Math.max(0,S.steam-dt*1.6);S.smoke=Math.max(0,S.smoke-dt*1.2);}
+ if(S.food&&S.foodGone){S.foodFade=Math.max(0,S.foodFade-dt*3.2);if(S.foodFade<=0){S.food=null;}}
+ S.dispSteam+=(S.steam-S.dispSteam)*Math.min(1,dt*6);
+ S.dispSmoke+=(S.smoke-S.dispSmoke)*Math.min(1,dt*6);
+ if(S.flip.on){
+  S.flip.k+=dt/.55;
+  if(S.flip.k>=1){S.flip.k=1;S.flip.on=false;finishFlip();}
+ }
+ S.flash=Math.max(0,S.flash-dt*1.4);
+ S.shake=Math.max(0,S.shake-dt*2.6);
+
+ // Rooster idle commentary timer
+ S.chickenTalk=Math.max(0,S.chickenTalk-dt*1.8);
+ S.chickenIdleTimer-=dt;
+ if(S.chickenIdleTimer<=0){
+  S.chickenIdleTimer=14+Math.random()*12;
+  if(!S.food||S.foodGone)chickenSay('idle');
+ }
+
+ tickOrders(dt);
+}
+function clamp01(v){return Math.max(0,Math.min(1,v));}
+
+/* ---------------- HUD updates ---------------- */
+function updHUD(){
+ $('#btnButter').disabled=S.butter.alive;
+ for(const ty of TYPES){$(DISH[ty].btn).disabled=!!(S.food&&!S.foodGone);}
+ $('#btnFlip').disabled=!(S.food&&!S.foodGone&&!S.flip.on);
+ $('#btnServe').disabled=!(S.food&&!S.foodGone);
+ $('#btnTrash').disabled=!((S.food&&!S.foodGone)||S.butter.alive);
+ const f=S.food,warn=$('div#warn');
+ if(f&&!S.foodGone&&f.charred){warn.style.display='block';warn.textContent='CHARRED. OWN IT.';}
+ else if(f&&!S.foodGone&&f.warned){warn.style.display='block';warn.textContent='CATCHING \u2014 FLIP IT OR KILL THE FLAME';}
+ else warn.style.display='none';
+ const gs=$('#gaugeSvg');
+ if(f&&!S.foodGone){
+  gs.classList.add('on');
+  const val=(f.c[0]+f.c[1])/2;
+  $('#gVal').textContent=val.toFixed(2);
+  const dn=f.c[f.down],upIdx=1-f.down,up=f.c[upIdx];
+  const td=$('#gTDown'),tu=$('#gTUp');
+  td.style.display='block';tu.style.display='block';
+  td.setAttribute('points',`78,${vy(dn)} 71,${vy(dn)-4} 71,${vy(dn)+4}`);
+  tu.setAttribute('points',`44,${vy(up)} 51,${vy(up)-4} 51,${vy(up)+4}`);
+  const ord=S.orders.find(o=>o.type===f.type);
+  const band=$('#gBand');
+  if(ord){const W=WIN[f.type][ord.wi];
+   band.style.display='block';
+   band.setAttribute('y',vy(W.hi));
+   band.setAttribute('height',Math.max(3,vy(W.lo)-vy(W.hi)));
+  }else band.style.display='none';
+ }else{gs.classList.remove('on');$('#gVal').textContent='\u2014';
+  $('#gTDown').style.display='none';$('#gTUp').style.display='none';$('#gBand').style.display='none';}
+ const mins=(23*60+52+Math.floor(S.time*.5))%1440;
+ const hh=Math.floor(mins/60),mm=mins%60;
+ const ap=hh>=12?'PM':'AM',h12=((hh+11)%12)+1;
+ $('#statClock').textContent=h12+':'+String(mm).padStart(2,'0')+' '+ap;
+}
+
+/* ---------------- adaptive resolution & render loop ---------------- */
+let scale=1,frames=0,emaDt=1/60,emaLast=null;
+function fit(){
+ const d=Math.min(devicePixelRatio||1,1.6);
+ cv.width=Math.max(320,Math.floor(innerWidth*d*scale));
+ cv.height=Math.max(240,Math.floor(innerHeight*d*scale));
+}
+addEventListener('resize',fit);fit();
+
+let curAng=0,prevAng=0;
+function render(now){
+ requestAnimationFrame(render);
+ const dt=Math.min(.05,(now-S.last)/1000||.016);
+ S.last=now;
+ emaDt+=((now-(emaLast||now))/1000-emaDt)*.05;emaLast=now;
+ frames++;
+ if(frames%110===0){
+  if(emaDt>1/46&&scale>.45){scale*=.85;fit();}
+  else if(emaDt<1/58&&scale<1){scale=Math.min(1,scale*1.07);fit();}
+ }
+ const paused=S.paused||S.menu;
+ if(S.running&&!paused)simulate(dt);
+ if(S.running)updHUD();
+ 
+ let hop=0;
+ if(S.food){
+  if(S.flip.on){
+   const k=S.flip.k,e=k*k*(3-2*k);
+   curAng=prevAng+e*Math.PI;
+   hop=Math.sin(Math.PI*Math.pow(k,.9))*.78;
+  }else curAng=prevAng;
+ }else{curAng=0;prevAng=0;}
+ if(!S.flip.on)prevAng=curAng;
+ 
+ S.pmx+=(S.mx-S.pmx)*.04;S.pmy+=(S.my-S.pmy)*.04;
+ const t=now/1000;
+ const shk=S.shake*S.shake*.05;
+ const cx=1.45+S.pmx*.45+Math.sin(t*1.7)*shk;
+ const cy=1.85-S.pmy*.25+Math.sin(t*.5)*.02+Math.cos(t*2.3)*shk*.6;
+ const cz=4.85;
+
+ if(AU.ctx&&!S.menu){
+  const f=S.food;
+  let sz=0;
+  if(f&&!S.foodGone){
+   const D=DISH[f.type],mc=clamp01((f.c[0]+f.c[1])/2);
+   sz=D.moist*(1-mc*.5)*(.15+S.panTemp*.9);
+   if(S.butter.alive)sz+=.12*(1-S.butter.melt);
+  }else if(S.butter.alive)sz=.15*(1-S.butter.melt)+S.panTemp*.15;
+  sz*=.75+.5*Math.random();
+  AU.hiss.g.gain.setTargetAtTime(sz*.16,AU.ctx.currentTime,.05);
+  AU.crisp.g.gain.setTargetAtTime(S.butter.alive?sz*.07:0,AU.ctx.currentTime,.06);
+  AU.roarG.gain.setTargetAtTime(Math.pow(S.heat,1.5)*.05,AU.ctx.currentTime,.1);
+ }
+
+ gl.viewport(0,0,cv.width,cv.height);
+ gl.uniform2f(U.uRes,cv.width,cv.height);
+ gl.uniform1f(U.uTime,t);
+ gl.uniform3f(U.uCam,cx,cy,cz);
+ gl.uniform1f(U.uHeat,S.heat);
+ const f=S.food,gone=S.foodGone;
+ gl.uniform1f(U.uFood,f&&!gone?f.type==='egg'?1:f.type==='pancake'?2:3:(f&&gone?f.type==='egg'?1:f.type==='pancake'?2:3:0));
+ gl.uniform1f(U.uSpread,f?f.spread*(gone?S.foodFade:1):0);
+ gl.uniform1f(U.uCookLo,f?f.c[0]:0);
+ gl.uniform1f(U.uCookHi,f?f.c[1]:0);
+ gl.uniform1f(U.uFlipAng,curAng);
+ gl.uniform1f(U.uHop,hop);
+ gl.uniform1f(U.uFade,f?S.foodFade:0);
+ gl.uniform1f(U.uButter,S.butter.alive?S.butter.melt:-1);
+ gl.uniform1f(U.uFond,S.fond);
+ gl.uniform1f(U.uSteam,S.dispSteam);
+ gl.uniform1f(U.uSmoke,S.dispSmoke);
+ gl.uniform1f(U.uSeed,f?f.seed:3.7);
+ gl.uniform1f(U.uFlash,S.flash);
+ gl.uniform1f(U.uChickenTalk,S.chickenTalk);
+ gl.uniform1f(U.uChickenMood,f&&f.charred?2.0:(f&&f.warned?1.0:0.0));
+ gl.drawArrays(gl.TRIANGLES,0,3);
+}
+
+setHeat(.45);
+$('#statBest').textContent=best.toLocaleString('en-US');
+if(best>0)$('#menuBest').textContent='HOUSE RECORD \u2014 '+best.toLocaleString('en-US')+' PTS';
+requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
