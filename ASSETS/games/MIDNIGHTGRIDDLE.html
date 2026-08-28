@@ -1587,12 +1587,11 @@ function updHUD(){
  $('#statClock').textContent=h12+':'+String(mm).padStart(2,'0')+' '+ap;
 }
 
-/* ---------------- adaptive resolution & render loop ---------------- */
-let scale=1,frames=0,emaDt=1/60,emaLast=null;
+/* ---------------- High-Fidelity Render Loop ---------------- */
 function fit(){
- const d=Math.min(devicePixelRatio||1,1.6);
- cv.width=Math.max(320,Math.floor(innerWidth*d*scale));
- cv.height=Math.max(240,Math.floor(innerHeight*d*scale));
+ const d=Math.min(devicePixelRatio||1,2.0);
+ cv.width=Math.floor(innerWidth*d);
+ cv.height=Math.floor(innerHeight*d);
 }
 addEventListener('resize',fit);fit();
 
@@ -1601,12 +1600,6 @@ function render(now){
  requestAnimationFrame(render);
  const dt=Math.min(.05,(now-S.last)/1000||.016);
  S.last=now;
- emaDt+=((now-(emaLast||now))/1000-emaDt)*.05;emaLast=now;
- frames++;
- if(frames%110===0){
-  if(emaDt>1/46&&scale>.45){scale*=.85;fit();}
-  else if(emaDt<1/58&&scale<1){scale=Math.min(1,scale*1.07);fit();}
- }
  const paused=S.paused||S.menu;
  if(S.running&&!paused)simulate(dt);
  if(S.running)updHUD();
