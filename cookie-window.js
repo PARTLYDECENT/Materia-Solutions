@@ -170,25 +170,25 @@ class CookieMatrixWindow {
         this.uiContainer.id = 'cookie-ui-container';
         this.uiContainer.innerHTML = `
             <div class="cookie-header">
-                <div class="cookie-title">CONFECTIONERY INTEGRATION</div>
-                <div class="cookie-desc">SYNCHRONIZE YOUR TASTE PREFERENCES WITH THE COOKIE ENGINE.<br>CHOOSE YOUR TASTE PARADIGM.</div>
+                <div class="cookie-title">HAUTE CONFECTIONERY SYNTHESIS</div>
+                <div class="cookie-desc">SYNCHRONIZE YOUR PALATE WITH OUR LUXURY GOURMET COOKIE ENGINE.<br>SELECT YOUR HAUTE-COUTURE TASTE PARADIGM.</div>
             </div>
             <div class="cookie-cards-grid">
                 <!-- Data indices match MatrixButton elements: 1=Cyber, 2=Void, 3=Aero -->
                 <div class="cookie-card" data-matrix-index="1" id="cookie-btn-merge">
                     <canvas class="card-border-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
-                    <div class="card-icon">⚡</div>
-                    <div class="card-label">MERGE</div>
+                    <div class="card-icon">👑</div>
+                    <div class="card-label">GRAND CRU</div>
                 </div>
                 <div class="cookie-card" data-matrix-index="2" id="cookie-btn-abort">
                     <canvas class="card-border-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
                     <div class="card-icon">✕</div>
-                    <div class="card-label">ABORT</div>
+                    <div class="card-label">RETURN</div>
                 </div>
                 <div class="cookie-card" data-matrix-index="3" id="cookie-btn-config">
                     <canvas class="card-border-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></canvas>
-                    <div class="card-icon">⎈</div>
-                    <div class="card-label">CONFIG</div>
+                    <div class="card-icon">✨</div>
+                    <div class="card-label">RESERVE</div>
                 </div>
             </div>
         `;

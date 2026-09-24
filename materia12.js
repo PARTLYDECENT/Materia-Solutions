@@ -410,7 +410,7 @@
         // Reset and ramp master gain cleanly
         master.gain.cancelScheduledValues(ctx.currentTime);
         master.gain.setValueAtTime(0, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 5.0); // Triumphant fade-in
+        master.gain.linearRampToValueAtTime(0.30, ctx.currentTime + 5.0); // Triumphant fade-in
 
         sequencer = xenoSequencer();
         schedulerLoop();

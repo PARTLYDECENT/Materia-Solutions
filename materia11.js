@@ -1438,7 +1438,7 @@
         // Always re-ramp master gain (critical after a stop() fade-out)
         master.gain.cancelScheduledValues(ctx.currentTime);
         master.gain.setValueAtTime(0, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(0.80, ctx.currentTime + 6);
+        master.gain.linearRampToValueAtTime(0.32, ctx.currentTime + 6);
         sequencer = solutusSequencer();
         schedulerLoop();
     }

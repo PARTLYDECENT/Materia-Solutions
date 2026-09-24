@@ -177,7 +177,7 @@
         compressor.attack.value = 0.001;
         compressor.release.value = 0.1;
 
-        master = ctx.createBiquadFilter();
+        master = ctx.createGain();
         master.gain.setValueAtTime(0, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.30, ctx.currentTime + 6);
 
@@ -191,13 +191,13 @@
         master.connect(ctx.destination);
 
         // ── Convolution reverb ──
-        reverbSend = ctx.createBiquadFilter();
+        reverbSend = ctx.createGain();
         reverbSend.gain.value = 0.25;
 
         convolver = ctx.createConvolver();
         convolver.buffer = generateDarkCavernIR(ctx, 6, 2.5);
 
-        const reverbReturn = ctx.createBiquadFilter();
+        const reverbReturn = ctx.createGain();
         reverbReturn.gain.value = 0.35;
 
         // Darken reverb return — cut highs aggressively

@@ -177,7 +177,7 @@
         compressor.attack.value = 0.002;
         compressor.release.value = 0.15;
 
-        master = ctx.createBiquadFilter();
+        master = ctx.createGain();
         master.gain.setValueAtTime(0, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.30, ctx.currentTime + 6);
 
@@ -191,13 +191,13 @@
         master.connect(ctx.destination);
 
         // ── Convolution reverb ──
-        reverbSend = ctx.createBiquadFilter();
+        reverbSend = ctx.createGain();
         reverbSend.gain.value = 0.25;
 
         convolver = ctx.createConvolver();
         convolver.buffer = generateDarkCavernIR(ctx, 6, 2.5);
 
-        const reverbReturn = ctx.createBiquadFilter();
+        const reverbReturn = ctx.createGain();
         reverbReturn.gain.value = 0.35;
 
         // Darken reverb return — cut highs aggressively
@@ -238,7 +238,7 @@
     }
 
     function createBus(vol) {
-        const g = ctx.createBiquadFilter();
+        const g = ctx.createGain();
         g.gain.value = vol;
         g.connect(compressor);
         g.connect(reverbSend);
@@ -290,7 +290,7 @@
         modulator.frequency.value = modFreq;
 
         // Modulation depth (index * modulator frequency)
-        const modGain = ctx.createBiquadFilter();
+        const modGain = ctx.createGain();
         modGain.gain.setValueAtTime(modIndex, time);
         modGain.gain.linearRampToValueAtTime(modIndex * 1.5, time + duration * 0.5);
         modGain.gain.linearRampToValueAtTime(modIndex * 0.3, time + duration);
@@ -307,7 +307,7 @@
         filter.Q.value = lerp(0.7, 4, tension);
 
         // Amplitude envelope
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(lerp(0.04, 0.10, tension), time + duration * 0.2);
         env.gain.setValueAtTime(lerp(0.04, 0.10, tension), time + duration * 0.7);
@@ -366,7 +366,7 @@
                 filter.frequency.linearRampToValueAtTime(Math.max(startCutoff * 0.8, 80), time + duration);
                 filter.Q.value = lerp(0.7, 3, tension);
 
-                const env = ctx.createBiquadFilter();
+                const env = ctx.createGain();
                 env.gain.setValueAtTime(0, time);
                 env.gain.linearRampToValueAtTime(0.05, time + duration * 0.25);
                 env.gain.setValueAtTime(0.04, time + duration * 0.6);
@@ -453,7 +453,7 @@
         filter.frequency.setValueAtTime(freq * 1.5, time);
         filter.Q.value = lerp(2, 6, tension);
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(lerp(0.08, 0.18, tension), time + 0.003);
         env.gain.exponentialRampToValueAtTime(0.001, time + dur);
@@ -694,7 +694,7 @@
         const dur = isOpen ? lerp(0.10, 0.18, tension) : lerp(0.02, 0.05, tension);
         const vol = isOpen ? lerp(0.06, 0.10, tension) : lerp(0.03, 0.06, tension);
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(vol, time);
         env.gain.exponentialRampToValueAtTime(0.001, time + dur);
 

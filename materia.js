@@ -86,7 +86,7 @@
         compressor.attack.value = 0.003;
         compressor.release.value = 0.25;
 
-        master = ctx.createBiquadFilter();
+        master = ctx.createGain();
         master.gain.value = 0.0; // Start silent, fade in
         master.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 4);
 
@@ -100,10 +100,10 @@
         master.connect(ctx.destination);
 
         // Reverb send/return via convolution-like feedback delay network
-        reverbSend = ctx.createBiquadFilter();
+        reverbSend = ctx.createGain();
         reverbSend.gain.value = 0.3;
 
-        reverbReturn = ctx.createBiquadFilter();
+        reverbReturn = ctx.createGain();
         reverbReturn.gain.value = 0.4;
 
         // 4-tap feedback delay network for lush reverb
@@ -112,7 +112,7 @@
         delays.forEach((t, i) => {
             const d = ctx.createDelay(0.2);
             d.delayTime.value = t;
-            const fb = ctx.createBiquadFilter();
+            const fb = ctx.createGain();
             fb.gain.value = feedbacks[i];
             const filt = ctx.createBiquadFilter();
             filt.type = 'lowpass';
@@ -139,7 +139,7 @@
     }
 
     function createBus(vol) {
-        const g = ctx.createBiquadFilter();
+        const g = ctx.createGain();
         g.gain.value = vol;
         g.connect(compressor);
         g.connect(reverbSend);
@@ -180,7 +180,7 @@
                 filter.frequency.linearRampToValueAtTime(600, time + duration);
                 filter.Q.value = 2;
 
-                const env = ctx.createBiquadFilter();
+                const env = ctx.createGain();
                 env.gain.setValueAtTime(0, time);
                 env.gain.linearRampToValueAtTime(0.08, time + duration * 0.3);
                 env.gain.linearRampToValueAtTime(0.06, time + duration * 0.7);
@@ -213,12 +213,12 @@
         osc2.type = 'triangle';
         osc2.frequency.value = freq * 2;
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(0.4, time + 0.02);
         env.gain.exponentialRampToValueAtTime(0.001, time + dur);
 
-        const env2 = ctx.createBiquadFilter();
+        const env2 = ctx.createGain();
         env2.gain.setValueAtTime(0, time);
         env2.gain.linearRampToValueAtTime(0.08, time + 0.02);
         env2.gain.exponentialRampToValueAtTime(0.001, time + dur);
@@ -256,7 +256,7 @@
         filter.frequency.value = freq * 2;
         filter.Q.value = 3;
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(0.2, time + 0.005);
         env.gain.exponentialRampToValueAtTime(0.001, time + dur);
@@ -272,7 +272,7 @@
             const ghost = ctx.createOscillator();
             ghost.type = 'sine';
             ghost.frequency.value = freq * 2;
-            const gEnv = ctx.createBiquadFilter();
+            const gEnv = ctx.createGain();
             gEnv.gain.setValueAtTime(0, time + stepDuration * 0.5);
             gEnv.gain.linearRampToValueAtTime(0.04, time + stepDuration * 0.5 + 0.005);
             gEnv.gain.exponentialRampToValueAtTime(0.001, time + stepDuration * 0.5 + dur);
@@ -301,7 +301,7 @@
         const lfo = ctx.createOscillator();
         lfo.type = 'sine';
         lfo.frequency.value = 5;
-        const lfoGain = ctx.createBiquadFilter();
+        const lfoGain = ctx.createGain();
         lfoGain.gain.value = 4; // subtle pitch wobble in Hz
         lfo.connect(lfoGain);
         lfoGain.connect(osc.frequency);
@@ -313,7 +313,7 @@
         filter.Q.value = 2; // Reduced Q to ensure stability
 
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(0.12, time + dur * 0.1);
         env.gain.linearRampToValueAtTime(0.08, time + dur * 0.5);
@@ -340,7 +340,7 @@
         osc.frequency.value = freq;
         osc.detune.value = (Math.random() - 0.5) * 20;
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0, time);
         env.gain.linearRampToValueAtTime(0.06, time + 0.3);
         env.gain.exponentialRampToValueAtTime(0.001, time + dur);
@@ -365,7 +365,7 @@
         osc.frequency.setValueAtTime(150, time);
         osc.frequency.exponentialRampToValueAtTime(35, time + 0.12);
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0.6, time);
         env.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
 
@@ -373,7 +373,7 @@
         const click = ctx.createOscillator();
         click.type = 'square';
         click.frequency.value = 800;
-        const clickEnv = ctx.createBiquadFilter();
+        const clickEnv = ctx.createGain();
         clickEnv.gain.setValueAtTime(0.15, time);
         clickEnv.gain.exponentialRampToValueAtTime(0.001, time + 0.015);
 
@@ -397,7 +397,7 @@
         const nFilter = ctx.createBiquadFilter();
         nFilter.type = 'highpass';
         nFilter.frequency.value = 2000;
-        const nEnv = ctx.createBiquadFilter();
+        const nEnv = ctx.createGain();
         nEnv.gain.setValueAtTime(0.2, time);
         nEnv.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
 
@@ -405,7 +405,7 @@
         const osc = ctx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.value = 200;
-        const oEnv = ctx.createBiquadFilter();
+        const oEnv = ctx.createGain();
         oEnv.gain.setValueAtTime(0.2, time);
         oEnv.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
 
@@ -432,7 +432,7 @@
         filter.type = 'highpass';
         filter.frequency.value = 7000;
 
-        const env = ctx.createBiquadFilter();
+        const env = ctx.createGain();
         const dur = isOpen ? 0.12 : 0.04;
         const vol = isOpen ? 0.08 : 0.04;
         env.gain.setValueAtTime(vol, time);

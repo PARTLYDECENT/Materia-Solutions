@@ -99,6 +99,49 @@
         ringModulate: function (sample, carrierFreq, time) {
             const carrier = Math.sin(2 * Math.PI * carrierFreq * time);
             return sample * carrier;
+        },
+
+        // ─── STEREO DELAY NODE ───
+        // Creates spatial ping-pong echo delay
+        createStereoDelay: function (audioCtx, delayTime = 0.25, feedback = 0.4) {
+            const delayL = audioCtx.createDelay(1.0);
+            const delayR = audioCtx.createDelay(1.0);
+            const feedbackGain = audioCtx.createGain();
+            const merger = audioCtx.createChannelMerger(2);
+
+            delayL.delayTime.value = delayTime;
+            delayR.delayTime.value = delayTime * 1.5; // Ping-pong offset
+            feedbackGain.gain.value = feedback;
+
+            delayL.connect(feedbackGain);
+            delayR.connect(feedbackGain);
+            feedbackGain.connect(delayR);
+            feedbackGain.connect(delayL);
+
+            delayL.connect(merger, 0, 0);
+            delayR.connect(merger, 0, 1);
+
+            return {
+                input: delayL,
+                output: merger
+            };
+        },
+
+        // ─── WARM ANALOG SATURATOR ───
+        // Soft-clipping distortion curve for cinematic analog warmth
+        createSaturator: function (audioCtx, drive = 2.0) {
+            const waveShaper = audioCtx.createWaveShaper();
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+
+            for (let i = 0; i < n_samples; ++i) {
+                let x = (i * 2) / n_samples - 1;
+                curve[i] = ((3 + drive) * x * 20 * deg) / (Math.PI + drive * Math.abs(x));
+            }
+            waveShaper.curve = curve;
+            waveShaper.oversample = '4x';
+            return waveShaper;
         }
     };
 

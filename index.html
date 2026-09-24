@@ -5,7 +5,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="fix-audio.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Materia Cookies | Cinematic Intro</title>
 
     <!-- Social Media Preview (Open Graph & Twitter Cards) -->
@@ -26,7 +26,8 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&family=Montserrat:wght@200;400;700;900&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -34,14 +35,15 @@
             box-sizing: border-box;
         }
 
-        body,
-        html {
+        body, html {
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #010204;
             overflow: hidden;
             font-family: 'Montserrat', sans-serif;
             cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #canvas-container {
@@ -65,20 +67,20 @@
             height: 100%;
         }
 
-        /* Upgraded Cinematic Vignette with color tinting */
+        /* Cinematic Vignette with color tinting */
         .vignette {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 20%, rgba(0, 5, 10, 0.85) 100%);
+            background: radial-gradient(circle at center, transparent 20%, rgba(0, 5, 10, 0.88) 100%);
             z-index: 2;
             pointer-events: none;
             transition: background 2s ease;
         }
 
-        /* Post-processing Flash for intense transitions */
+        /* Flash layer for impact transitions */
         #flash {
             position: absolute;
             top: 0;
@@ -92,36 +94,87 @@
             will-change: opacity;
         }
 
-        /* --- New Audio/Start Screen Overlay --- */
+        /* Start Screen Overlay */
         #start-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(2, 3, 6, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 100;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease;
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .start-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            padding: 40px 60px;
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(180, 140, 255, 0.05);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .start-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1px solid rgba(180, 140, 255, 0.4);
+            box-shadow: 0 0 25px rgba(180, 140, 255, 0.3);
+            background: #000;
+        }
+
+        .start-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.4);
+        }
+
+        .start-title {
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+        }
+
+        .start-sub {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 300;
         }
 
         #start-btn {
-            padding: 20px 60px;
-            font-size: 0.9rem;
+            padding: 16px 44px;
+            font-size: 0.85rem;
             font-family: 'Montserrat', sans-serif;
-            font-weight: 200;
-            letter-spacing: 0.8em;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            letter-spacing: 0.5em;
+            color: #ffffff;
+            background: rgba(180, 140, 255, 0.12);
+            border: 1px solid rgba(180, 140, 255, 0.4);
+            border-radius: 999px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(180, 140, 255, 0.2);
         }
 
         #start-btn::before {
@@ -131,37 +184,36 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: 0.5s;
         }
 
         #start-btn:hover {
-            border-color: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.15);
-            letter-spacing: 1em;
-            padding-left: 70px;
-            padding-right: 50px;
-            /* Subtle shift */
+            background: rgba(180, 140, 255, 0.25);
+            border-color: rgba(180, 140, 255, 0.8);
+            box-shadow: 0 0 40px rgba(180, 140, 255, 0.5);
+            transform: translateY(-2px) scale(1.03);
+            letter-spacing: 0.6em;
         }
 
         #start-btn:hover::before {
             left: 100%;
         }
 
-        /* Final Text Fade-in */
+        /* Tagline Text Overlay */
         #tagline {
             position: absolute;
             bottom: 12%;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             font-family: 'Montserrat', sans-serif;
             font-weight: 200;
-            font-size: 1.2rem;
-            letter-spacing: 0.8em;
+            font-size: 1.1rem;
+            letter-spacing: 0.6em;
             text-transform: uppercase;
             opacity: 0;
-            transition: opacity 4s ease;
+            transition: opacity 3s ease;
             z-index: 10;
             pointer-events: none;
             white-space: nowrap;
@@ -174,24 +226,15 @@
             transform: translate(-50%, -50%);
             color: rgba(255, 255, 255, 0.4);
             font-size: 0.8rem;
-            letter-spacing: 1em;
+            letter-spacing: 0.8em;
             text-transform: uppercase;
             z-index: 0;
             animation: pulse 2s infinite ease-in-out;
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: translate(-50%, -50%) scale(0.98);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: translate(-50%, -50%) scale(1.02);
-            }
+            0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.98); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.02); }
         }
 
         /* Noise Overlay */
@@ -204,55 +247,24 @@
             background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42NSIgbnVtT2N0YXZlcz0iMyIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==');
             z-index: 1000;
             pointer-events: none;
-            opacity: 0.15;
+            opacity: 0.12;
             animation: grain 0.5s steps(1) infinite;
         }
 
         @keyframes grain {
-
-            0%,
-            100% {
-                transform: translate(0, 0);
-            }
-
-            10% {
-                transform: translate(-5%, -10%);
-            }
-
-            20% {
-                transform: translate(-15%, 5%);
-            }
-
-            30% {
-                transform: translate(7%, -25%);
-            }
-
-            40% {
-                transform: translate(-5%, 25%);
-            }
-
-            50% {
-                transform: translate(-15%, 10%);
-            }
-
-            60% {
-                transform: translate(15%, 0%);
-            }
-
-            70% {
-                transform: translate(0, 15%);
-            }
-
-            80% {
-                transform: translate(3%, 35%);
-            }
-
-            90% {
-                transform: translate(-10%, 10%);
-            }
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -10%); }
+            20% { transform: translate(-15%, 5%); }
+            30% { transform: translate(7%, -25%); }
+            40% { transform: translate(-5%, 25%); }
+            50% { transform: translate(-15%, 10%); }
+            60% { transform: translate(15%, 0%); }
+            70% { transform: translate(0, 15%); }
+            80% { transform: translate(3%, 35%); }
+            90% { transform: translate(-10%, 10%); }
         }
 
-        /* Hide default dev launcher on index.html so it doesn't overlap the Ferris Wheel */
+        /* Hide default dev launcher on intro */
         #materia-dev-launcher {
             display: none !important;
         }
@@ -279,20 +291,13 @@
             background: rgba(1, 2, 4, 0.96);
             z-index: 9;
             pointer-events: none;
-            transition: height 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: height 1.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        #cinematic-bar-top {
-            top: 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
+        #cinematic-bar-top { top: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+        #cinematic-bar-bottom { bottom: 0; border-top: 1px solid rgba(255, 255, 255, 0.04); }
 
-        #cinematic-bar-bottom {
-            bottom: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        /* True High-Fidelity Solid Text Overlay */
+        /* Typography Overlay */
         #final-text-container {
             position: absolute;
             top: 50%;
@@ -308,8 +313,8 @@
             filter: blur(15px);
             transition: opacity 2.5s cubic-bezier(0.16, 1, 0.3, 1), filter 2.5s cubic-bezier(0.16, 1, 0.3, 1);
             white-space: nowrap;
-            letter-spacing: 0.15em;
-            text-shadow: 0 0 25px rgba(255, 255, 255, 0.25), 0 0 50px rgba(0, 200, 255, 0.15);
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.3), 0 0 50px rgba(180, 140, 255, 0.2);
         }
 
         #final-text-container.active {
@@ -317,25 +322,121 @@
             filter: blur(0px);
         }
 
-        .final-line {
-            display: block;
+        .final-line { display: block; }
+        .final-line-1 { font-weight: 200; margin-bottom: 0.05em; font-size: clamp(2rem, 6vw, 4.5rem); }
+        .final-line-2 { font-weight: 900; font-size: clamp(2rem, 6vw, 4.5rem); color: #b48cff; }
+
+        /* Telemetry HUD Overlay */
+        #hud-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 30px;
+            opacity: 0;
+            transition: opacity 1.5s ease;
         }
 
-        .final-line-1 {
-            font-weight: 200;
-            margin-bottom: 0.05em;
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
 
-        .final-line-2 {
-            font-weight: 200;
+        .hud-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            background: rgba(180, 140, 255, 0.08);
+            border: 1px solid rgba(180, 140, 255, 0.25);
+            backdrop-filter: blur(12px);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 9px;
+            color: #b48cff;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
 
-        .final-gap {
-            display: inline-block;
-            vertical-align: middle;
+        .hud-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+            animation: livePulse 1.8s infinite;
         }
 
-        /* --- Ferris Wheel Bottom-Right Menu --- */
+        @keyframes livePulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .skip-btn {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .skip-btn:hover {
+            background: rgba(180, 140, 255, 0.2);
+            border-color: rgba(180, 140, 255, 0.5);
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(180, 140, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .hud-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .hud-telemetry {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 8.5px;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+        }
+
+        /* Real-Time Audio DSP Equalizer Bars */
+        .audio-eq-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+        }
+
+        .eq-bar {
+            width: 2.5px;
+            height: 3px;
+            background: rgba(180, 140, 255, 0.6);
+            border-radius: 999px;
+            transition: height 0.08s linear, background-color 0.2s ease;
+        }
+
+        /* --- Ferris Wheel Menu --- */
         #ferris-wheel-menu {
             position: fixed;
             bottom: 30px;
@@ -346,7 +447,6 @@
             pointer-events: none;
         }
 
-        /* Inner container that receives the mouse hover to expand the wheel */
         .ferris-hover-area {
             position: absolute;
             bottom: -15px;
@@ -378,9 +478,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 1000;
-            box-shadow:
-                0 0 20px rgba(180, 140, 255, 0.15),
-                inset 0 0 10px rgba(180, 140, 255, 0.1);
+            box-shadow: 0 0 20px rgba(180, 140, 255, 0.15), inset 0 0 10px rgba(180, 140, 255, 0.1);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: auto;
         }
@@ -388,9 +486,7 @@
         .ferris-hover-area:hover .ferris-hub {
             transform: scale(1.15) rotate(135deg);
             border-color: #b48cff;
-            box-shadow:
-                0 0 30px rgba(180, 140, 255, 0.4),
-                inset 0 0 15px rgba(180, 140, 255, 0.2);
+            box-shadow: 0 0 30px rgba(180, 140, 255, 0.4), inset 0 0 15px rgba(180, 140, 255, 0.2);
             color: #fff;
         }
 
@@ -426,62 +522,17 @@
             line-height: 1.1;
         }
 
-        /* Hover expansion coordinates */
-        .ferris-hover-area:hover .ferris-item {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .ferris-hover-area:hover .ferris-item { opacity: 1; pointer-events: auto; }
+        .ferris-hover-area:hover #ferris-item-dev { transform: translate(-110px, 0) scale(1) rotate(0deg); }
+        .ferris-hover-area:hover #ferris-item-cookies { transform: translate(-78px, -78px) scale(1) rotate(0deg); }
+        .ferris-hover-area:hover #ferris-item-recipe { transform: translate(0, -110px) scale(1) rotate(0deg); }
 
-        /* 1. DEV button (goes 110px to the left) */
-        .ferris-hover-area:hover #ferris-item-dev {
-            transform: translate(-110px, 0) scale(1) rotate(0deg);
-        }
-
-        /* 2. COOKIES button (goes 78px left, 78px up) */
-        .ferris-hover-area:hover #ferris-item-cookies {
-            transform: translate(-78px, -78px) scale(1) rotate(0deg);
-        }
-
-        /* 3. RECIPE button (goes 110px up) */
-        .ferris-hover-area:hover #ferris-item-recipe {
-            transform: translate(0, -110px) scale(1) rotate(0deg);
-        }
-
-        #ferris-item-dev {
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            color: rgba(0, 255, 255, 0.85);
-        }
-
-        #ferris-item-dev:hover {
-            border-color: #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-            background: rgba(0, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        #ferris-item-cookies {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        #ferris-item-cookies:hover {
-            border-color: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        #ferris-item-recipe {
-            border: 1px solid rgba(180, 140, 255, 0.3);
-            color: rgba(180, 140, 255, 0.85);
-        }
-
-        #ferris-item-recipe:hover {
-            border-color: #b48cff;
-            box-shadow: 0 0 20px rgba(180, 140, 255, 0.5);
-            background: rgba(180, 140, 255, 0.15);
-            color: #fff;
-        }
+        #ferris-item-dev { border: 1px solid rgba(0, 255, 255, 0.3); color: rgba(0, 255, 255, 0.85); }
+        #ferris-item-dev:hover { border-color: #00ffff; box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); background: rgba(0, 255, 255, 0.15); color: #fff; }
+        #ferris-item-cookies { border: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.7); }
+        #ferris-item-cookies:hover { border-color: #ffffff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.15); color: #fff; }
+        #ferris-item-recipe { border: 1px solid rgba(180, 140, 255, 0.3); color: rgba(180, 140, 255, 0.85); }
+        #ferris-item-recipe:hover { border-color: #b48cff; box-shadow: 0 0 20px rgba(180, 140, 255, 0.5); background: rgba(180, 140, 255, 0.15); color: #fff; }
     </style>
 </head>
 
@@ -491,16 +542,50 @@
     <div id="cinematic-bar-bottom" class="cinematic-bar"></div>
 
     <div class="noise"></div>
-    <div id="loading">Initializing...</div>
+    <div id="loading">Initializing System...</div>
 
-    <!-- New Start Screen -->
-    <div id="start-screen" style="display: none;">
-        <button id="start-btn">Initiate Sequence</button>
+    <!-- Telemetry HUD Overlay -->
+    <div id="hud-overlay">
+        <div class="hud-header">
+            <div class="hud-badge">
+                <span class="hud-dot"></span>
+                <span>MATERIA // QUANTUM BAKING ENGINE v4.2</span>
+            </div>
+            <button class="skip-btn" onclick="skipToStore()">
+                <span>SKIP INTRO</span>
+                <span>➔</span>
+            </button>
+        </div>
+        <div class="hud-footer">
+            <div class="hud-telemetry" id="hud-phase-readout">
+                [PHASE 00 // ATMOSPHERIC DRIFT]
+            </div>
+            <div class="audio-eq-container" id="audio-eq">
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Final Tagline -->
-    <div id="tagline">Welcome to the future</div>
+    <!-- Start Screen Card -->
+    <div id="start-screen" style="display: none;">
+        <div class="start-card">
+            <div class="start-logo">
+                <img src="icon.jpeg" alt="Materia Logo">
+            </div>
+            <div>
+                <div class="start-title">MATERIA COOKIES</div>
+                <div class="start-sub" style="margin-top: 6px;">Haute Confectionery Division</div>
+            </div>
+            <button id="start-btn">INITIATE SEQUENCE</button>
+            <div style="font-size: 8px; letter-spacing: 0.2em; color: rgba(255,255,255,0.3); text-transform: uppercase;">✦ Procedural DSP Audio &amp; 3D Physics Enabled ✦</div>
+        </div>
+    </div>
 
+    <!-- Tagline & Final Text -->
+    <div id="tagline">Welcome to the future</div>
     <div id="final-text-container">
         <span class="final-line final-line-1">MATERIA</span>
         <span class="final-line final-line-2">COOKIES</span>
@@ -511,8 +596,7 @@
         <defs>
             <filter id="gooey-sdf">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
-                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15"
-                    result="goo" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -15" result="goo" />
                 <feComposite in="SourceGraphic" in2="goo" operator="atop" />
             </filter>
         </defs>
@@ -525,20 +609,20 @@
     <div id="flash"></div>
 
     <script>
-        // --- System Configuration ---
-        const PARTICLE_COUNT = 3000;
+        // ─── HIGH-DENSITY PARTICLE SYSTEM CONFIG ───
+        const PARTICLE_COUNT = 4200;
 
-        // Precise Timeline sequence (in milliseconds) - Tightened for better impact
+        // Precise Timeline sequence (in milliseconds)
         const T = {
             P1: 3500,   // End Komorebi -> Morph to Heavy Text
             P2: 6000,   // End Morph Heavy -> Hold Heavy Text
             P3: 8500,   // End Hold Heavy -> Explode to Giant Sphere
             P4: 10500,  // End Explode Sphere -> Hold Rotating Sphere
-            P5: 13500,  // End Hold Sphere -> Morph to Sleek Text & Mini Sphere
-            P6: 15500   // End Morph Sleek Text -> Final Infinite Hold
+            P5: 13500,  // End Hold Sphere -> Morph to Sleek Text & Disperse
+            P6: 15500   // End Morph -> Final Hold & Smooth Fade
         };
 
-        // --- DOM Elements & Canvas ---
+        // DOM Elements
         const canvasContainer = document.getElementById('canvas-container');
         const flashDiv = document.getElementById('flash');
         const vignetteDiv = document.getElementById('vignette');
@@ -546,13 +630,14 @@
         const ctx = canvas.getContext('2d', { alpha: false });
         let cw, ch;
 
-        // Cinematic Camera State
+        // Cinematic Camera & Mouse State
         let camScale = 1;
         let camX = 0, camY = 0;
         let shakeIntensity = 0;
 
-        let mouse = { x: -1000, y: -1000, radius: 100 };
+        let mouse = { x: -1000, y: -1000, radius: 120 };
         let smoothMouse = { x: -1000, y: -1000 };
+        let sphereRotX = 0, sphereRotY = 0;
         window.shockwaves = [];
 
         class Shockwave {
@@ -560,34 +645,42 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 0;
-                this.maxRadius = 600;
+                this.maxRadius = 700;
                 this.life = 1;
-                this.decay = 0.02;
-                this.power = 25;
+                this.decay = 0.018;
+                this.power = 30;
             }
             update() {
-                this.radius += 15;
+                this.radius += 18;
                 this.life -= this.decay;
             }
         }
 
         window.addEventListener('mousedown', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('#ferris-wheel-menu')) return;
             const rx = (e.clientX - cw / 2) / camScale + cw / 2;
-            const ry = (e.clientY - cw / 2) / camScale + ch / 2;
+            const ry = (e.clientY - ch / 2) / camScale + ch / 2;
             window.shockwaves.push(new Shockwave(rx, ry));
+            playClickSparkle();
         });
 
         window.addEventListener('mousemove', (e) => {
-            // Adjust mouse coordinates based on camera scale for accurate interaction
             mouse.x = (e.clientX - cw / 2) / camScale + cw / 2;
             mouse.y = (e.clientY - ch / 2) / camScale + ch / 2;
+
+            // Interactive sphere rotation mapping
+            const normX = (e.clientX / window.innerWidth) - 0.5;
+            const normY = (e.clientY / window.innerHeight) - 0.5;
+            sphereRotY = normX * 0.8;
+            sphereRotX = normY * 0.8;
         });
+
         window.addEventListener('touchmove', (e) => {
             mouse.x = (e.touches[0].clientX - cw / 2) / camScale + cw / 2;
             mouse.y = (e.touches[0].clientY - ch / 2) / camScale + ch / 2;
         });
 
-        // --- Offscreen Canvases for Color Graded Light Orbs ---
+        // ─── COLOR GRADED LIGHT ORBS ───
         function createOrb(r, g, b) {
             const oc = document.createElement('canvas');
             const size = 120;
@@ -595,29 +688,29 @@
             const octx = oc.getContext('2d');
             const grad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
             grad.addColorStop(0, `rgba(255, 255, 255, 1)`);
-            grad.addColorStop(0.1, `rgba(${r}, ${g}, ${b}, 0.8)`);
-            grad.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.2)`);
+            grad.addColorStop(0.12, `rgba(${r}, ${g}, ${b}, 0.85)`);
+            grad.addColorStop(0.45, `rgba(${r}, ${g}, ${b}, 0.25)`);
             grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
             octx.fillStyle = grad;
             octx.fillRect(0, 0, size, size);
             return oc;
         }
 
-        const orbWarm = createOrb(255, 200, 150); // Golden hour for Phase 0
-        const orbWhite = createOrb(255, 255, 255); // Pure white for Phase 1
-        const orbCyan = createOrb(0, 200, 255);   // Electric cyan for Phase 3/4
+        const orbWarm = createOrb(255, 190, 120);  // Golden Amber for Phase 0
+        const orbWhite = createOrb(255, 255, 255); // Monolithic White for Phase 1
+        const orbViolet = createOrb(180, 140, 255); // Quantum Violet for Phase 3/4
 
         function easeInOutQuint(t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2; }
         function easeInExpo(t) { return t === 0 ? 0 : Math.pow(2, 10 * t - 10); }
         function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
         function easeOutBack(t) { const c1 = 1.70158; const c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); }
 
-        // --- 3D Projection Helper ---
-        function getProjectedSpherePos(base3D, globalTime, centerX, centerY, radius, isMini) {
-            const rotSpeedX = isMini ? 0.002 : 0.0005;
-            const rotSpeedY = isMini ? 0.003 : 0.0008;
-            const angleX = globalTime * rotSpeedX;
-            const angleY = globalTime * rotSpeedY;
+        // ─── 3D PROJECTION HELPER WITH MOUSE TILT ───
+        function getProjectedSpherePos(base3D, globalTime, centerX, centerY, radius) {
+            const rotSpeedX = 0.0006;
+            const rotSpeedY = 0.0009;
+            const angleX = globalTime * rotSpeedX + sphereRotX;
+            const angleY = globalTime * rotSpeedY + sphereRotY;
 
             let y1 = base3D.y * Math.cos(angleX) - base3D.z * Math.sin(angleX);
             let z1 = base3D.z * Math.cos(angleX) + base3D.y * Math.sin(angleX);
@@ -630,215 +723,279 @@
             return { x: centerX + x2 * radius * scale, y: centerY + y1 * radius * scale, scale: scale, z: z2 };
         }
 
-        // --- State Management ---
+        // State variables
         let particles = [];
         let textTargetsHeavy = [];
-        let textTargetsLight = [];
-        let oCenterX = 0, oCenterY = 0, oRadius = 0;
         let giantSphereRadius = 0;
         let currentPhase = 0;
         let animationStartTime = null;
         let flashOpacity = 0;
+        let isRedirecting = false;
 
-        // --- Web Audio API Synth Engine ---
-        let audioCtx;
-        let masterGain;
+        // ─── PRISTINE SILK-SMOOTH PROCEDURAL AUDIO ENGINE ───
+        let audioCtx = null;
+        let masterGain = null;
+        let ambientDroneGain = null;
+        let delayNodeL = null;
+        let delayNodeR = null;
 
-        function createNoiseBuffer() {
-            const bufferSize = audioCtx.sampleRate * 2; // 2 seconds
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
-            }
-            return buffer;
+        // Ambient Landing Pad (Start Screen)
+        function startAmbientDrone() {
+            if (!audioCtx) return;
+            const subOsc = audioCtx.createOscillator();
+            const padOsc = audioCtx.createOscillator();
+            const padFilter = audioCtx.createBiquadFilter();
+            ambientDroneGain = audioCtx.createGain();
+
+            subOsc.type = 'sine';
+            subOsc.frequency.value = 65.41; // C2 Sub Bass
+
+            padOsc.type = 'triangle';
+            padOsc.frequency.value = 130.81; // C3 Harmonic
+
+            padFilter.type = 'lowpass';
+            padFilter.frequency.value = 280;
+            padFilter.Q.value = 1.0;
+
+            ambientDroneGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+            ambientDroneGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 2.5);
+
+            subOsc.connect(padFilter);
+            padOsc.connect(padFilter);
+            padFilter.connect(ambientDroneGain);
+            ambientDroneGain.connect(masterGain);
+
+            subOsc.start();
+            padOsc.start();
         }
 
-        // Epic Synthesizer Brass
+        // Pristine Soft Sparkle Hit (On Click)
+        function playClickSparkle() {
+            if (!audioCtx) return;
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(1046.50, audioCtx.currentTime); // C6
+            osc1.frequency.exponentialRampToValueAtTime(2093.00, audioCtx.currentTime + 0.15); // C7
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime); // E6
+            osc2.frequency.exponentialRampToValueAtTime(2637.02, audioCtx.currentTime + 0.15); // E7
+
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(masterGain);
+
+            osc1.start(); osc2.start();
+            osc1.stop(audioCtx.currentTime + 0.15);
+            osc2.stop(audioCtx.currentTime + 0.15);
+        }
+
+        // Pure Silk Cinematic Brass Chords (Zero Distortion / Zero Static)
         function playBrassChord(freqs, startTime, duration, isHigh = false) {
-            freqs.forEach(f => {
-                // Layer multiple oscillators per note for a thick, wide "orchestral" feel
-                [f * 0.995, f, f * 1.005].forEach(detunedFreq => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createBiquadFilter();
-                    const filter = audioCtx.createBiquadFilter();
+            if (!audioCtx) return;
+            freqs.forEach((f, idx) => {
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const subOsc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
 
-                    osc.type = isHigh ? 'square' : 'sawtooth';
-                    osc.frequency.value = detunedFreq;
+                osc1.type = isHigh ? 'triangle' : 'sawtooth';
+                osc1.frequency.value = f;
+                osc1.detune.value = -4;
 
-                    // Envelope for the filter (Brass Swell)
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(isHigh ? 800 : 300, startTime);
-                    filter.frequency.exponentialRampToValueAtTime(isHigh ? 6000 : 3000, startTime + 0.2);
-                    filter.frequency.exponentialRampToValueAtTime(isHigh ? 2000 : 800, startTime + duration);
+                osc2.type = isHigh ? 'triangle' : 'sawtooth';
+                osc2.frequency.value = f;
+                osc2.detune.value = +4;
 
-                    // Envelope for volume (ADSR)
-                    gain.gain.setValueAtTime(0, startTime);
-                    gain.gain.linearRampToValueAtTime(0.15, startTime + 0.1); // Attack
-                    gain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.3); // Decay to Sustain
-                    gain.gain.linearRampToValueAtTime(0.001, startTime + duration); // Release
+                subOsc.type = 'sine';
+                subOsc.frequency.value = f * 0.5; // 1 Octave below for warmth
 
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
+                filter.type = 'lowpass';
+                filter.Q.value = 1.0;
+                filter.frequency.setValueAtTime(isHigh ? 350 : 180, startTime);
+                filter.frequency.exponentialRampToValueAtTime(isHigh ? 2200 : 1400, startTime + 0.4);
+                filter.frequency.exponentialRampToValueAtTime(isHigh ? 800 : 420, startTime + duration);
 
-                    osc.start(startTime);
-                    osc.stop(startTime + duration);
-                });
+                const noteGain = isHigh ? 0.045 : 0.055;
+                gain.gain.setValueAtTime(0.0001, startTime);
+                gain.gain.linearRampToValueAtTime(noteGain, startTime + 0.15);
+                gain.gain.exponentialRampToValueAtTime(noteGain * 0.6, startTime + 0.5);
+                gain.gain.linearRampToValueAtTime(0.0001, startTime + duration);
+
+                osc1.connect(filter);
+                osc2.connect(filter);
+                subOsc.connect(filter);
+                filter.connect(gain);
+                gain.connect(masterGain);
+
+                osc1.start(startTime);
+                osc2.start(startTime);
+                subOsc.start(startTime);
+                osc1.stop(startTime + duration);
+                osc2.stop(startTime + duration);
+                subOsc.stop(startTime + duration);
             });
         }
 
-        // Cinematic Impact Boom
+        // Ultra-Clean Pure Sub Boom Impact (100% Pure Sine Pitch Drop - Zero Noise)
         function playImpact(startTime) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createBiquadFilter();
+            if (!audioCtx) return;
+            const subOsc = audioCtx.createOscillator();
+            const subGain = audioCtx.createGain();
 
-            osc.type = 'sine';
-            // Massive pitch drop
-            osc.frequency.setValueAtTime(150, startTime);
-            osc.frequency.exponentialRampToValueAtTime(0.01, startTime + 2);
+            subOsc.type = 'sine';
+            subOsc.frequency.setValueAtTime(140, startTime);
+            subOsc.frequency.exponentialRampToValueAtTime(25, startTime + 1.8);
 
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 2);
+            subGain.gain.setValueAtTime(0.0001, startTime);
+            subGain.gain.linearRampToValueAtTime(0.65, startTime + 0.03);
+            subGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.8);
 
-            osc.connect(gain);
-            gain.connect(masterGain);
-            osc.start(startTime);
-            osc.stop(startTime + 2);
-
-            // Add an explosive noise burst
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
-            const noiseFilter = audioCtx.createBiquadFilter();
-            noiseFilter.type = 'lowpass';
-            noiseFilter.frequency.setValueAtTime(1000, startTime);
-            noiseFilter.frequency.exponentialRampToValueAtTime(100, startTime + 1);
-
-            const noiseGain = audioCtx.createBiquadFilter();
-            noiseGain.gain.setValueAtTime(0.6, startTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.5);
-
-            noise.connect(noiseFilter);
-            noiseFilter.connect(noiseGain);
-            noiseGain.connect(masterGain);
-            noise.start(startTime);
-            noise.stop(startTime + 1.5);
+            subOsc.connect(subGain);
+            subGain.connect(masterGain);
+            subOsc.start(startTime);
+            subOsc.stop(startTime + 1.8);
         }
 
-        // Military Snare Roll (21st Century Fox style rhythm intro)
+        // Soft Tonal Percussion Pulse (Smooth Timpani-style pulse - No Static)
         function playSnareHit(time, vol) {
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = createNoiseBuffer();
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             const filter = audioCtx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.value = 800;
-            const gain = audioCtx.createBiquadFilter();
-            gain.gain.setValueAtTime(vol, time);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
 
-            noise.connect(filter);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, time);
+            osc.frequency.exponentialRampToValueAtTime(60, time + 0.1);
+
+            filter.type = 'lowpass';
+            filter.frequency.value = 600;
+
+            gain.gain.setValueAtTime(vol * 0.4, time);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.1);
+
+            osc.connect(filter);
             filter.connect(gain);
             gain.connect(masterGain);
-            noise.start(time);
-            noise.stop(time + 0.1);
+            osc.start(time);
+            osc.stop(time + 0.1);
         }
 
-        // Shimmering Futuristic Arpeggio for the ending
+        // Shimmering Celestial Crystal Arpeggio (Pure Tones with Stereo Delay)
         function playArpeggio(startTime) {
-            // C Major 9 chord sweeping up multiple octaves
-            const notes = [261.63, 329.63, 392.00, 493.88, 587.33, 783.99, 987.77, 1174.66, 1567.98, 1975.53, 2349.32];
-            notes.forEach((freq, i) => {
-                const noteTime = startTime + (i * 0.12); // Rapid sweep timing
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createBiquadFilter();
+            if (!audioCtx) return;
+            // C Major 9 pentatonic progression
+            const notes = [261.63, 329.63, 392.00, 493.88, 587.33, 783.99, 987.77, 1174.66, 1567.98, 1975.53];
+            
+            // Build Stereo Delay Chain
+            const delayL = audioCtx.createDelay();
+            const delayR = audioCtx.createDelay();
+            const feedback = audioCtx.createGain();
+            const delayFilter = audioCtx.createBiquadFilter();
 
-                osc.type = 'triangle'; // Bell-like tone
+            delayL.delayTime.value = 0.22;
+            delayR.delayTime.value = 0.33;
+            feedback.gain.value = 0.35;
+
+            delayFilter.type = 'lowpass';
+            delayFilter.frequency.value = 2500;
+
+            delayL.connect(feedback);
+            feedback.connect(delayR);
+            delayR.connect(delayFilter);
+            delayFilter.connect(masterGain);
+
+            notes.forEach((freq, i) => {
+                const noteTime = startTime + (i * 0.12);
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
                 osc.frequency.value = freq;
 
-                gain.gain.setValueAtTime(0, noteTime);
-                gain.gain.linearRampToValueAtTime(0.08, noteTime + 0.05); // Quick attack
-                gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 3.0); // Long ringing tail
+                gain.gain.setValueAtTime(0.0001, noteTime);
+                gain.gain.linearRampToValueAtTime(0.08, noteTime + 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 2.5);
 
                 osc.connect(gain);
                 gain.connect(masterGain);
+                gain.connect(delayL);
 
                 osc.start(noteTime);
-                osc.stop(noteTime + 3.0);
+                osc.stop(noteTime + 2.5);
             });
         }
 
-        // Cinematic Text-To-Speech Voice
+        // Speech Synthesis Voice
         function playTTSVoice() {
             if ('speechSynthesis' in window) {
-                // Cancel any currently playing speech to ensure immediate playback
                 window.speechSynthesis.cancel();
-
                 const msg = new SpeechSynthesisUtterance("Welcome to the future of baking. Materia Cookies.");
-                msg.rate = 0.85; // Slowed down for a dramatic, cinematic feel
-                msg.pitch = 0.2; // Deep pitch for a massive, robotic/AI tone
+                msg.rate = 0.82;
+                msg.pitch = 0.25;
                 msg.volume = 1.0;
 
-                // Try to grab a deep or male voice if available in the browser
                 const voices = window.speechSynthesis.getVoices();
                 const englishVoices = voices.filter(v => v.lang.startsWith('en'));
                 const preferredVoice = englishVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Male')) || englishVoices[0];
-
-                if (preferredVoice) {
-                    msg.voice = preferredVoice;
-                }
-
+                if (preferredVoice) msg.voice = preferredVoice;
                 window.speechSynthesis.speak(msg);
             }
         }
 
         function scheduleCinematicScore(t0) {
-            // Intro: Rolling snare building up tension
-            for (let i = 0; i < 18; i++) {
-                let hitTime = t0 + (i * 0.18);
-                let vol = 0.05 + (i * 0.015); // Build up volume slightly faster
+            // Intro Snare Roll
+            for (let i = 0; i < 20; i++) {
+                let hitTime = t0 + (i * 0.16);
+                let vol = 0.04 + (i * 0.016);
                 playSnareHit(hitTime, vol);
-                if (i % 4 === 0) playSnareHit(hitTime + 0.06, vol * 0.8);
+                if (i % 4 === 0) playSnareHit(hitTime + 0.05, vol * 0.75);
             }
 
-            // Phase 1 (4.0s) - Morph starts: Grandiose C Major Intro Chord + Boom
+            // Phase 1 (3.5s): C Major 9 Brass Slam
             const tMorph = t0 + (T.P1 / 1000);
             playImpact(tMorph);
-            playBrassChord([130.81, 196.00, 261.63, 329.63, 392.00], tMorph, 2.5); // C3, G3, C4, E4, G4
+            playBrassChord([130.81, 196.00, 261.63, 329.63, 392.00, 493.88], tMorph, 2.5);
 
-            // Phase 2 (6.5s) - Heavy Text forms: Higher, triumphant G Major Chord
+            // Phase 2 (6.0s): G Major Brass Swell
             const tHeavy = t0 + (T.P2 / 1000);
             playImpact(tHeavy);
-            playBrassChord([196.00, 293.66, 392.00, 493.88, 587.33], tHeavy, 2.5); // G3, D4, G4, B4, D5
+            playBrassChord([196.00, 293.66, 392.00, 493.88, 587.33], tHeavy, 2.5);
 
-            // Phase 3 (9.0s) - Explode to Sphere: Massive dissonant hit resolving to F Major
+            // Phase 3 (8.5s): Explode to Sphere (Double Impact + F Major Burst)
             const tExplode = t0 + (T.P3 / 1000);
             playImpact(tExplode);
-            playImpact(tExplode + 0.1); // Double boom
-            playBrassChord([87.31, 174.61, 261.63, 349.23, 440.00], tExplode, 3.5); // F2, F3, C4, F4, A4
+            playImpact(tExplode + 0.08);
+            playBrassChord([87.31, 174.61, 261.63, 349.23, 440.00, 523.25], tExplode, 3.8);
 
-            // Phase 5 (14.0s) - Morph to Sleek: FULL SPECTRUM MULTI-TONE LONG PAD
+            // Phase 5 (13.5s): Full Spectrum Synth Pad & Arpeggio
             const tSleek = t0 + (T.P5 / 1000);
             playImpact(tSleek);
-            // Deep sub bass all the way up to high shimmering synth frequencies
-            playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 12.0, true);
+            playBrassChord([65.41, 130.81, 261.63, 392.00, 493.88, 659.25, 1046.50, 1567.98], tSleek, 10.0, true);
 
-            // The End - Futuristic Arpeggio to cap it off
-            const tArp = t0 + (T.P6 / 1000) + 2.5;
+            // The End: Celestial Arpeggio
+            const tArp = t0 + (T.P6 / 1000) + 1.8;
             playArpeggio(tArp);
         }
 
-        // --- Particle Class ---
+        // ─── PARTICLE CLASS ───
         class Particle {
             constructor() {
                 this.x = Math.random() * cw;
                 this.y = Math.random() * ch;
-                this.px = this.x; this.py = this.y; // Previous positions for motion blur
+                this.px = this.x; this.py = this.y;
 
-                this.komorebiSize = Math.random() * 80 + 40;
+                this.komorebiSize = Math.random() * 85 + 35;
                 this.size = this.komorebiSize;
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
+                this.vx = (Math.random() - 0.5) * 2.2;
+                this.vy = (Math.random() - 0.5) * 2.2;
                 this.noiseOffsetX = Math.random() * 1000;
                 this.noiseOffsetY = Math.random() * 1000;
                 this.flickerSpeed = Math.random() * 0.05 + 0.01;
@@ -848,11 +1005,8 @@
                 this.morphStartX = 0; this.morphStartY = 0; this.morphStartSize = 0;
                 this.currentScale = 1;
                 this.depthZ = 0;
+                this.stagger = Math.random() * 0.35;
 
-                // Stagger factor: how much this particle lags/leads in transitions
-                this.stagger = Math.random() * 0.4;
-
-                // Audio Reactive properties
                 this.audioJitterX = 0;
                 this.audioJitterY = 0;
                 this.audioScale = 1;
@@ -861,19 +1015,15 @@
             }
 
             audioReactiveUpdate(bass, treble) {
-                // Bass drives size and a slow pulse
-                this.audioScale = 1 + bass * 0.5;
-
-                // Treble drives high-frequency jitter
-                const jitterMag = treble * 15;
+                this.audioScale = 1 + bass * 0.55;
+                const jitterMag = treble * 14;
                 this.audioJitterX = (Math.random() - 0.5) * jitterMag;
                 this.audioJitterY = (Math.random() - 0.5) * jitterMag;
 
-                // Sonic pressure: push away from center on bass hits
                 const dx = this.x - cw / 2;
                 const dy = this.y - ch / 2;
                 const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                const force = bass * 20;
+                const force = bass * 18;
                 this.sonicPushX = (dx / dist) * force;
                 this.sonicPushY = (dy / dist) * force;
             }
@@ -889,8 +1039,8 @@
 
                 if (distanceMouse < mouse.radius && (phase === 2 || phase === 4 || phase === 6)) {
                     let force = (mouse.radius - distanceMouse) / mouse.radius;
-                    pushX = -(dxMouse / distanceMouse) * force * 15;
-                    pushY = -(dyMouse / distanceMouse) * force * 15;
+                    pushX = -(dxMouse / distanceMouse) * force * 16;
+                    pushY = -(dyMouse / distanceMouse) * force * 16;
                 }
 
                 // Apply Shockwaves
@@ -899,14 +1049,13 @@
                     let dySw = sw.y - this.y;
                     let distSw = Math.sqrt(dxSw * dxSw + dySw * dySw);
                     let diff = Math.abs(distSw - sw.radius);
-                    if (diff < 50) {
-                        let force = (1 - diff / 50) * sw.life * sw.power;
+                    if (diff < 60) {
+                        let force = (1 - diff / 60) * sw.life * sw.power;
                         pushX -= (dxSw / distSw) * force;
                         pushY -= (dySw / distSw) * force;
                     }
                 }
 
-                // Apply staggered progress
                 let p = Math.max(0, Math.min(1, (phaseProgress - this.stagger) / (1 - this.stagger)));
 
                 if (phase === 0) {
@@ -925,9 +1074,8 @@
                 } else if (phase === 2) {
                     let anticipation = 0;
                     if (globalTime > T.P3 - 500) {
-                        anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 25;
+                        anticipation = easeInExpo((globalTime - (T.P3 - 500)) / 500) * 28;
                     }
-
                     let dirX = (cw / 2 - this.heavyX);
                     let dirY = (ch / 2 - this.heavyY);
                     let mag = Math.sqrt(dirX * dirX + dirY * dirY) || 1;
@@ -938,17 +1086,15 @@
 
                 } else if (phase === 3) {
                     const ease = easeOutExpo(p);
-                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius, false);
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius);
                     this.x = this.morphStartX + (proj.x - this.morphStartX) * ease;
                     this.y = this.morphStartY + (proj.y - this.morphStartY) * ease;
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
-                    this.size = Math.max(0.1, this.morphStartSize + ((3 * proj.scale) - this.morphStartSize) * ease);
+                    this.size = Math.max(0.1, this.morphStartSize + ((3.2 * proj.scale) - this.morphStartSize) * ease);
 
                 } else if (phase === 4) {
-                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius, false);
-
-                    // Add Turbulence
+                    let proj = getProjectedSpherePos(this.sphere3D, globalTime, cw / 2, ch / 2, giantSphereRadius);
                     const turbX = Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 2;
                     const turbY = Math.cos(globalTime * 0.0015 + this.noiseOffsetY) * 2;
 
@@ -956,25 +1102,23 @@
                     this.y = proj.y + pushY + turbY;
                     this.currentScale = proj.scale;
                     this.depthZ = proj.z;
-                    this.size = 3 * proj.scale;
+                    this.size = 3.2 * proj.scale;
 
                 } else if (phase === 5) {
-                    // Disperse particles outward as ambient stardust
                     const ease = easeInOutQuint(p);
                     if (this.disperseDirX === undefined || this.disperseDirX === null) {
                         const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 2.5 + 0.5;
+                        const speed = Math.random() * 2.8 + 0.6;
                         this.disperseDirX = Math.cos(angle) * speed;
                         this.disperseDirY = Math.sin(angle) * speed;
                         this.targetSize = Math.random() * 1.5 + 0.5;
                     }
-                    this.x = this.morphStartX + this.disperseDirX * ease * 180 + Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 1.5;
-                    this.y = this.morphStartY + this.disperseDirY * ease * 180 + Math.cos(globalTime * 0.001 + this.noiseOffsetY) * 1.5;
+                    this.x = this.morphStartX + this.disperseDirX * ease * 200 + Math.sin(globalTime * 0.001 + this.noiseOffsetX) * 1.5;
+                    this.y = this.morphStartY + this.disperseDirY * ease * 200 + Math.cos(globalTime * 0.001 + this.noiseOffsetY) * 1.5;
                     this.size = this.morphStartSize + (this.targetSize - this.morphStartSize) * ease;
                     this.opacity = 1 - ease * 0.85;
 
                 } else if (phase === 6) {
-                    // Continue drifting slowly as ambient stardust
                     if (this.disperseDirX === undefined || this.disperseDirX === null) {
                         this.disperseDirX = (Math.random() - 0.5) * 2;
                         this.disperseDirY = (Math.random() - 0.5) * 2;
@@ -1002,16 +1146,15 @@
                     let r = 255, g = 255, b = 255;
 
                     if (phase === 3 || phase === 4) {
-                        alpha *= Math.max(0.15, Math.min(1, this.currentScale * this.currentScale));
+                        alpha *= Math.max(0.18, Math.min(1, this.currentScale * this.currentScale));
                         let depthFactor = (this.depthZ + 1) / 2;
-                        r = Math.floor(100 + 155 * depthFactor);
-                        g = Math.floor(200 + 55 * depthFactor);
+                        r = Math.floor(180 + 75 * depthFactor);
+                        g = Math.floor(140 + 115 * depthFactor);
                         b = 255;
                     }
 
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
-                    // Motion Blur: Stretch particle if velocity is high
                     if (velocity > 5 && (phase === 1 || phase === 3 || phase === 5)) {
                         ctx.beginPath();
                         ctx.lineWidth = this.size * 2;
@@ -1029,12 +1172,12 @@
             }
         }
 
-        // --- Target Extraction ---
+        // ─── TARGET EXTRACTION & SHAPE MAPPING ───
         function extractHeavyTextTargets() {
             const tCanvas = document.createElement('canvas');
             tCanvas.width = cw; tCanvas.height = ch;
             const tCtx = tCanvas.getContext('2d');
-            let fontSize = Math.min(cw / 7, 180);
+            let fontSize = Math.min(cw / 6.5, 190);
             tCtx.font = `900 ${fontSize}px Montserrat`;
             tCtx.fillStyle = 'white'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
 
@@ -1044,7 +1187,7 @@
 
             const imgData = tCtx.getImageData(0, 0, cw, ch).data;
             textTargetsHeavy = [];
-            const step = Math.ceil(cw / 300);
+            const step = Math.ceil(cw / 320);
 
             for (let y = 0; y < ch; y += step) {
                 for (let x = 0; x < cw; x += step) {
@@ -1054,8 +1197,8 @@
         }
 
         function assignRolesAndShapes() {
-            const lats = 24;
-            const lons = 48;
+            const lats = 26;
+            const lons = 52;
 
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 if (textTargetsHeavy.length > 0) {
@@ -1080,8 +1223,6 @@
             }
         }
 
-
-
         function init() {
             const dpr = window.devicePixelRatio || 1;
             const logicalW = Math.max(window.innerWidth, 1);
@@ -1094,7 +1235,7 @@
             cw = logicalW;
             ch = logicalH;
 
-            giantSphereRadius = Math.min(cw, ch) * 0.40;
+            giantSphereRadius = Math.min(cw, ch) * 0.38;
 
             particles = [];
             for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
@@ -1107,24 +1248,52 @@
             particles.forEach(p => { p.morphStartX = p.x; p.morphStartY = p.y; p.morphStartSize = p.size; });
         }
 
-        // --- Main Animation Loop ---
+        function skipToStore() {
+            if (isRedirecting) return;
+            isRedirecting = true;
+            canvasContainer.style.transition = 'opacity 0.8s ease, filter 0.8s ease';
+            canvasContainer.style.opacity = '0';
+            canvasContainer.style.filter = 'blur(20px)';
+
+            const textContainer = document.getElementById('final-text-container');
+            if (textContainer) {
+                textContainer.style.transition = 'opacity 0.8s ease';
+                textContainer.style.opacity = '0';
+            }
+
+            setTimeout(() => {
+                window.location.href = 'STORE.HTML';
+            }, 800);
+        }
+
+        // ─── MAIN ANIMATION LOOP ───
         function animate(timestamp) {
             if (!animationStartTime) animationStartTime = timestamp;
             let globalTime = timestamp - animationStartTime;
 
-            // --- Audio Reactivity Logic ---
+            // Audio Frequency Analyser Data
             let frequencyData = null;
             if (window.MateriaAnalyser) {
                 frequencyData = new Uint8Array(window.MateriaAnalyser.frequencyBinCount);
                 window.MateriaAnalyser.getByteFrequencyData(frequencyData);
+
+                // Update HUD Audio Equalizer Bars dynamically
+                const eqBars = document.querySelectorAll('.eq-bar');
+                if (eqBars.length > 0) {
+                    eqBars.forEach((bar, idx) => {
+                        const bin = Math.floor((idx / eqBars.length) * 32);
+                        const val = (frequencyData[bin] || 0) / 255;
+                        bar.style.height = `${Math.max(3, val * 16)}px`;
+                        bar.style.backgroundColor = val > 0.6 ? '#b48cff' : 'rgba(180, 140, 255, 0.6)';
+                    });
+                }
             }
 
-            // Simple beat detection / energy mapping
             let bassEnergy = 0;
             let trebleEnergy = 0;
             if (frequencyData) {
                 for (let i = 0; i < 8; i++) bassEnergy += frequencyData[i];
-                bassEnergy /= 8 * 255; // 0 to 1
+                bassEnergy /= 8 * 255;
                 for (let i = 16; i < 32; i++) trebleEnergy += frequencyData[i];
                 trebleEnergy /= 16 * 255;
             }
@@ -1148,47 +1317,58 @@
                 newPhase = 6;
             }
 
-            // --- CINEMATIC DIRECTOR (Camera, Shakes, Flashes) ---
+            // Phase Readout HUD update
+            const hudReadout = document.getElementById('hud-phase-readout');
+            if (hudReadout) {
+                const phaseLabels = [
+                    '[PHASE 00 // ATMOSPHERIC DRIFT]',
+                    '[PHASE 01 // TEXT SYNTHESIS]',
+                    '[PHASE 02 // MONOLITHIC HOLD]',
+                    '[PHASE 03 // QUANTUM SPHERE EXPLOSION]',
+                    '[PHASE 04 // SPHERE ORBITAL STABILITY]',
+                    '[PHASE 05 // SPECIMEN DISSOLVE]',
+                    '[PHASE 06 // HAUTE STORE LOADING]'
+                ];
+                hudReadout.textContent = phaseLabels[newPhase] || '[SYSTEM ONLINE]';
+            }
+
+            // Cinematic Director Transitions
             if (newPhase !== currentPhase) {
                 triggerMorph();
 
-                // Dynamic phase-based ambient background color shifts
                 const ambientBg = document.getElementById('ambient-bg');
                 if (ambientBg) {
                     if (newPhase === 0) {
-                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(40, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(45, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
                     } else if (newPhase === 1 || newPhase === 2) {
-                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(20, 20, 35, 0.3) 0%, rgba(0, 0, 0, 1) 100%)";
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(25, 20, 45, 0.35) 0%, rgba(0, 0, 0, 1) 100%)";
                     } else if (newPhase === 3 || newPhase === 4) {
-                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(0, 45, 65, 0.35) 0%, rgba(0, 0, 0, 1) 100%)";
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(10, 45, 75, 0.4) 0%, rgba(0, 0, 0, 1) 100%)";
                     } else if (newPhase === 5 || newPhase === 6) {
-                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(35, 15, 65, 0.4) 0%, rgba(0, 0, 0, 1) 100%)";
+                        ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(40, 15, 70, 0.45) 0%, rgba(0, 0, 0, 1) 100%)";
                     }
                 }
 
                 canvasContainer.classList.remove('gooey-active');
 
                 if (newPhase === 2) {
-                    shakeIntensity = 40; // Hard slam
-                    flashOpacity = 0.4;
-                    canvasContainer.style.filter = 'contrast(1.2) saturate(1.5)';
+                    shakeIntensity = 42;
+                    flashOpacity = 0.45;
+                    canvasContainer.style.filter = 'contrast(1.25) saturate(1.5)';
                 }
                 if (newPhase === 3) {
                     flashOpacity = 1;
-                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 0%, rgba(0, 15, 30, 0.95) 100%)";
-                    canvasContainer.style.filter = 'contrast(1.5) saturate(2) hue-rotate(10deg)';
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 0%, rgba(0, 15, 35, 0.95) 100%)";
+                    canvasContainer.style.filter = 'contrast(1.5) saturate(2) hue-rotate(12deg)';
                 }
                 if (newPhase === 5) {
-                    shakeIntensity = 15;
-                    flashOpacity = 0.6;
-                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.9) 100%)";
+                    shakeIntensity = 18;
+                    flashOpacity = 0.65;
+                    vignetteDiv.style.background = "radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.92) 100%)";
                     canvasContainer.style.filter = 'none';
 
-                    // Fade in the static CSS text overlay
                     const textContainer = document.getElementById('final-text-container');
-                    if (textContainer) {
-                        textContainer.classList.add('active');
-                    }
+                    if (textContainer) textContainer.classList.add('active');
                 }
 
                 currentPhase = newPhase;
@@ -1196,10 +1376,10 @@
 
             // Camera Motion Logic
             if (currentPhase === 0) {
-                camScale = 1 + (globalTime / T.P1) * 0.15; // Slow push in during Komorebi
+                camScale = 1 + (globalTime / T.P1) * 0.15;
             }
-            // Viscous Input Smoothing (Lerp)
-            const lerpFactor = 0.08; // Lower is more "viscous"
+
+            const lerpFactor = 0.08;
             if (smoothMouse.x === -1000) {
                 smoothMouse.x = mouse.x;
                 smoothMouse.y = mouse.y;
@@ -1209,29 +1389,29 @@
             }
 
             if (currentPhase === 1) {
-                camScale = 1.15 - easeInOutQuint(phaseProgress) * 0.15; // Pull back sharply as text forms
+                camScale = 1.15 - easeInOutQuint(phaseProgress) * 0.15;
             } else if (currentPhase === 2) {
-                camScale = 1 + (globalTime - T.P2) * 0.00002; // Micro drift
+                camScale = 1 + (globalTime - T.P2) * 0.00002;
             } else if (currentPhase === 3) {
-                camScale = 1 + easeInOutQuint(phaseProgress) * 0.2; // Push in aggressively as sphere expands
+                camScale = 1 + easeInOutQuint(phaseProgress) * 0.22;
             } else if (currentPhase === 4) {
-                camScale = 1.2 + (globalTime - T.P4) * 0.00003; // Continue drifting in
+                camScale = 1.22 + (globalTime - T.P4) * 0.00003;
             } else if (currentPhase === 5) {
-                camScale = 1.2 - easeInOutQuint(phaseProgress) * 0.2; // Snap back out to reveal final text
+                camScale = 1.22 - easeInOutQuint(phaseProgress) * 0.22;
             }
 
-            // Screen Shake Decay with Frequency (Sine noise)
+            // Screen Shake Decay
             if (shakeIntensity > 0.1) {
                 const s = shakeIntensity;
                 const freq = globalTime * 0.05;
                 camX = (Math.sin(freq) + Math.sin(freq * 0.79)) * s * 0.5;
                 camY = (Math.cos(freq * 0.91) + Math.cos(freq * 0.67)) * s * 0.5;
-                shakeIntensity *= 0.92; // Slightly slower decay for "rumble"
+                shakeIntensity *= 0.92;
             } else {
                 camX = 0; camY = 0;
             }
 
-            // Flash & Filter Decay
+            // Flash Decay
             if (flashOpacity > 0.01) {
                 flashOpacity *= 0.85;
             } else {
@@ -1239,29 +1419,16 @@
                 if (currentPhase !== 3) canvasContainer.style.filter = 'none';
             }
 
-
-            // Apply Camera and Flash
             canvasContainer.style.transform = `translate(${camX}px, ${camY}px) scale(${camScale})`;
             flashDiv.style.opacity = flashOpacity;
 
-            // Dynamic Atmospheric Filtering based on audio intensity
-            if (window.MateriaAnalyser) {
-                const intensity = (bassEnergy + trebleEnergy) / 2;
-                const hue = intensity * 15; // Subtle color shift
-                const contrast = 100 + intensity * 50;
-                const brightness = 100 + intensity * 20;
-                canvasContainer.style.filter = `hue-rotate(${hue}deg) contrast(${contrast}%) brightness(${brightness}%)`;
-            }
-
-            // Trigger "Welcome to the future" text and Voice slightly before the arpeggio hits
-            if (globalTime > T.P6 + 2000 && !window.taglineShown) {
+            // Trigger "Welcome to the future" text & redirect sequence
+            if (globalTime > T.P6 + 2000 && !window.taglineShown && !isRedirecting) {
                 document.getElementById('tagline').style.opacity = 1;
                 playTTSVoice();
                 window.taglineShown = true;
 
-                // Final cinematic hold before redirect
                 setTimeout(() => {
-                    // Start fading out the entire cinematic for a smooth transition
                     canvasContainer.style.transition = 'opacity 3s ease, filter 3s ease';
                     canvasContainer.style.opacity = '0';
                     canvasContainer.style.filter = 'blur(20px)';
@@ -1269,7 +1436,6 @@
                     document.getElementById('tagline').style.transition = 'opacity 2s ease';
                     document.getElementById('tagline').style.opacity = '0';
 
-                    // Smoothly fade out final typography
                     const textContainer = document.getElementById('final-text-container');
                     if (textContainer) {
                         textContainer.style.transition = 'opacity 3s ease, filter 3s ease';
@@ -1277,24 +1443,25 @@
                         textContainer.style.filter = 'blur(20px)';
                     }
 
-                    // Open cinematic widescreen bars back up
                     const barTop = document.getElementById('cinematic-bar-top');
                     const barBottom = document.getElementById('cinematic-bar-bottom');
                     if (barTop) barTop.style.height = '0vh';
                     if (barBottom) barBottom.style.height = '0vh';
-                }, 5000);
+                }, 4800);
 
                 setTimeout(() => {
-                    window.location.href = 'STORE.HTML';
-                }, 8500); // Redirect after fade completes
+                    if (!isRedirecting) {
+                        isRedirecting = true;
+                        window.location.href = 'STORE.HTML';
+                    }
+                }, 8200);
             }
 
-            // --- CANVAS RENDERING ---
+            // Canvas Drawing Pass
             ctx.globalCompositeOperation = 'source-over';
-            // Variable trailing for different phases
             let trailOpacity = 0.15;
             if (currentPhase === 0) trailOpacity = 0.15;
-            else if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0; // Hard clear on hold phases
+            else if (currentPhase === 2 || currentPhase === 4 || currentPhase === 6) trailOpacity = 1.0;
             else trailOpacity = 0.4;
 
             ctx.fillStyle = `rgba(0, 0, 0, ${trailOpacity})`;
@@ -1302,16 +1469,15 @@
 
             ctx.globalCompositeOperation = 'lighter';
 
-            // Update & Draw Shockwaves
+            // Shockwaves
             for (let i = window.shockwaves.length - 1; i >= 0; i--) {
                 const sw = window.shockwaves[i];
                 sw.update();
 
-                // Draw dynamic expanding glowing cyan ring for visual punch
                 ctx.beginPath();
                 ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(0, 210, 255, ${sw.life * 0.18})`;
-                ctx.lineWidth = 3 * sw.life;
+                ctx.strokeStyle = `rgba(180, 140, 255, ${sw.life * 0.25})`;
+                ctx.lineWidth = 3.5 * sw.life;
                 ctx.stroke();
 
                 if (sw.life <= 0) window.shockwaves.splice(i, 1);
@@ -1323,69 +1489,71 @@
                 particles[i].draw(currentPhase, phaseProgress);
             }
 
-            // Keep the animation loop running indefinitely for the final state
             requestAnimationFrame(animate);
         }
 
-        // --- Initialization & Audio Context Boot ---
+        // Initialization & Audio Context Setup
         document.fonts.ready.then(() => {
             document.getElementById('loading').style.display = 'none';
             const startScreen = document.getElementById('start-screen');
             startScreen.style.display = 'flex';
 
-            // Pre-warm Speech Synthesis to ensure voices are loaded into the browser early
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.getVoices();
             }
 
             document.getElementById('start-btn').addEventListener('click', () => {
-                // Widescreen bars sliding in
                 const barTop = document.getElementById('cinematic-bar-top');
                 const barBottom = document.getElementById('cinematic-bar-bottom');
                 if (barTop) barTop.style.height = '10vh';
                 if (barBottom) barBottom.style.height = '10vh';
 
-                // Immediately set initial Phase 0 ambient background gradient
                 const ambientBg = document.getElementById('ambient-bg');
-                if (ambientBg) ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(40, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
+                if (ambientBg) ambientBg.style.background = "radial-gradient(circle at 50% 50%, rgba(45, 25, 10, 0.25) 0%, rgba(0, 0, 0, 1) 100%)";
 
-                // Initialize Web Audio API on user gesture
+                const hudOverlay = document.getElementById('hud-overlay');
+                if (hudOverlay) hudOverlay.style.opacity = '1';
+
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                masterGain = audioCtx.createBiquadFilter();
-                masterGain.gain.value = 0.6; // Master Volume
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.55;
 
-                // Add a soft compressor to prevent clipping when massive chords hit
                 const compressor = audioCtx.createDynamicsCompressor();
-                compressor.threshold.value = -10;
-                compressor.ratio.value = 4;
+                compressor.threshold.value = -14;
+                compressor.knee.value = 10;
+                compressor.ratio.value = 4.0;
+                compressor.attack.value = 0.005;
+                compressor.release.value = 0.2;
 
-                // --- Audio Bridge for Intro Reactivity ---
+                const masterFilter = audioCtx.createBiquadFilter();
+                masterFilter.type = 'lowpass';
+                masterFilter.frequency.value = 7500;
+
                 const analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 256;
                 window.MateriaAnalyser = analyser;
 
                 masterGain.connect(compressor);
-                compressor.connect(analyser);
+                compressor.connect(masterFilter);
+                masterFilter.connect(analyser);
                 analyser.connect(audioCtx.destination);
 
-                startScreen.style.opacity = 0;
-                setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
+                startAmbientDrone();
+
+                startScreen.style.opacity = '0';
+                setTimeout(() => { startScreen.style.display = 'none'; }, 1200);
 
                 init();
-
-                // Schedule the audio score perfectly synced with the visual phases
                 scheduleCinematicScore(audioCtx.currentTime);
-
-                // Start visual animation loop
                 requestAnimationFrame(animate);
             });
         });
 
         window.addEventListener('resize', () => {
-            if (particles.length === 0) return; // Prevent error if resized before init
+            if (particles.length === 0) return;
             cw = canvas.width = Math.max(window.innerWidth, 1);
             ch = canvas.height = Math.max(window.innerHeight, 1);
-            giantSphereRadius = Math.min(cw, ch) * 0.40;
+            giantSphereRadius = Math.min(cw, ch) * 0.38;
             extractHeavyTextTargets();
             assignRolesAndShapes();
             triggerMorph();
@@ -1421,22 +1589,13 @@
     <!-- Ferris Wheel Menu (Lower Right) -->
     <div id="ferris-wheel-menu">
         <div class="ferris-hover-area">
-            <!-- Hub Button (✦ indicator) -->
             <div class="ferris-hub">✦</div>
-
-            <!-- Satellite 1: DEV -->
-            <button id="ferris-item-dev" class="ferris-item"
-                onclick="document.getElementById('materia-dev-launcher').click()" title="Developer Console">
+            <button id="ferris-item-dev" class="ferris-item" onclick="document.getElementById('materia-dev-launcher').click()" title="Developer Console">
                 <span class="label" style="font-size: 8px;">DEV</span>
             </button>
-
-            <!-- Satellite 2: COOKIES -->
-            <button id="ferris-item-cookies" class="ferris-item" onclick="showCookieWindow()"
-                title="Data Consent / Cookies">
+            <button id="ferris-item-cookies" class="ferris-item" onclick="showCookieWindow()" title="Data Consent / Cookies">
                 <span class="label" style="font-size: 7px; letter-spacing: 0;">DATA<br>INFO</span>
             </button>
-
-            <!-- Satellite 3: RECIPE -->
             <button id="ferris-item-recipe" class="ferris-item" onclick="openRecipeViewer()" title="Recipe Card">
                 <span class="label" style="font-size: 7px; letter-spacing: 0;">RECIPE</span>
             </button>
@@ -1460,7 +1619,6 @@
         overflow: hidden;
         font-family: 'Montserrat', sans-serif;
     ">
-        <!-- Close Button (Top Right) -->
         <button onclick="closeRecipeViewer()" style="
             position: absolute;
             top: 25px; right: 25px;
@@ -1481,7 +1639,6 @@
             ✕
         </button>
 
-        <!-- Modal Content Box -->
         <div id="recipe-content-box" style="
             position: relative;
             max-width: 90%;
@@ -1492,7 +1649,6 @@
             transform: scale(0.9) translateY(20px);
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         ">
-            <!-- Title Badge -->
             <div style="
                 padding: 6px 20px;
                 background: rgba(180, 140, 255, 0.15);
@@ -1510,21 +1666,17 @@
                 ">✦ ORB TREAT RECIPE ✦</span>
             </div>
 
-            <!-- Recipe Image Frame -->
             <div style="
                 position: relative;
                 border-radius: 24px;
                 overflow: hidden;
                 border: 1px solid rgba(255, 255, 255, 0.15);
-                box-shadow: 
-                    0 20px 50px rgba(0,0,0,0.5),
-                    0 0 40px rgba(180, 140, 255, 0.1);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(180, 140, 255, 0.1);
                 background: rgba(0,0,0,0.2);
                 transition: all 0.3s ease;
             " onmouseover="this.style.borderColor='rgba(180, 140, 255, 0.4)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.6), 0 0 50px rgba(180, 140, 255, 0.2)'"
                 onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(180, 140, 255, 0.1)'">
-                <img src="ASSETS/images/ordinary_technology_tentacle_orb…_202605180046.jpeg" alt="Orb Treat Recipe"
-                    style="
+                <img src="ASSETS/images/ordinary_technology_tentacle_orb…_202605180046.jpeg" alt="Orb Treat Recipe" style="
                     display: block;
                     max-width: 100%;
                     max-height: 70vh;
@@ -1533,7 +1685,6 @@
                 ">
             </div>
 
-            <!-- Subtitle/Caption -->
             <div style="
                 margin-top: 20px;
                 font-size: 11px;
@@ -1543,7 +1694,7 @@
                 font-weight: 200;
                 text-align: center;
             ">
-                Ordinary Technology Tentacle Orb Chocolates & Molds
+                Ordinary Technology Tentacle Orb Chocolates &amp; Molds
             </div>
         </div>
     </div>
@@ -1554,12 +1705,9 @@
             const content = document.getElementById('recipe-content-box');
             if (!viewer) return;
             viewer.style.display = 'flex';
-            // Force reflow
             viewer.offsetHeight;
             viewer.style.opacity = '1';
-            if (content) {
-                content.style.transform = 'scale(1) translateY(0)';
-            }
+            if (content) content.style.transform = 'scale(1) translateY(0)';
         }
 
         function closeRecipeViewer() {
@@ -1567,12 +1715,8 @@
             const content = document.getElementById('recipe-content-box');
             if (!viewer) return;
             viewer.style.opacity = '0';
-            if (content) {
-                content.style.transform = 'scale(0.9) translateY(20px)';
-            }
-            setTimeout(() => {
-                viewer.style.display = 'none';
-            }, 500);
+            if (content) content.style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => { viewer.style.display = 'none'; }, 500);
         }
     </script>
 </body>

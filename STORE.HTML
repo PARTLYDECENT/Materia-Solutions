@@ -62,23 +62,26 @@
 
         /* Category Filter Buttons */
         .cat-filter-btn {
-            background: rgba(255, 255, 255, 0.45);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            color: #71717a;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            color: #4b5563;
             backdrop-filter: blur(10px);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
         .cat-filter-btn:hover {
-            background: rgba(255, 255, 255, 0.8);
-            color: #18181b;
-            border-color: rgba(180, 140, 255, 0.4);
+            background: rgba(255, 255, 255, 0.9);
+            color: #111827;
+            border-color: rgba(147, 51, 234, 0.4);
+            transform: translateY(-1px);
         }
         .cat-filter-btn.active {
-            background: rgba(180, 140, 255, 0.2);
-            border-color: rgba(180, 140, 255, 0.6);
-            color: #7c3aed;
-            box-shadow: 0 0 15px rgba(180, 140, 255, 0.2);
+            background: rgba(147, 51, 234, 0.9);
+            border-color: rgba(147, 51, 234, 1);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(147, 51, 234, 0.35);
         }
 
         #webgl-container {
@@ -815,17 +818,22 @@
 
         /* 3D Card Physics & Cursor Spotlight */
         .flower-card {
-            min-height: 185px;
-            padding: 1.35rem 1.2rem !important;
+            min-height: 145px;
+            padding: 1rem 0.9rem !important;
+            border-radius: 1.25rem;
             transform-style: preserve-3d;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
         @media (min-width: 768px) {
             .flower-card {
-                min-height: 220px;
-                padding: 1.75rem 1.5rem !important;
+                min-height: 160px;
+                padding: 1.2rem 1.1rem !important;
             }
         }
         .flower-card::before {
@@ -833,8 +841,8 @@
             position: absolute;
             top: var(--mouse-y, 50%);
             left: var(--mouse-x, 50%);
-            width: 280px;
-            height: 280px;
+            width: 240px;
+            height: 240px;
             transform: translate(-50%, -50%);
             background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.08) 45%, transparent 70%);
             opacity: 0;
@@ -866,22 +874,25 @@
 
         /* Flavor Note Pills */
         .flavor-pill {
-            font-size: 8px;
-            letter-spacing: 0.15em;
+            font-size: 7.5px;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            padding: 3px 9px;
+            padding: 2.5px 8px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            color: #6b7280;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1f2937;
+            font-weight: 600;
             margin-bottom: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
         }
         .flower-card:hover .flavor-pill {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1f2937;
-            border-color: rgba(180, 140, 255, 0.4);
+            background: #ffffff;
+            color: #111827;
+            border-color: rgba(147, 51, 234, 0.5);
+            box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
         }
 
         /* Section Divider */
@@ -1599,10 +1610,23 @@
         }
 
         .rd-card-evolved .rd-inspect {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            background: rgba(147, 51, 234, 0.08);
+            font-size: 8.5px;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .rd-card-evolved:hover .rd-inspect {
-            transform: translateX(4px);
+            transform: translateX(3px) scale(1.05);
+            background: rgba(147, 51, 234, 0.2);
+            border-color: rgba(147, 51, 234, 0.6);
+            box-shadow: 0 0 12px rgba(147, 51, 234, 0.25);
         }
 
         /* Progress Bar */
@@ -1748,13 +1772,13 @@
     </style>
 </head>
 
-<body class="h-[100dvh] w-screen relative selection:bg-hana-sakura selection:text-white">
+<body class="min-h-screen w-full relative selection:bg-hana-sakura selection:text-white overflow-x-hidden overflow-y-auto">
 
     <!-- WebGL Background -->
     <div id="webgl-container"></div>
 
-    <!-- UI Overlay (No Scroll Grid) -->
-    <div class="relative z-10 h-full flex flex-col w-full max-w-7xl mx-auto">
+    <!-- UI Overlay -->
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6 pb-28">
 
         <!-- Minimal Header -->
         <header class="absolute top-0 left-0 w-full px-6 py-5 flex justify-between items-center z-50 bg-gradient-to-b from-hana-bg/80 to-transparent backdrop-blur-[2px]">
@@ -1888,230 +1912,198 @@
             </div>
         </div>
 
-        <!-- Main Product Catalog Grid (Spaced) -->
-        <main class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 my-6 min-h-0">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-7 w-full">
+        <!-- Main Product Catalog Grid (Spaced & Compact) -->
+        <main class="flex-1 flex flex-col items-center justify-center p-3 md:p-6 my-4 min-h-0">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 w-full">
 
                 <!-- Card 1: FIRE -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-fire group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-fire group relative overflow-hidden p-3"
                     data-category="current" data-name="Scarlet Spice Fire" onclick="showModal('Scarlet Spice')">
-                    <span class="flavor-pill">🌶️ Chili Cacao</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🌶️ Saffron Chili Noir</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         SCARLET</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">SPICE</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        BAKED ON MASS
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">TRUFFLE</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-orange-500/40 bg-orange-500/10 text-[8.5px] md:text-[9px] tracking-widest text-orange-700 font-mono font-semibold uppercase">
+                        24K GOLD DUSTED
                     </div>
                 </div>
 
                 <!-- Card 2: CYBER -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-cyber group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-cyber group relative overflow-hidden p-3"
                     data-category="current" data-name="Cyber Mint" onclick="showModal('Cyber Mint')">
-                    <span class="flavor-pill">🍃 Mint Crisp</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍃 Emerald Mint Crisp</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         CYBER</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">MINT</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        VACUUM SEALED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">MINT</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-[8.5px] md:text-[9px] tracking-widest text-emerald-700 font-mono font-semibold uppercase">
+                        VALRHONA INFUSED
                     </div>
                 </div>
 
                 <!-- Card 3: VOID -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-void group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-void group relative overflow-hidden p-3"
                     data-category="current" data-name="Void Cocoa Dark" onclick="showModal('Void Cocoa')">
-                    <span class="flavor-pill">🍫 Dark Truffle</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍫 Périgord Black Truffle</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         VOID</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">COCOA</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        IN PRODUCTION
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">GANACHE</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-purple-500/40 bg-purple-500/10 text-[8.5px] md:text-[9px] tracking-widest text-purple-700 font-mono font-semibold uppercase">
+                        GRAND CRU RESERVE
                     </div>
                 </div>
 
                 <!-- Card 4: AERO -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-aero group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-aero group relative overflow-hidden p-3"
                     data-category="current" data-name="Aero Lemon Zest" onclick="showModal('Aero Lemon')">
-                    <span class="flavor-pill">🍋 Zesty Citrus</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍋 Imperial Yuzu Blossom</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         AERO</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">LEMON</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        BATCH READY
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">YUZU</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-sky-500/40 bg-sky-500/10 text-[8.5px] md:text-[9px] tracking-widest text-sky-700 font-mono font-semibold uppercase">
+                        HAUTE VACUUM BAKE
                     </div>
                 </div>
 
                 <!-- Card 5: PRISM -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-prism group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-prism group relative overflow-hidden p-3"
                     data-category="current" data-name="Prism Sugar Rainbow" onclick="showModal('Prism Sugar')">
-                    <span class="flavor-pill">🌈 Rainbow Spark</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">✨ Champagne Sugar Sablé</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         PRISM</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">SUGAR</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        STYLING SOON
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">SABLÉ</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-pink-500/40 bg-pink-500/10 text-[8.5px] md:text-[9px] tracking-widest text-pink-700 font-mono font-semibold uppercase">
+                        HAUTE COUTURE
                     </div>
                 </div>
 
                 <!-- Card 6: FROST -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-frost group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-frost group relative overflow-hidden p-3"
                     data-category="current" data-name="Ghost Frost Ice" onclick="showModal('Ghost Frost')">
-                    <span class="flavor-pill">❄️ Ice Glaze</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">❄️ White Gold Glacé</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         GHOST</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">FROST</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        VACUUM SEALED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">FROST</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-[8.5px] md:text-[9px] tracking-widest text-cyan-700 font-mono font-semibold uppercase">
+                        CRYO-TEMPERED
                     </div>
                 </div>
 
                 <!-- Card 7: GRAVITY -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-gravity group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-gravity group relative overflow-hidden p-3"
                     data-category="current" data-name="Gravity Fudge" onclick="showModal('Gravity Fudge')">
-                    <span class="flavor-pill">🍨 Fudge Core</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍨 Piedmont Gianduja Core</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         GRAVITY</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">FUDGE</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        VACUUM SEALED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">GIANDUJA</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-indigo-500/40 bg-indigo-500/10 text-[8.5px] md:text-[9px] tracking-widest text-indigo-700 font-mono font-semibold uppercase">
+                        OPULENT FUSION
                     </div>
                 </div>
 
                 <!-- Card 8: NEURAL -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-neural group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-neural group relative overflow-hidden p-3"
                     data-category="current" data-name="Neural Berry Pulse" onclick="showModal('Neural Berry')">
-                    <span class="flavor-pill">🫐 Berry Pulse</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🫐 Cassis Violet Glaze</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         NEURAL</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">BERRY</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-gray-200 bg-white/50 text-[10px] md:text-xs tracking-widest text-gray-400">
-                        FRESH BATCH
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">CASSIS</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-rose-500/40 bg-rose-500/10 text-[8.5px] md:text-[9px] tracking-widest text-rose-700 font-mono font-semibold uppercase">
+                        GENETIC PROFILED
                     </div>
                 </div>
 
                 <!-- Card 9: PLASMA -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-plasma group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-plasma group relative overflow-hidden p-3"
                     data-category="new" data-name="Plasma Toffee Butter" onclick="showModal('Plasma Toffee')">
-                    <span class="flavor-pill">🍯 Butter Toffee</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍯 Smoked Amber Praline</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         PLASMA</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">TOFFEE</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-amber-300/60 bg-amber-500/10 text-[10px] md:text-xs tracking-widest text-amber-600 font-semibold">
-                        FUSION BAKED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">PRALINE</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-[8.5px] md:text-[9px] tracking-widest text-amber-700 font-mono font-semibold uppercase">
+                        FUSION ROASTED
                     </div>
                 </div>
 
                 <!-- Card 10: QUANTUM -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-quantum group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-quantum group relative overflow-hidden p-3"
                     data-category="new" data-name="Quantum Matcha Green Tea" onclick="showModal('Quantum Matcha')">
-                    <span class="flavor-pill">🍵 Matcha Spin</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🍵 Ceremonial Uji Matcha</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         QUANTUM</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">MATCHA</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-emerald-300/60 bg-emerald-500/10 text-[10px] md:text-xs tracking-widest text-emerald-600 font-semibold">
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">MATCHA</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-[8.5px] md:text-[9px] tracking-widest text-emerald-700 font-mono font-semibold uppercase">
                         SPIN STABILIZED
                     </div>
                 </div>
 
                 <!-- Card 11: MAGMA -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-magma group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-magma group relative overflow-hidden p-3"
                     data-category="new" data-name="Magma Cinnamon Spice" onclick="showModal('Magma Cinnamon')">
-                    <span class="flavor-pill">🌋 Spicy Cinnamon</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🌋 Golden Cardamom Brioche</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         MAGMA</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">CINNAMON</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-red-300/60 bg-red-500/10 text-[10px] md:text-xs tracking-widest text-red-600 font-semibold">
-                        CORE HEATED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">CARDAMOM</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-red-500/40 bg-red-500/10 text-[8.5px] md:text-[9px] tracking-widest text-red-700 font-mono font-semibold uppercase">
+                        MOLTEN CORE
                     </div>
                 </div>
 
                 <!-- Card 12: DIAMOND -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-diamond group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-diamond group relative overflow-hidden p-3"
                     data-category="new" data-name="Diamond Shortbread Butter" onclick="showModal('Diamond Shortbread')">
-                    <span class="flavor-pill">✨ Crystalline Gold</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">✨ Tahitian Vanilla Gold</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         DIAMOND</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">SHORTBREAD</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-cyan-300/60 bg-cyan-500/10 text-[10px] md:text-xs tracking-widest text-cyan-600 font-semibold">
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">TAHITI</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-[8.5px] md:text-[9px] tracking-widest text-cyan-700 font-mono font-semibold uppercase">
                         CRYSTALLINE
                     </div>
                 </div>
 
                 <!-- Card 13: CHRONO -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-chrono group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-chrono group relative overflow-hidden p-3"
                     data-category="new" data-name="Chrono Vanilla Bean" onclick="showModal('Chrono Vanilla')">
-                    <span class="flavor-pill">🔮 Aged Vanilla</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🔮 10-Yr Aged Bourbon Bean</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         CHRONO</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">VANILLA</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-yellow-300/60 bg-yellow-500/10 text-[10px] md:text-xs tracking-widest text-yellow-600 font-semibold">
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">BOURBON</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-yellow-500/40 bg-yellow-500/10 text-[8.5px] md:text-[9px] tracking-widest text-yellow-700 font-mono font-semibold uppercase">
                         EPOCH AGED
                     </div>
                 </div>
 
                 <!-- Card 14: BIO -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-bio group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-bio group relative overflow-hidden p-3"
                     data-category="new" data-name="Bio Horizon Organic" onclick="showModal('Bio Horizon')">
-                    <span class="flavor-pill">🧬 Bio Crunch</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🧬 Hawaiian Macadamia Crisp</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         BIO</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">HORIZON</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-teal-300/60 bg-teal-500/10 text-[10px] md:text-xs tracking-widest text-teal-600 font-semibold">
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">MACADAMIA</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-teal-500/40 bg-teal-500/10 text-[8.5px] md:text-[9px] tracking-widest text-teal-700 font-mono font-semibold uppercase">
                         GENE PROFILED
                     </div>
                 </div>
 
                 <!-- Card 15: SOLAR -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-solar group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-solar group relative overflow-hidden p-3"
                     data-category="new" data-name="Solar Macadamia Nut" onclick="showModal('Solar Macadamia')">
-                    <span class="flavor-pill">☀️ Solar Roasted</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">☀️ Honey Almond Florentine</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         SOLAR</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">MACADAMIA</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-orange-300/60 bg-orange-500/10 text-[10px] md:text-xs tracking-widest text-orange-600 font-semibold">
-                        5000K ROASTED
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">FLORENTINE</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-orange-500/40 bg-orange-500/10 text-[8.5px] md:text-[9px] tracking-widest text-orange-700 font-mono font-semibold uppercase">
+                        SOLAR TEMPERED
                     </div>
                 </div>
 
                 <!-- Card 16: DARK MATTER -->
-                <div class="glass-panel rounded-3xl flex flex-col items-center justify-center flower-card card-darkmatter group relative overflow-hidden"
+                <div class="glass-panel rounded-2xl flex flex-col items-center justify-center flower-card card-darkmatter group relative overflow-hidden p-3"
                     data-category="new" data-name="Dark Matter Chocolate" onclick="showModal('Dark Matter')">
-                    <span class="flavor-pill">🌌 Abyssal Cocoa</span>
-                    <div
-                        class="text-3xl md:text-4xl text-hana-text mb-1 font-light opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-500 uppercase tracking-tighter">
+                    <span class="flavor-pill">🌌 Venezuelan Criollo Dark</span>
+                    <div class="text-lg md:text-xl text-hana-text mb-0.5 font-light opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-300 uppercase tracking-wide">
                         DARK</div>
-                    <div class="text-xs md:text-sm tracking-widest text-gray-500 mb-3">MATTER</div>
-                    <div
-                        class="mt-auto px-4 py-1.5 rounded-full border border-purple-400/60 bg-purple-500/10 text-[10px] md:text-xs tracking-widest text-purple-600 font-semibold">
+                    <div class="text-[9px] md:text-[10px] tracking-[0.2em] text-gray-500 mb-2 font-mono">CRIOLLO</div>
+                    <div class="mt-auto px-3 py-1 rounded-full border border-purple-500/40 bg-purple-500/10 text-[8.5px] md:text-[9px] tracking-widest text-purple-700 font-mono font-semibold uppercase">
                         EVENT HORIZON
                     </div>
                 </div>
@@ -2160,7 +2152,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(168, 85, 247, 0.45); background: rgba(147, 51, 234, 0.1);">
                                     <div class="typing-content" style="font-family: 'Share Tech Mono', monospace; font-size: 14px; color: #e9d5ff;">
                                         <span class="typing-prefix" style="color: #c084fc;">[SWEET_ORB] &gt;</span>
-                                        <span class="typing-text" data-text="Rich belgian dark chocolate orb filled with molten salted caramel &amp; hazelnut praline cream!"></span>
+                                        <span class="typing-text" data-text="Rich 85% Valrhona dark chocolate orb infused with 24K gold leaf &amp; Sicilian Bronte pistachio praline cream!"></span>
                                         <span class="typing-cursor" style="color: #c084fc;">▌</span>
                                     </div>
                                 </div>
@@ -2192,7 +2184,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(6, 182, 212, 0.45); background: rgba(6, 182, 212, 0.1);">
                                     <div class="typing-content" style="font-family: 'Fira Code', monospace; font-size: 13.5px; color: #a5f3fc;">
                                         <span class="typing-prefix" style="color: #22d3ee;">[HOT_BAKE] &gt;</span>
-                                        <span class="typing-text" data-text="Bakes hot, gooey chocolate chip &amp; gooey marshmallow cookies fresh at your desk in 30 seconds!"></span>
+                                        <span class="typing-text" data-text="Bakes warm Valrhona dark chocolate chunk &amp; Madagascar bourbon vanilla bean soufflé cookies fresh at your desk in 30 seconds!"></span>
                                         <span class="typing-cursor" style="color: #22d3ee;">▌</span>
                                     </div>
                                 </div>
@@ -2224,7 +2216,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.1);">
                                     <div class="typing-content" style="font-family: 'Space Mono', monospace; font-size: 13.5px; color: #a7f3d0;">
                                         <span class="typing-prefix" style="color: #34d399;">[PASTRY_CORE] &gt;</span>
-                                        <span class="typing-text" data-text="Compressed golden shortbread pastry packed with honey roasted macadamias &amp; sweet vanilla cream!"></span>
+                                        <span class="typing-text" data-text="Compressed golden shortbread pastry packed with honey roasted Hawaiian macadamias &amp; Tahitian vanilla bean cream!"></span>
                                         <span class="typing-cursor" style="color: #34d399;">▌</span>
                                     </div>
                                 </div>
@@ -2256,7 +2248,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(236, 72, 153, 0.45); background: rgba(219, 39, 119, 0.1);">
                                     <div class="typing-content" style="font-family: 'VT323', monospace; font-size: 17px; color: #fbcfe8;">
                                         <span class="typing-prefix" style="color: #f472b6;">[SWEET_HOVER] &gt;</span>
-                                        <span class="typing-text" data-text="Floating strawberry pistachio macaron with sweet white chocolate ganache that melts on your tongue!"></span>
+                                        <span class="typing-text" data-text="Floating ruby cacao macaron with Dom Pérignon rosé ganache &amp; Damask rose petals that melt on your tongue!"></span>
                                         <span class="typing-cursor" style="color: #f472b6;">▌</span>
                                     </div>
                                 </div>
@@ -2288,7 +2280,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(99, 102, 241, 0.45); background: rgba(79, 70, 229, 0.1);">
                                     <div class="typing-content" style="font-family: 'Orbitron', sans-serif; font-size: 12px; color: #c7d2fe;">
                                         <span class="typing-prefix" style="color: #818cf8;">[FLAVOR_BURST] &gt;</span>
-                                        <span class="typing-text" data-text="Unlocks infinite gourmet cookie flavors in every bite — warm churro, dulce de leche &amp; velvet cocoa!"></span>
+                                        <span class="typing-text" data-text="Unlocks infinite haute confectionery flavor profiles in every bite — Grand Cru Valrhona, smoked dulce de leche &amp; Kyoto Uji matcha!"></span>
                                         <span class="typing-cursor" style="color: #818cf8;">▌</span>
                                     </div>
                                 </div>
@@ -2320,7 +2312,7 @@
                                 <div class="typing-console" style="border: 1px solid rgba(14, 165, 233, 0.45); background: rgba(14, 165, 233, 0.1);">
                                     <div class="typing-content" style="font-family: 'Courier Prime', monospace; font-size: 14px; color: #bae6fd;">
                                         <span class="typing-prefix" style="color: #38bdf8;">[FROST_CREAM] &gt;</span>
-                                        <span class="typing-text" data-text="Chilled frosted sugar biscuit that turns into warm, velvety brown-butter vanilla cream as soon as you taste it!"></span>
+                                        <span class="typing-text" data-text="Chilled white-gold glazed sablé biscuit that transforms into warm, velvety brown-butter truffle cream on contact!"></span>
                                         <span class="typing-cursor" style="color: #38bdf8;">▌</span>
                                     </div>
                                 </div>
@@ -2513,7 +2505,7 @@
                 }
             }
 
-            let detailText = `The <span style="color: ${accent}; font-weight: bold;">${itemName}</span> cookies are currently being processed in our automated reactors.<br><br>All Materia cookies are <b>computed to perfection</b>, <b>baked on mass</b>, and <b>vacuum sealed</b> in our automated confectionery reactors.<br><br>Materia Cookies is a venture-backed food-tech startup designed to disrupt the global confectionery market through generative flavor profiling. Pre-orders are open now!`;
+            let detailText = `The <span style="color: ${accent}; font-weight: bold;">${itemName}</span> haute confectionery cookies are currently being synthesized in our automated precision chambers.<br><br>All Materia cookies are <b>crafted with rare origin ingredients</b>, <b>precision temperature-tempered</b>, and <b>gold-foil vacuum sealed</b> in our automated confectionery labs.<br><br>Materia Cookies is an ultra-premium food-tech luxury startup merging computational flavor profiling with artisanal haute pastry craft. Pre-orders for vintage batches are open now!`;
 
             if (['Orb Treat V2', 'Desktop Reactor #09', 'Materia Pill-Bar', 'Zero-G Hover Macaron', 'Neural-Link Taste Pack', 'Cryo-Stasis Ice Biscuit'].includes(itemName)) {
                 detailText = `🔬 <b>QUANTUM R&D EXPERIMENTAL PIPELINE</b><br><br>The <span style="color: ${accent}; font-weight: bold;">${itemName}</span> is an active prototype currently undergoing molecular stability testing in our Quantum Baking Chambers.<br><br>Expected commercial rollout begins in <b>2026-2027</b>. Join the priority waitlist to secure early access batch allocation!`;

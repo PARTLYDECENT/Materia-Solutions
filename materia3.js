@@ -128,7 +128,7 @@
         compressor.attack.value = 0.05;
         compressor.release.value = 0.5;
 
-        master = ctx.createBiquadFilter();
+        master = ctx.createGain();
         master.gain.setValueAtTime(0, ctx.currentTime);
         master.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 8); // Gentle fade in
 
@@ -142,13 +142,13 @@
         master.connect(ctx.destination);
 
         // ── Cathedral Reverb ──
-        reverbSend = ctx.createBiquadFilter();
+        reverbSend = ctx.createGain();
         reverbSend.gain.value = 0.6; // High wet mix
 
         convolver = ctx.createConvolver();
         convolver.buffer = generateCathedralIR(ctx, 8, 3.5);
 
-        const reverbReturn = ctx.createBiquadFilter();
+        const reverbReturn = ctx.createGain();
         reverbReturn.gain.value = 0.5;
         
         const reverbFilter = ctx.createBiquadFilter();

@@ -58,31 +58,33 @@
         launcher.innerHTML = 'DEV';
         launcher.style.cssText = `
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+            bottom: 12px;
+            right: 15px;
+            padding: 4px 10px;
+            background: rgba(10, 10, 15, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            color: rgba(255, 255, 255, 0.5);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.7);
             font-family: ${CONFIG.font};
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: 2px;
+            font-size: 8.5px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
             cursor: pointer;
             z-index: 99999;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         `;
         launcher.addEventListener('mouseenter', () => {
             launcher.style.color = '#fff';
             launcher.style.borderColor = CONFIG.primaryColor;
-            launcher.style.boxShadow = `0 0 15px ${CONFIG.primaryColor}`;
+            launcher.style.boxShadow = `0 0 12px ${CONFIG.primaryColor}`;
         });
         launcher.addEventListener('mouseleave', () => {
-            launcher.style.color = 'rgba(255, 255, 255, 0.5)';
+            launcher.style.color = 'rgba(255, 255, 255, 0.7)';
             launcher.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-            launcher.style.boxShadow = 'none';
+            launcher.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
         });
 
         // Header

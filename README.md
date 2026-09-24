@@ -19,30 +19,30 @@ A 3,000-particle CPU-projected 3D sequence that morphs through 7 timed phases.
 
 ### 2. Confectionery Flavor Store (`STORE.HTML`)
 A premium glassmorphism storefront displaying 16 flagship computational cookie specimens and an interactive R&D Coming Soon pipeline:
-- 🔥 **SCARLET SPICE** (Fire - Baked on Mass)
-- 💾 **CYBER MINT** (Cyber - Vacuum Sealed)
-- 🌑 **VOID COCOA** (Void - In Production)
-- 🌬️ **AERO LEMON** (Aero - Batch Ready)
-- 🌈 **PRISM SUGAR** (Prism - Styling Soon)
-- ❄️ **GHOST FROST** (Frost - Vacuum Sealed)
-- 🌀 **GRAVITY FUDGE** (Gravity - Vacuum Sealed)
-- 🧠 **NEURAL BERRY** (Neural - Fresh Batch)
-- ⚡ **PLASMA TOFFEE** (Plasma - Fusion Baked)
-- 🌌 **QUANTUM MATCHA** (Quantum - Spin Stabilized)
-- 🌋 **MAGMA CINNAMON** (Thermal - Core Heated)
-- 💎 **DIAMOND SHORTBREAD** (Crystalline - Lattice Form)
-- 🔮 **CHRONO VANILLA** (Temporal - Epoch Aged)
-- 🧬 **BIO HORIZON** (Organic Synth - Gene Profiled)
-- ☀️ **SOLAR MACADAMIA** (Stellar - 5000K Roasted)
-- 🪐 **DARK MATTER** (Abyssal - Event Horizon)
+- 🔥 **SCARLET TRUFFLE** (Chili Cacao Noir - 24K Gold Dusted)
+- 💾 **CYBER MINT** (Emerald Mint Crisp - Valrhona Infused)
+- 🌑 **VOID GANACHE** (Périgord Black Truffle - Grand Cru Reserve)
+- 🌬️ **AERO YUZU** (Imperial Yuzu Blossom - Haute Vacuum Bake)
+- 🌈 **PRISM SABLÉ** (Champagne Sugar Sablé - Haute Couture)
+- ❄️ **GHOST GLACÉ** (White Gold Glacé - Cryo-Tempered)
+- 🌀 **GRAVITY GIANDUJA** (Piedmont Hazelnut Core - Opulent Fusion)
+- 🧠 **NEURAL CASSIS** (Blackcurrant Violet Glaze - Gene Profiled)
+- ⚡ **PLASMA PRALINE** (Smoked Amber Caramel - Fusion Roasted)
+- 🌌 **QUANTUM MATCHA** (Ceremonial Uji Matcha - Spin Stabilized)
+- 🌋 **MAGMA CARDAMOM** (Golden Cardamom Brioche - Molten Core)
+- 💎 **DIAMOND TAHITI** (Tahitian Vanilla Gold - Crystalline)
+- 🔮 **CHRONO BOURBON** (10-Yr Aged Bourbon Bean - Epoch Aged)
+- 🧬 **BIO MACADAMIA** (Hawaiian Gold Roasted - Gene Profiled)
+- ☀️ **SOLAR FLORENTINE** (Honey Almond Florentine - Solar Tempered)
+- 🪐 **DARK CRIOLLO** (Venezuelan Criollo Dark - Event Horizon)
 
 #### 🧪 R&D Experimental Pipeline (Coming Soon 2026-2027):
-- 🛸 **ORB TREAT V2** (Ferro-magnetic cocoa matrix chocolate sphere)
-- 🤖 **DESKTOP REACTOR #09** (Compact 30-second home cookie synthesizer)
-- 💊 **MATERIA PILL-BAR** (2,000 kcal zero-crash compressed pastry core)
-- 🌊 **ZERO-G HOVER MACARON** (Acoustic levitation floating macaron)
-- ⚡ **NEURAL-LINK TASTE PACK** (Synaptic gustatory flavor trigger)
-- 🧊 **CRYO-STASIS ICE BISCUIT** (Absolute zero quantum flash-baked biscuit)
+- 🛸 **ORB TREAT V2** (24K Gold 85% Valrhona dark chocolate orb filled with Bronte pistachio praline cream)
+- 🤖 **DESKTOP REACTOR #09** (30-second fresh desk synthesizer for Valrhona chocolate chunk & Bourbon vanilla soufflé cookies)
+- 💊 **MATERIA PILL-BAR** (Compressed golden shortbread pastry packed with Hawaiian macadamias & Tahitian vanilla cream)
+- 🌊 **ZERO-G HOVER MACARON** (Acoustic levitation floating ruby cacao macaron with Dom Pérignon rosé ganache)
+- ⚡ **NEURAL-LINK TASTE PACK** (Synaptic gustatory trigger unlocking infinite haute confectionery flavor profiles)
+- 🧊 **CRYO-STASIS ICE BISCUIT** (Absolute zero white-gold glazed sablé biscuit transforming into brown-butter truffle cream)
 
 ### 3. The Baking Entity AI (`entity.js`)
 An autonomous, raymarched SDF helper entity that inhabits the background and assists in flavor balancing.
@@ -51,9 +51,9 @@ An autonomous, raymarched SDF helper entity that inhabits the background and ass
 - **Raymarched Volumes**: Rendered without traditional mesh geometry for a perfectly smooth, organic feel.
 
 ### 4. Confectionery Glitch System (`animator.js`)
-The storefront periodically "scrambles" from its advanced product line-up into classic cookie varieties.
+The storefront periodically "scrambles" from its advanced product line-up into high-class haute confectionery varieties (e.g. Valrhona Noir, 24K Safran Gold Leaf, Bronte Pistachio, Tahitian Salted Vanilla, Piedmont Gianduja, Ruby Rose Petal, Périgord Black Truffle, Kyoto Uji Matcha, Smoked Dulce de Leche, Milano Amaretto, Imperial Yuzu, Bergamot Earl Grey, Aged Bourbon Pecan, Dom Pérignon Rosé Champagne, Royal Macadamia, Golden Cardamom Crown).
 - **FLIP Transitions**: Cards reshuffle their positions with smooth physics.
-- **Text Scramble**: Real-time decode animation as "VOID COCOA" becomes "MACARON ROYALE".
+- **Text Scramble**: Real-time decode animation as "VOID GANACHE" becomes "TRUFFLE PERIGORD".
 - **Micro-Glitches**: Random brief distortions, skews, and text corruption maintain a "haunted" feel.
 
 ### 5. Generative Soundtrack Suite

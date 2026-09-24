@@ -23,33 +23,33 @@
     // Decode cipher characters (mix of Latin, Katakana, symbols)
     const CIPHER = 'ABCDEFGHJKLMNPRSTUVWXYZアイウエオカキクケコサシスセソ0123456789#%&@ξΣΩ';
 
-    // ─── ALTERNATE NAME SETS ───
+    // ─── ALTERNATE NAME SETS (HIGH-CLASS HAUTE CONFECTIONERY) ───
     const COOKIE_SET = [
-        { main: 'SNICKER',  sub: 'DOODLE',  badge: 'FRESH',        color: {r: 0.9, g: 0.7, b: 0.3}, blobType: 1 }, // Rounded Box (Cookie shape)
-        { main: 'CHOCO',    sub: 'CHIP',     badge: 'HOT',          color: {r: 0.4, g: 0.2, b: 0.1}, blobType: 3 }, // Noisy (Chunky chips)
-        { main: 'RED',      sub: 'VELVET',   badge: 'WARM',         color: {r: 0.8, g: 0.1, b: 0.2}, blobType: 0 }, // Circle (Smooth)
-        { main: 'MACARON',  sub: 'ROYALE',   badge: 'CRISPY',       color: {r: 0.8, g: 0.4, b: 0.9}, blobType: 4 }, // Ring (Fancy)
-        { main: 'SUGAR',    sub: 'COOKIE',   badge: 'CHEWY',        color: {r: 0.9, g: 0.9, b: 0.7}, blobType: 2 }, // Star (Sugar shape)
-        { main: 'BROWNIE',  sub: 'BITE',     badge: 'GLAZED',       color: {r: 0.3, g: 0.1, b: 0.0}, blobType: 1 }, // Box
-        { main: 'OATMEAL',  sub: 'RAISIN',   badge: 'SOFT',         color: {r: 0.6, g: 0.4, b: 0.2}, blobType: 3 }, // Noisy
-        { main: 'GINGER',   sub: 'SNAP',     badge: 'SPICY',        color: {r: 1.0, g: 0.5, b: 0.0}, blobType: 2 }, // Star
-        { main: 'TOFFEE',   sub: 'CRUNCH',   badge: 'PLASMA BAKED', color: {r: 1.0, g: 0.7, b: 0.0}, blobType: 1 },
-        { main: 'MATCHA',   sub: 'WAFER',    badge: 'SPIN-LATTICE', color: {r: 0.2, g: 0.9, b: 0.4}, blobType: 2 },
-        { main: 'CINNAMON', sub: 'SWIRL',    badge: 'MOLTEN CORE',  color: {r: 1.0, g: 0.1, b: 0.0}, blobType: 0 },
-        { main: 'SHORTBREAD',sub: 'DIAMOND', badge: 'CRYSTALLINE',  color: {r: 0.8, g: 0.95, b: 1.0},blobType: 2 },
-        { main: 'VANILLA',  sub: 'BEAN',     badge: 'EPOCH AGED',   color: {r: 1.0, g: 0.8, b: 0.2}, blobType: 4 },
-        { main: 'BIO BREAD',sub: 'PULSE',    badge: 'GENE PROFILED',color: {r: 0.0, g: 0.95, b: 0.9},blobType: 3 },
-        { main: 'MACADAMIA',sub: 'SOLAR',    badge: '5000K ROAST',  color: {r: 1.0, g: 0.4, b: 0.0}, blobType: 0 },
-        { main: 'TRUFFLE',  sub: 'ABYSSAL',  badge: 'SINGULARITY',  color: {r: 0.4, g: 0.1, b: 0.7}, blobType: 4 },
+        { main: 'VALRHONA',   sub: 'NOIR',      badge: '85% GRAND CRU', color: {r: 0.35, g: 0.18, b: 0.12}, blobType: 3 }, // Dark Truffle
+        { main: 'GOLD LEAF',  sub: 'SAFRAN',    badge: '24K INFUSED',   color: {r: 1.0, g: 0.84, b: 0.0}, blobType: 1 }, // 24K Gold Saffron
+        { main: 'ROYAL',      sub: 'PISTACHIO', badge: 'BRONTE HARVEST',color: {r: 0.45, g: 0.75, b: 0.35}, blobType: 2 }, // Sicilian Bronte Pistachio
+        { main: 'TAHITIAN',   sub: 'VANILLA',   badge: 'FLEUR DE SEL',  color: {r: 0.95, g: 0.90, b: 0.75}, blobType: 0 }, // Tahitian Salted Vanilla
+        { main: 'GIANDUJA',   sub: 'NOCTURNE',  badge: 'PIEDMONT 1922', color: {r: 0.4, g: 0.22, b: 0.15}, blobType: 1 }, // Hazelnut Gianduja
+        { main: 'RUBY CACAO', sub: 'ROSE',      badge: 'FLORENTINE',    color: {r: 0.9, g: 0.25, b: 0.45}, blobType: 4 }, // Ruby Rose Petal
+        { main: 'TRUFFLE',    sub: 'PERIGORD',  badge: 'BLACK GANACHE', color: {r: 0.25, g: 0.12, b: 0.2}, blobType: 4 }, // Périgord Black Truffle
+        { main: 'CEREMONIAL', sub: 'MATCHA',    badge: 'KYOTO UJI CRU', color: {r: 0.2, g: 0.8, b: 0.35}, blobType: 2 }, // Kyoto Uji Matcha
+        { main: 'SOLAR DULCE',sub: 'LECHE',     badge: 'AMBER CARAMEL', color: {r: 0.95, g: 0.6, b: 0.1}, blobType: 0 }, // Solar Dulce de Leche
+        { main: 'AMARETTO',   sub: 'VELVET',    badge: 'MILANO SABLÉ',  color: {r: 0.8, g: 0.3, b: 0.15}, blobType: 0 }, // Amaretto Velvet
+        { main: 'IMPERIAL',   sub: 'YUZU',      badge: 'WHITE GOLD',    color: {r: 1.0, g: 0.85, b: 0.2}, blobType: 2 }, // Imperial Yuzu
+        { main: 'BERGAMOT',   sub: 'EARL GREY', badge: 'ROYAL TUILE',   color: {r: 0.6, g: 0.5, b: 0.7}, blobType: 4 }, // Bergamot Earl Grey
+        { main: 'BOURBON',    sub: 'PRALINE',   badge: 'BARREL AGED',   color: {r: 0.85, g: 0.5, b: 0.2}, blobType: 3 }, // Aged Bourbon Pecan
+        { main: 'CHAMPAGNE',  sub: 'ROSE',      badge: 'DOM CUVÉE',     color: {r: 0.95, g: 0.85, b: 0.65}, blobType: 4 }, // Rosé Champagne Macaron
+        { main: 'MACADAMIA',  sub: 'ROYALE',    badge: 'HONEY ROASTED', color: {r: 0.9, g: 0.75, b: 0.4}, blobType: 1 }, // Royal Macadamia
+        { main: 'CARDAMOM',   sub: 'CROWN',     badge: 'HAUTE TART',    color: {r: 1.0, g: 0.7, b: 0.2}, blobType: 2 }, // Golden Cardamom Crown
     ];
 
     const HERO_ALT = {
-        tag:   'Freshly Baked',
-        title: 'MEGA COOKIE',
-        sub:   "GRANDMA'S RECIPE | BATCH-42",
+        tag:   'Haute Confectionery',
+        title: 'GRAND CRU RESERVE',
+        sub:   "24K GOLD LEAF | VINTAGE BATCH #01",
     };
 
-    const HEADER_ALT = 'Cookie Division';
+    const HEADER_ALT = 'Haute Confectionery Division';
 
     // ─── ENGINE STATE ───
     let cards       = [];      // DOM card elements
@@ -413,7 +413,7 @@
         isAlt:     () => isAlt,
         getCookieData: (name) => {
             const cleanName = name.split(' ')[0].toUpperCase();
-            return COOKIE_SET.find(c => c.main === cleanName);
+            return COOKIE_SET.find(c => c.main === cleanName || cleanName.startsWith(c.main) || c.main.startsWith(cleanName));
         }
     };
 

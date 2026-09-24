@@ -25,18 +25,20 @@
         hud.id = 'materia-effects-hud';
         hud.style.cssText = `
             position: fixed;
-            bottom: 30px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 15px;
+            gap: 8px;
             z-index: 99998;
             pointer-events: auto;
-            background: rgba(0,0,0,0.2);
-            padding: 10px 20px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(5, 8, 15, 0.75);
+            padding: 5px 12px;
+            border-radius: 999px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         `;
 
         const effects = [
@@ -57,13 +59,13 @@
             dot.className = 'effect-dot';
             dot.title = eff.name;
             dot.style.cssText = `
-                width: 10px;
-                height: 10px;
+                width: 7px;
+                height: 7px;
                 border-radius: 50%;
                 background: ${eff.color};
-                border: 1px solid rgba(255,255,255,0.2);
+                border: 1px solid rgba(255,255,255,0.3);
                 cursor: pointer;
-                box-shadow: 0 0 8px ${eff.color};
+                box-shadow: 0 0 6px ${eff.color};
                 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 padding: 0;
             `;

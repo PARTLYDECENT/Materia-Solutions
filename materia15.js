@@ -309,7 +309,7 @@
         // Clean ramp
         master.gain.cancelScheduledValues(ctx.currentTime);
         master.gain.setValueAtTime(0, ctx.currentTime);
-        master.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 2.0);
+        master.gain.linearRampToValueAtTime(0.30, ctx.currentTime + 2.0);
 
         sequencer = runSequencer();
         loop();
